@@ -20,7 +20,7 @@ import time
 import urllib.parse
 import uuid
 
-from . import __version__, gate, tools
+from . import __version__, game_file, gate, tools
 from .manifest import (RUNNABLE_STATES, catalog, expand, host_id, load_manifest,
                        manifest_for, manifest_sha256, needs_build_input)
 from .package import validate_ipa
@@ -536,6 +536,9 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
         disc = None  # the game file is added in the app, not read by the build
     elif disc is None:
         raise ValueError(f"{manifest['name']} needs your own game file (--disc)")
+    accepted = game_file.check_before_tools(manifest, target, disc, host_id())
+    if accepted:
+        print(f"Your game file: {accepted}", flush=True)
     tools.install(target.get("tools", []), host_id())
     version = (read_game_version(source) or {}).get("version") or ref.lstrip("v")
     if target.get("published_app") and app is None:
