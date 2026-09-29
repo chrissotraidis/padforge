@@ -17,6 +17,7 @@ import signal
 import subprocess
 import sys
 import time
+import urllib.parse
 import uuid
 
 from . import __version__, gate, tools
@@ -428,11 +429,29 @@ def print_log_tail(log, lines=15):
 
 
 def latest_release(repo_url):
-    """The game's latest GitHub release: tag and downloadable assets."""
-    path = repo_url.removeprefix("https://github.com/").removesuffix(".git")
-    with tools.open_url(f"https://api.github.com/repos/{path}/releases/latest") as response:
-        data = json.load(response)
-    return data["tag_name"], {asset["name"]: asset["browser_download_url"] for asset in data["assets"]}
+    """The game's latest GitHub release: tag and downloadable assets.
+
+    Uses the release web pages, not GitHub's API: the API allows 60 unsigned
+    requests an hour per network address, which shared networks run out of.
+    /releases/latest redirects to the tag, and every Pad release lists its
+    files in SHA256SUMS.
+    """
+    base = repo_url.removesuffix(".git").rstrip("/")
+    with tools.open_url(f"{base}/releases/latest") as response:
+        landed = response.geturl()
+    if "/releases/tag/" not in landed:
+        raise ValueError(f"{base} has no published release yet")
+    tag = urllib.parse.unquote(landed.rsplit("/releases/tag/", 1)[1].split("?")[0].strip("/"))
+    download = f"{base}/releases/download/{urllib.parse.quote(tag)}"
+    try:
+        with tools.open_url(f"{download}/SHA256SUMS") as response:
+            listed = response.read().decode()
+    except RuntimeError:
+        return tag, {}
+    names = [line.split(maxsplit=1)[1].lstrip("*") for line in listed.splitlines() if len(line.split()) == 2]
+    assets = {name: f"{download}/{urllib.parse.quote(name)}" for name in names}
+    assets["SHA256SUMS"] = f"{download}/SHA256SUMS"
+    return tag, assets
 
 
 def published_app(name, assets, folder):
