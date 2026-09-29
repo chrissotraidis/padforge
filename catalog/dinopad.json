@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "id": "dinopad",
+  "repo_url": "https://github.com/chrissotraidis/dinopad",
+  "reviewed_revision": null,
+  "notes": "Manifest owned by the game repository (base edition; ROM read at build time).",
+  "manifest": null
+}
