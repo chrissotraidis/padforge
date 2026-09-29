@@ -14,13 +14,17 @@ not a provenance database or copyright clearance.
 
 Exit 0 = PASS, 1 = FAIL, 2 = usage error.
 """
+import bz2
 import hashlib
 import io
 import json
+import lzma
 import os
 import re
 import sys
+import tarfile
 import zipfile
+import zlib
 
 # name: (first four key bytes as hex, SHA-256 of the complete 16-byte key)
 KEY_FINGERPRINTS = {
@@ -41,6 +45,7 @@ SOURCE_EXTENSIONS = {".c", ".h", ".cc", ".cpp", ".hpp", ".cxx", ".hxx",
                      ".patch", ".diff", ".md", ".rst", ".txt", ".json"}
 BYTE_LIST = re.compile(rb"0x[0-9a-f]{2}(?:\s*,\s*0x[0-9a-f]{2}){15,}")
 UNREADABLE = b"__release_gate_unreadable__"
+EXPANDED_LIMIT = 1 << 30  # largest decompressed stream the gate reads (1 GiB)
 
 
 def _raw_key_hits(data, fingerprints):
@@ -184,13 +189,61 @@ def expand(name, data, depth=0):
                 member = UNREADABLE
             yield from expand(name + "!" + info.filename, member, depth + 1)
         return
-    # Only ZIP is expanded; normalize TAR safely to ZIP before inspection.
+    # gzip, bzip2 and xz streams and tar archives are read in memory (never
+    # extracted to disk). Anything else compressed, corrupt or over the limit
+    # fails closed.
+    if depth < 3:
+        inner = decompress(data)
+        if inner is not None:
+            yield from expand(name + "!" + inner_name(name), inner, depth + 1)
+            return
+        if data[257:262] == b"ustar":
+            try:
+                with tarfile.open(fileobj=io.BytesIO(data), mode="r:") as archive:
+                    for member in archive:
+                        if member.isfile():
+                            yield from expand(name + "!" + member.name,
+                                              archive.extractfile(member).read(), depth + 1)
+            except tarfile.TarError:
+                yield name, UNREADABLE
+            return
     if (name.lower().endswith((".tar", ".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".gz", ".xz", ".bz2", ".7z", ".rar"))
             or data.startswith((b"\x1f\x8b", b"\xfd7zXZ\x00", b"BZh", b"7z\xbc\xaf\x27\x1c", b"Rar!"))
             or data[257:262] == b"ustar"):
         yield name, UNREADABLE
         return
     yield name, data
+
+
+def decompress(data):
+    """One complete gzip, bzip2 or xz stream, or None (other, corrupt, trailing data or too big)."""
+    if data.startswith(b"\x1f\x8b"):
+        stream = zlib.decompressobj(31)
+    elif data.startswith(b"BZh"):
+        stream = bz2.BZ2Decompressor()
+    elif data.startswith(b"\xfd7zXZ\x00"):
+        stream = lzma.LZMADecompressor()
+    else:
+        return None
+    try:
+        out = stream.decompress(data, EXPANDED_LIMIT + 1)
+    except (OSError, EOFError, ValueError, zlib.error, lzma.LZMAError):
+        return None
+    done = stream.eof
+    rest = stream.unused_data
+    if not done or rest or len(out) > EXPANDED_LIMIT:
+        return None
+    return out
+
+
+def inner_name(name):
+    lower = name.lower()
+    if lower.endswith(".tgz"):
+        return name.rsplit("/", 1)[-1][:-4] + ".tar"
+    for suffix in (".gz", ".bz2", ".xz"):
+        if lower.endswith(suffix):
+            return name.rsplit("/", 1)[-1][:-len(suffix)]
+    return "contents"
 
 
 def load_reference(reference):
