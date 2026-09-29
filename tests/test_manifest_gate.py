@@ -123,6 +123,28 @@ class GateTests(unittest.TestCase):
             clean.write_text("runtime only")
             self.assertEqual(gate.audit([clean], stream=io.StringIO()), 0)
 
+    def test_compressed_streams_and_tar_are_read(self):
+        import bz2, gzip, tarfile
+        with tempfile.TemporaryDirectory() as folder:
+            hidden = Path(folder) / "save.sav.gz"
+            hidden.write_bytes(gzip.compress(b"xx" + FAKE_KEY + b"yy"))
+            self.assertEqual(gate.check(str(hidden))[0], ["Synthetic key in save.sav.gz!save.sav"])
+            plain = Path(folder) / "sample1.bz2"
+            plain.write_bytes(bz2.compress(b"ordinary test data"))
+            self.assertEqual(gate.check(str(plain))[0], [])
+            member = io.BytesIO()
+            with tarfile.open(fileobj=member, mode="w:gz") as archive:
+                info = tarfile.TarInfo("src/key.c")
+                body = FAKE_KEY.hex().encode()
+                info.size = len(body)
+                archive.addfile(info, io.BytesIO(body))
+            tarball = Path(folder) / "source.tar.gz"
+            tarball.write_bytes(member.getvalue())
+            self.assertEqual(gate.check(str(tarball))[0], ["Synthetic key in source.tar.gz!source.tar!src/key.c"])
+            trailing = Path(folder) / "two.gz"
+            trailing.write_bytes(gzip.compress(b"a") + gzip.compress(b"b"))
+            self.assertIn("fails closed", gate.check(str(trailing))[0][0])
+
 
 if __name__ == "__main__":
     unittest.main()
