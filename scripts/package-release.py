@@ -33,7 +33,11 @@ def payload():
 
 def add(bundle, name, data, executable=False):
     info = zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
-    info.external_attr = (0o755 if executable else 0o644) << 16
+    # Unix mode with the regular-file type bit: macOS's Archive Utility (what a
+    # double-click in Finder uses) drops permissions stored without it, which
+    # left PadForge.command unable to start (padforge#7).
+    info.create_system = 3
+    info.external_attr = (0o100755 if executable else 0o100644) << 16
     info.compress_type = zipfile.ZIP_DEFLATED
     bundle.writestr(info, data)
 
