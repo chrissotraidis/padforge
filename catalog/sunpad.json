@@ -2,7 +2,12 @@
   "schema_version": 1,
   "id": "sunpad",
   "repo_url": "https://github.com/chrissotraidis/sunpad",
+  "name": "SunPad",
+  "player_targets": [
+    "ios"
+  ],
+  "player_help": "https://github.com/chrissotraidis/sunpad#get-sunpad",
   "reviewed_revision": null,
-  "notes": "padforge.json is on open PR #49 until merged. Game module is a separate dylib.",
+  "notes": "Empty app plus a game module made from the player's own disc (D11: no Nintendo keys in the published app).",
   "manifest": null
 }

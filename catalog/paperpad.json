@@ -2,6 +2,11 @@
   "schema_version": 1,
   "id": "paperpad",
   "repo_url": "https://github.com/chrissotraidis/paperpad",
+  "name": "PaperPad",
+  "player_targets": [
+    "ios"
+  ],
+  "player_help": "https://github.com/chrissotraidis/paperpad#get-paperpad",
   "reviewed_revision": null,
   "notes": "Manifest owned by the game repository (build-ios-device.sh --rom, then package-unsigned-ipa.sh).",
   "manifest": null

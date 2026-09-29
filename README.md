@@ -13,8 +13,9 @@ Games you can make today:
   Apple Silicon Mac with Xcode.
 - On an Apple Silicon Mac with Xcode, for iPhone/iPad: **AnnePad**,
   **BallPad**, **BananaPad**, **BarrelPad**, **BearBirdPad**, **BellPad**,
-  **BlueWake**, **BrawlerPad**, **GoldenPad**, **HarkinianPad**, **MaskPad**,
-  **SpaghettiPad** and **StarshipPad**. Some need build libraries from
+  **BlueWake**, **BrawlerPad**, **DinoPad**, **GoldenPad**, **HarkinianPad**,
+  **MaskPad**, **MeleePad**, **PaperPad**, **SpaghettiPad**, **StarshipPad**
+  and **SunPad**. Some need build libraries from
   Homebrew first; each game's release notes list them.
 
 You need your own copy of the game; see the game's README for exactly which
