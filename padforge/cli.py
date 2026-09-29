@@ -296,7 +296,9 @@ def read_game_version(repo):
 def workspace_root(args, repo):
     selected = getattr(args, "workspace_root", None)
     root = selected.expanduser().resolve() if selected else (repo / "build/padforge").resolve()
-    if repo / "build" not in root.parents:
+    # Compare resolved paths: a home folder reached through a link (macOS /tmp,
+    # a moved or synced user folder) otherwise stops every build here.
+    if repo.resolve() / "build" not in root.parents:
         raise ValueError("Workspace root must be below the backend's build directory")
     return root
 
