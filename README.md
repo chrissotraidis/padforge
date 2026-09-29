@@ -7,19 +7,29 @@ uploaded and no game files are downloaded.
 
 ## Make a game
 
+Games you can make today: **KartPad** (Android game pack on Windows, Mac or
+Linux; complete iPhone/iPad app on an Apple Silicon Mac with Xcode). You need
+your own copy of the game; see the game's README for exactly which one.
+
 Download PadForge for your computer from the
 [latest release](https://github.com/chrissotraidis/padforge/releases/latest),
 unzip it and start it:
 
 - **Windows:** double-click `PadForge.cmd` (Python is included). If Windows
-  says it protected your PC, choose *More info*, then *Run anyway*.
-- **Mac:** double-click `PadForge.command`. If macOS blocks it, open System
-  Settings, Privacy & Security, and choose *Open Anyway*. It needs Apple's
-  command line tools (`xcode-select --install`); iPhone builds also need Xcode.
+  says it protected your PC, choose **More info**, then **Run anyway**.
+- **Mac:** once, run `xcode-select --install` in Terminal (Apple's command
+  line tools; iPhone builds also need Xcode). Then double-click
+  `PadForge.command`. The first time, macOS says Apple could not verify it:
+  choose **Done**, open **System Settings → Privacy & Security**, scroll down,
+  choose **Open Anyway** next to PadForge.command and confirm. (Or, in
+  Terminal, type `sh `, drag `PadForge.command` into the window and press
+  Return.)
 - **Linux:** in the folder, run `sh padforge.sh` (needs Python 3.9+ and Git).
 
-PadForge asks which game, then for your own game file (drag it into the
-window) and where to save. The same thing as one command:
+PadForge asks which game and platform, then for your own game file (drag it
+into the window and press Enter) and where to save (Enter for Downloads). The
+first run downloads a few GB of tools and can take from about 10 minutes to an
+hour, depending on the computer. The same thing as one command:
 
 ```
 python -m padforge make kartpad android --disc "Mario Kart Wii.wbfs"
@@ -27,9 +37,10 @@ python -m padforge make kartpad android --disc "Mario Kart Wii.wbfs"
 
 PadForge picks the game's latest release, downloads its source, its pinned
 tools (into its own folder, never system-wide) and its published app, then
-builds your copy and saves it where you run it (`--out` to choose). The game's
-README says what to do with the result, for example KartPad's
-[Get KartPad](https://github.com/chrissotraidis/kartpad#get-kartpad).
+builds your copy, for example `KartPad-v0.6.0-android-personal.so` or
+`KartPad-v0.6.0-ios-personal.ipa`. Keep it to yourself: it contains game code
+made from your copy. The game's README says what to do with it, for example
+KartPad's [Get KartPad](https://github.com/chrissotraidis/kartpad#get-kartpad).
 
 **Experimental.** See [STATUS.md](STATUS.md) for what has been verified on
 each system and [docs/DECISIONS.md](docs/DECISIONS.md) for why it works this way.
@@ -66,10 +77,10 @@ Builds run on the platforms each game marks *verified* or *experimental*;
 and ARM64), Linux (x86_64) and macOS; iPhone/iPad builds need an Apple Silicon
 Mac. See [STATUS.md](STATUS.md) for what has been verified on each.
 
-The catalog covers the Pad ports whose repositories declare a build. Most
-manifests are `draft-untested` until a complete build has run through PadForge;
-[STATUS.md](STATUS.md) lists which ones have. MaskPad was the first complete
-game build through PadForge (29 Sep 2026, on its pending PR branch).
+The catalog covers the Pad ports whose repositories declare a build. Only
+games listed under [Make a game](#make-a-game) are offered to players; the
+others are still being tested, and [STATUS.md](STATUS.md) lists how far each
+has got.
 
 ## How games plug in
 
@@ -83,8 +94,12 @@ See [Adding a game](docs/ADDING_A_GAME.md) for a complete example.
 
 ## What a build does and does not do
 
-- Keep the game checkout clean at a commit you have reviewed. PadForge does
-  not download repositories or install tools; follow `doctor`'s suggestions.
+This describes `plan`/`build` on a checkout you provide (`make` and the
+guided start do the downloading for you).
+
+- Keep the game checkout clean at a commit you have reviewed. `plan` and
+  `build` do not download repositories or install tools; follow `doctor`'s
+  suggestions or use `tools` and `get`.
 - Builds, logs and records stay under the game's ignored `build/padforge/`.
   One PadForge build runs per checkout; Ctrl-C cancels and keeps finished work.
 - Every personal output is checked for structure and provenance, then run
