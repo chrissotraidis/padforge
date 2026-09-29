@@ -177,6 +177,13 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
   - Catalog entries for MeleePad and PaperPad: PR #10 (draft until released).
   - Phone: CoreDevice file copies from the phone stall (AFC works); XCTest hangs
     or asks for the passcode. Installs, launches and screenshots work.
+- **Status (04:30, 30 Sep).** PadForge 0.1.3 published: BananaPad in the
+  guided start (it was released but not offered), and the gate reads gzip,
+  bzip2, xz and tar contents (#11), which let PeonPad #8 merge. Checked on Mac,
+  Windows 11 VM (bundled Python) and Linux (Python 3.9); anonymous downloads
+  match SHA256SUMS. SunPad and MeleePad staged empty IPAs rebuilt from fresh
+  clones; the phone copies use them. EctoPad's one blocker recorded: no build
+  from a fresh clone yet.
 
 ## Overnight run 28–29 Sep (complete)
 
