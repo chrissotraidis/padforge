@@ -236,6 +236,7 @@ def run_steps(steps, argvs, cwd, log_path, event_path, emit, before_each, values
         env = backend_env((values or {}).get("jobs"), tool_names)
         if step.get("env"):
             env.update({key: expand([value], values or {})[0] for key, value in step["env"].items()})
+        argv = with_python_path(argv, env)
         emit("backend_event", backend={"schema_version": 1, "event": "stage_started", "stage": stage})
         code, cancelled = run_process(argv, cwd, log_path, event_path, emit,
                                       before_spawn=before_each, append=True, env=env)
@@ -251,6 +252,19 @@ def placeholder_values(args, repo, disc, work, output):
     return {"repo": str(repo), "disc": str(disc) if disc else "", "work": str(work),
             "output": str(output), "jobs": str(args.jobs), "app": app_path(args),
             "python": sys.executable}
+
+
+def with_python_path(argv, env):
+    """Run a `{python} -m module` step with its PYTHONPATH on sys.path itself.
+
+    Windows PadForge ships Python's embeddable package, whose ._pth file makes
+    Python ignore PYTHONPATH, so `-m` could not find a game's builder there."""
+    if not env.get("PYTHONPATH") or len(argv) < 3 or argv[0] != sys.executable or argv[1] != "-m":
+        return argv
+    shim = ("import os, runpy, sys; "
+            "sys.path[:0] = [p for p in os.environ['PYTHONPATH'].split(os.pathsep) if p]; "
+            f"runpy.run_module({argv[2]!r}, run_name='__main__', alter_sys=True)")
+    return [argv[0], "-c", shim, *argv[3:]]
 
 
 def app_path(args):
