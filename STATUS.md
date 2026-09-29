@@ -187,6 +187,38 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
 
 ## Overnight run 28–29 Sep (complete)
 
+## Morning handoff (30 Sep, written 04:25)
+
+- **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
+  HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
+  BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
+- **Needs 5 minutes with the iPhone, then publish** (runbook:
+  `~/.codex/scratch/release-staging/READY-30sep.md`): SunPad #50 (press Start),
+  MeleePad #35 (Import Game Data → On My iPhone → MeleePad → the .iso),
+  PaperPad #12 (press Start), DinoPad #7 (Start Dinosaur Planet). Each is the
+  PadForge build, installed in place with saves kept; releases are staged and
+  pass the content check. Then PadForge PR #10 + 0.1.4 for the guided start.
+- **Phone:** XCTest needs "Enable UI Automation" (passcode) and now stalls at
+  "waiting for workers to materialize"; CoreDevice file copies from the phone
+  stall too (AFC works). Unplugging and replugging the cable, then entering the
+  passcode at the prompt, should clear both.
+- **Device checks open:** DevilTouch (published IPA plays its intro with your
+  MPQ; tap into town); VaultPad is iPad-only.
+- **Your decisions:** AltStore #5 and the clean engines (mark Clear), SnapPad #7
+  test stub, GalaxyPad #15 anchors (spread across research scripts), F0X and
+  HarkinianPad #28 patch context, UTP, CTRPad, KidPad listing. EctoPad needs a
+  bootstrap script first.
+- **Notes:** the local `~/.codex/release-gate/release_gate.py` that AGENTS
+  rules cite is an older copy of PadForge's gate (no compressed-file support).
+  KartPad's pinned #338 is closed (still pinned). Phone copies to tidy: Melee ISO
+  in MeleePad Documents (for the import), DK64.v64 and Animal Crossing.iso in
+  BlueWake Documents, a stray copy in BellPad's Library.
+- **Disk (165 GB free):** cleanup candidates, not deleted: scratch
+  padforge-mac-home 64 GB, worktrees/kartpad-padforge/build 44 GB,
+  bluewake-public-cold 15 GB, kp060-phone 15 GB, padforge-fresh-home 11 GB,
+  bluewake-fresh 9.8 GB, pack-e2e-mac 6.6 GB, tonight's padforge-*-home and
+  *-fresh-020 folders (about 20 GB together).
+
 ## Morning handoff (06:15)
 
 - **Complete personal builds through PadForge (16 games):** KartPad (iOS and
