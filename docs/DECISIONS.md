@@ -167,6 +167,21 @@ Apple Silicon Mac either way, and nothing with game code is published in either
 shape. The N64 recipe (N64Recomp + RT64) stays shared across the ports. If a
 port gains Android or a Windows-built iPhone path later, revisit this for it.
 
+## D11. Published Dolphin-based apps carry no Nintendo keys (30 Sep 2026)
+
+Dolphin sets built-in Wii keys (retail, Korean and dev common keys, SD key) as
+IOS defaults, so any empty app linking the Dolphin core fails the content check.
+The Dolphin-based ports SunPad and MeleePad (BlueWake's published app already
+passes) build their iOS core with `PADFORGE_PUBLIC_APP`, which leaves those keys zeroed
+in `IOSC.cpp` on each port's RecompCore branch. The published app is also the
+one PadForge completes for players, so there is one build, not two.
+
+Why: GameCube games never use these keys, and a Wii title would read the
+player's own `keys.bin`, the same pattern as KartPad's Android disc import
+asking for the player's `common-key.bin`. A compile switch in the fork is one
+reviewed change per port; binary patching or a second "public" build would be
+new machinery.
+
 ## S1. iPhone/iPad module without Xcode or Apple's SDK: plausible, partly verified
 
 Test (BlueWake, private scratch, nothing committed): one real translated chunk

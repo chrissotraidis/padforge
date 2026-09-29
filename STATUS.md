@@ -146,6 +146,22 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
   - BananaPad #10: fresh clones failed verify-sources (submodule fingerprint
     included git describe text); fixed, rebuilding. DinoPad #7: catalogued;
     build next. Then SunPad #50 and MeleePad.
+- **Status (02:15, 30 Sep).** Released since 00:00: PadForge 0.1.2 (Windows
+  and Mac builds passed; Linux: the container starts) and BananaPad 0.2.0. Every released repo was
+  re-checked on GitHub: the release has the formula's assets, the README points
+  to PadForge, and the Notion row has Release, README ready and L5 set; stale
+  "Next action" text on those rows was rewritten.
+  - DinoPad #7 builds through PadForge (0.2.0 build 4) and is installed in
+    place on the iPhone (ROM and save kept). Gameplay check waits for the
+    phone: XCTest shows an "Enable UI Automation" passcode prompt.
+  - SunPad #50: the empty app failed the content check (Wii retail and Korean
+    common keys from Dolphin's IOSC defaults; two license test ZIPs). Fixed
+    with D11 (RecompCore `da96175`, ModernGekko `8f49c55` on
+    `codex/sunpad-apple`), notices skip archives, and build-ios-app.sh now
+    merges the fresh core (it linked a stale `libSunPadCore.a`). The empty
+    IPA passes; a fresh-home PadForge build from the branch is running.
+  - MeleePad #35: same fix cherry-picked (RecompCore `3f2a51f`, ModernGekko
+    `9be2c5b` on `codex/meleepad-slippi-preview5`); empty-app build next.
 
 ## Overnight run 28–29 Sep (complete)
 
