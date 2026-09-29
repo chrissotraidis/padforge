@@ -135,6 +135,17 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
     with `player_targets` for each released game follows the first recipe
     releases (v0.1.0 offers only KartPad and asks every game for a disc).
   - Merged: MaskPad #10, VaultPad #8 (README).
+- **Status (00:00, 30 Sep).** Released after a PadForge build and iPhone 14
+  gameplay with the owner's data: BlueWake 0.1.0 (empty app + module),
+  HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
+  BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad (recipe only). All twelve
+  are in the catalog's guided start. v0.1.1 is the other chat's Windows hotfix;
+  main is 0.1.2 (player hardening, PR #5). Before publishing 0.1.2: Windows
+  gate with the bundled Python (KartPad build in the VM, C:\\pffix-full.log)
+  and a Mac run through PadForge.command (Apple's Python).
+  - BananaPad #10: fresh clones failed verify-sources (submodule fingerprint
+    included git describe text); fixed, rebuilding. DinoPad #7: catalogued;
+    build next. Then SunPad #50 and MeleePad.
 
 ## Overnight run 28–29 Sep (complete)
 
