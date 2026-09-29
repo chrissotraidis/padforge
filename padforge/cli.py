@@ -657,10 +657,11 @@ def start(ask=input, stream=None):
     """The guided path for players: pick the game, then give your game file and a folder."""
     stream = stream or sys.stdout
     print(f"PadForge {__version__}: make your own copy of a game from your own game file.", file=stream)
-    on_mac = host_id().startswith("macos")
+    # iPhone builds need Xcode on Apple Silicon; an Intel Mac makes Android copies.
+    apple_silicon = host_id() == "macos-arm64"
     games = []
     for game, entry in sorted(catalog().items()):
-        platforms = [name for name in entry.get("player_targets", []) if name != "ios" or on_mac]
+        platforms = [name for name in entry.get("player_targets", []) if name != "ios" or apple_silicon]
         if platforms:
             name = (entry.get("manifest") or {}).get("name") or entry.get("name", game)
             games.append((game, name, platforms))
