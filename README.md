@@ -12,8 +12,8 @@ Games you can make today:
 - **KartPad**: Android game pack on Windows, Mac or Linux; iPhone/iPad on an
   Apple Silicon Mac with Xcode.
 - On an Apple Silicon Mac with Xcode, for iPhone/iPad: **AnnePad**,
-  **BallPad**, **BarrelPad**, **BearBirdPad**, **BellPad**, **BlueWake**,
-  **BrawlerPad**, **GoldenPad**, **HarkinianPad**, **MaskPad**,
+  **BallPad**, **BananaPad**, **BarrelPad**, **BearBirdPad**, **BellPad**,
+  **BlueWake**, **BrawlerPad**, **GoldenPad**, **HarkinianPad**, **MaskPad**,
   **SpaghettiPad** and **StarshipPad**. Some need build libraries from
   Homebrew first; each game's release notes list them.
 
