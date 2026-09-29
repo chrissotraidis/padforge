@@ -162,6 +162,21 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
     IPA passes; a fresh-home PadForge build from the branch is running.
   - MeleePad #35: same fix cherry-picked (RecompCore `3f2a51f`, ModernGekko
     `9be2c5b` on `codex/meleepad-slippi-preview5`); empty-app build next.
+- **Status (04:00, 30 Sep).** Four more ports build end to end through
+  PadForge from fresh homes and run on the iPhone 14 (installed in place,
+  saves kept); each release is staged with the content check passing, and each
+  PR names its one remaining step: controlled gameplay on the phone, which
+  waits for the phone's UI automation to be re-enabled with the passcode.
+  - SunPad #50: title screen reached. Also moved the iOS module build into the
+    checkout (a shared /tmp CMake cache broke a second checkout).
+  - MeleePad #35: launcher; disc import pending. Fixes: Slippi link inputs
+    built before provisioning, `-DHAVE_PIPE2=OFF` (macOS 27 SDK), rustup listed.
+  - PaperPad #12 (new recipe: version.json, build-ios-device.sh, padforge.json,
+    README Get PaperPad): 12.8 min build, opening scene plays.
+  - DinoPad #7: launcher, ROM and save kept.
+  - Catalog entries for MeleePad and PaperPad: PR #10 (draft until released).
+  - Phone: CoreDevice file copies from the phone stall (AFC works); XCTest hangs
+    or asks for the passcode. Installs, launches and screenshots work.
 
 ## Overnight run 28–29 Sep (complete)
 
