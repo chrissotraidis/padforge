@@ -185,8 +185,6 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
   clones; the phone copies use them. EctoPad's one blocker recorded: no build
   from a fresh clone yet.
 
-## Overnight run 28–29 Sep (complete)
-
 ## Morning handoff (30 Sep, written 04:25)
 
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
@@ -218,6 +216,8 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
   bluewake-public-cold 15 GB, kp060-phone 15 GB, padforge-fresh-home 11 GB,
   bluewake-fresh 9.8 GB, pack-e2e-mac 6.6 GB, tonight's padforge-*-home and
   *-fresh-020 folders (about 20 GB together).
+
+## Overnight run 28–29 Sep (complete)
 
 ## Morning handoff (06:15)
 
