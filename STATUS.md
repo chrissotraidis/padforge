@@ -187,6 +187,12 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
 
 ## Morning handoff (30 Sep, written 04:25)
 
+**Update 08:15:** the phone recovered after restarting its `dtfileserviced`
+and `testmanagerd` from the Mac (`devicectl device process signal`). Played on
+the iPhone 14 and released: SunPad, MeleePad, PaperPad, DinoPad (0.2.0 each);
+DevilTouch's published app reached Tristram (L5). PadForge 0.1.4 offers all 18
+games. VaultPad (iPad-only) and the owner decisions below remain.
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
