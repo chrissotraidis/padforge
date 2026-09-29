@@ -2,6 +2,11 @@
   "schema_version": 1,
   "id": "bananapad",
   "repo_url": "https://github.com/chrissotraidis/bananapad",
+  "name": "BananaPad",
+  "player_targets": [
+    "ios"
+  ],
+  "player_help": "https://github.com/chrissotraidis/bananapad#get-started",
   "reviewed_revision": null,
   "notes": "Manifest owned by the game repository (wraps bootstrap-bananapad.sh --target device).",
   "manifest": null
