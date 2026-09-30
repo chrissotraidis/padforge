@@ -13,6 +13,7 @@ import stat
 import subprocess
 import sys
 import tarfile
+import urllib.parse
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -36,8 +37,11 @@ def download_problem(url, error):
         return ("This Python cannot check website certificates, so PadMint cannot download. "
                 "On a Mac, start PadMint with PadMint.command (it uses Apple's Python), or run "
                 "Install Certificates.command in your Python folder. Then run PadMint again.")
-    return (f"Could not download {url} ({error}). Check your internet connection and run "
-            "PadMint again; finished downloads are kept.")
+    host = urllib.parse.urlsplit(url).hostname or url
+    reason = getattr(error, "reason", error)
+    return (f"PadMint could not reach {host} to download {url} ({reason}). Check your internet "
+            f"connection, and whether a VPN, a firewall or an antivirus web filter blocks {host}. "
+            "Then run PadMint again; finished downloads are kept.")
 
 
 def lock():
