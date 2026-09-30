@@ -9,6 +9,7 @@
   "game_ids": [
     "NGEE"
   ],
+  "free_space_gb": 6,
   "player_help": "https://github.com/chrissotraidis/goldenpad#play-on-iphone-or-ipad",
   "reviewed_revision": null,
   "notes": "GoldenPad owns padmint.json; the iOS target runs scripts/build-personal-ipa.sh (complete build verified 29 Sep). The macOS target is still planned.",

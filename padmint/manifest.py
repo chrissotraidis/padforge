@@ -199,9 +199,12 @@ def catalog():
         if not isinstance(labels, dict) or not all(platform in targets and isinstance(label, str)
                                                    for platform, label in labels.items()):
             raise ValueError(f"catalog/{path.name}: game_data_import names a player target's button")
-        space = entry.get("free_space_gb", 0)
-        if not isinstance(space, int) or isinstance(space, bool) or space < 0:
-            raise ValueError(f"catalog/{path.name}: free_space_gb is a whole number of GB")
+        # Games offered to players must say how much space their first build needs, or doctor
+        # reports "0 GB needed" and make's early check does nothing.
+        space = entry.get("free_space_gb", 0 if not targets else None)
+        if not isinstance(space, int) or isinstance(space, bool) or space < 0 or (targets and space < 1):
+            raise ValueError(f"catalog/{path.name}: free_space_gb is a whole number of GB"
+                             + (", required for games with player_targets" if targets else ""))
         if entry.get("manifest") is not None:
             validate_manifest(entry["manifest"])
             if entry["manifest"]["id"] != entry["id"]:

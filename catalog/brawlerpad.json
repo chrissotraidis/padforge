@@ -9,6 +9,7 @@
   "game_ids": [
     "NALE"
   ],
+  "free_space_gb": 3,
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/brawlerpad#get-started",
   "reviewed_revision": null,
