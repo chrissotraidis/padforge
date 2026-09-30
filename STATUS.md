@@ -16,8 +16,9 @@ tracker; this file mirrors progress so work can resume after interruption.
   All 190 source tests pass on Apple's Python 3.9. Packaged Mac and Linux checks
   pass the 14 guided-start and 14 recovery tests; all downloads pass both content
   checks. The Windows VM was suspended after discovering Chris's request in the
-  BlueWake chat to keep Parallels off for Mac responsiveness. Windows check pending;
-  do not resume the VM or publish 0.2.8 without resolving that check.
+  BlueWake chat to keep Parallels off for Mac responsiveness. Draft #65 adds a
+  hosted Windows check using the included Python and actual public packages;
+  this avoids the local VM. Do not publish 0.2.8 before that check passes.
 - KartPad #371 merged: device choice means where the player will play; phone-only
   setup needs about 25 GB free. The guide explains file-menu numbers versus RMCP01.
 - AnnePad 0.2.2 build 7 rebuilt after two interruptions. Draft #14, recipe/checksums
@@ -34,6 +35,10 @@ tracker; this file mirrors progress so work can resume after interruption.
   KartPad #104 (S24 graphics), #357 (S26 Automatic) and #366 (phone storage) remain
   actionable. #366's first-build timing corrected. Draft #369's diagnostic modes
   are being checked on the emulator; affected Adreno hardware is still needed.
+- The wider sweep covered 61 repositories and 82 open issues. Replied to new
+  KartPad #370 (M2 iPad black screen), corrected #332's obsolete setup advice,
+  and edited #192 to remove the request for a private diagnostic archive.
+  Existing #301 idle-freeze logs and #304 PowerVR fix provenance are under review.
 - New Discord report: PWR Jaypp says flickering persists in 0.7.3 in both Original
   and Retro Rewind. Platform and scene are unknown; the earlier startup fix does
   not establish that this report is resolved.
