@@ -195,19 +195,23 @@ new machinery.
 ## D12. iPhone game packs on Windows and Linux use LLVM and open-source headers (30 Sep 2026)
 
 For a game whose published IPA loads a player-built game pack (KartPad), the
-`llvm` tool now has downloads for Windows and Linux (arm64 and x86_64), with
-`ld64.lld` and `llvm-install-name-tool` added. There it brings, as companions,
-libc++'s headers from the same LLVM release (`libcxx`) and six Apple
-open-source archives (`apple-libc`, `apple-xnu`, `apple-libpthread`,
-`apple-libmalloc`, `apple-libplatform`, `apple-availability`; APSL 2.0), each
-unpacked only where the game needs it. The game assembles its SDK from them
-(KartPad: `builder/kartpad_builder/ios_sdk.py`, which records every file's
-origin and license). A Mac keeps using Xcode and gets none of these.
+game names `libcxx`: libc++'s headers from LLVM 21.1.8, with downloads for
+Windows and Linux (arm64 and x86_64) only. There it brings, as companions,
+`llvm` (21.1.8 for those hosts, with `ld64.lld` and `llvm-install-name-tool`
+added) and six Apple open-source archives (`apple-libc`, `apple-xnu`,
+`apple-libpthread`, `apple-libmalloc`, `apple-libplatform`,
+`apple-availability`; APSL 2.0), each unpacked only where the game needs it.
+The game assembles its SDK from them (KartPad:
+`builder/kartpad_builder/ios_sdk.py`, which records every file's origin and
+license). A Mac keeps using Xcode and downloads none of these; its LLVM
+entries (for N64 patch code) are unchanged. Naming `libcxx` rather than `llvm`
+keeps Macs from downloading LLVM for iPhone builds.
 
 Apple publishes no digest for these archives, so the lock pins the GitHub
 archive of each release tag's commit and the SHA-256 that
-`scripts/update-tools-lock.py` computes (two downloads matched). A game names
-only `llvm`, so its manifest stays valid for PadMint 0.2.0.
+`scripts/update-tools-lock.py` computes (two downloads matched). Release order:
+a game manifest naming `libcxx` is rejected by PadMint releases without it, so
+PadMint ships this before the game does.
 
 Why: Apple's SDK may only be used on Apple computers; these parts are
 redistributable and are downloaded from their publishers, never re-hosted.
