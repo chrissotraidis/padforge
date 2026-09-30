@@ -210,19 +210,19 @@
             "android-ndk-r29/source.properties",
             "android-ndk-r29/build/",
             "android-ndk-r29/meta/",
-          "android-ndk-r29/toolchains/llvm/prebuilt/linux-x86_64/sysroot/",
-          "android-ndk-r29/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/21/lib/linux/"
-        ],
-        "with": [
-          "llvm"
-        ]
-      }
+            "android-ndk-r29/toolchains/llvm/prebuilt/linux-x86_64/sysroot/",
+            "android-ndk-r29/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/21/lib/linux/"
+          ],
+          "with": [
+            "llvm"
+          ]
+        }
       }
     },
     "llvm": {
       "version": "21.1.8",
       "only_where_listed": true,
-      "note": "Linux arm64 only: compiles Android game packs with the NDK's portable parts.",
+      "note": "Linux arm64: compiles Android game packs with the NDK's portable parts. macOS: compiles N64 patch code (GoldenPad); Apple's clang cannot target MIPS. Apple Silicon Macs get 22.1.8 (Homebrew's version, whose output GoldenPad checks); Intel Macs get 20.1.7, LLVM's newest build for them.",
       "env": {
         "PADMINT_LLVM_ROOT": "LLVM-21.1.8-Linux-ARM64"
       },
@@ -247,6 +247,58 @@
             "LLVM-21.1.8-Linux-ARM64/bin/llvm-readobj",
             "LLVM-21.1.8-Linux-ARM64/bin/llvm-cxxfilt",
             "LLVM-21.1.8-Linux-ARM64/lib/clang/21/include/"
+          ]
+        },
+        "macos-arm64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-macOS-ARM64.tar.xz",
+          "sha256": "f260f4f7c0d430828a81ae8a3826a1d63fc0963ec2459489308cc23b1f7eab4f",
+          "size": 1479903744,
+          "archive": "tar.xz",
+          "version": "22.1.8",
+          "env": {
+            "PADMINT_LLVM_ROOT": "LLVM-22.1.8-macOS-ARM64"
+          },
+          "members": [
+            "LLVM-22.1.8-macOS-ARM64/bin/clang",
+            "LLVM-22.1.8-macOS-ARM64/bin/clang++",
+            "LLVM-22.1.8-macOS-ARM64/bin/clang-22",
+            "LLVM-22.1.8-macOS-ARM64/bin/lld",
+            "LLVM-22.1.8-macOS-ARM64/bin/ld.lld",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-ar",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-ranlib",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-nm",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-strip",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-objcopy",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-readelf",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-readobj",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-cxxfilt",
+            "LLVM-22.1.8-macOS-ARM64/lib/clang/22/include/"
+          ]
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-20.1.7/LLVM-20.1.7-macOS-X64.tar.xz",
+          "sha256": "ccf82ffe7e136ee49659cb57157856a7963d0950fac3d05aabba0db75bfba26f",
+          "size": 1464445324,
+          "archive": "tar.xz",
+          "version": "20.1.7",
+          "env": {
+            "PADMINT_LLVM_ROOT": "LLVM-20.1.7-macOS-X64"
+          },
+          "members": [
+            "LLVM-20.1.7-macOS-X64/bin/clang",
+            "LLVM-20.1.7-macOS-X64/bin/clang++",
+            "LLVM-20.1.7-macOS-X64/bin/clang-20",
+            "LLVM-20.1.7-macOS-X64/bin/lld",
+            "LLVM-20.1.7-macOS-X64/bin/ld.lld",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-ar",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-ranlib",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-nm",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-strip",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-objcopy",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-readelf",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-readobj",
+            "LLVM-20.1.7-macOS-X64/bin/llvm-cxxfilt",
+            "LLVM-20.1.7-macOS-X64/lib/clang/20/include/"
           ]
         }
       }

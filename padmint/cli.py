@@ -8,12 +8,14 @@ progress, and records and audits the result.
 import argparse
 import contextlib
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import re
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -428,7 +430,10 @@ def execute(args, repo, disc):
 def print_log_tail(log, lines=15):
     """Show the end of the backend log, where the reason for a failure is."""
     try:
-        tail = log.read_text(errors="replace").splitlines()[-lines:]
+        # LLVM on a system with only the newer libxml2 (see tools.link_system_library)
+        # warns on every run; the warning is harmless and would push the real error out.
+        tail = [line for line in log.read_text(errors="replace").splitlines()
+                if "no version information available" not in line][-lines:]
     except OSError:
         return
     if tail:
@@ -524,19 +529,13 @@ def check_free_space(folder, needed_gb):
                          f"{folder} has {free_gb:.1f} GB free. Free up space and run PadMint again.")
 
 
-def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
+def make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=None):
     """The player's command: from their own game file to their own copy, in one step."""
     entry = catalog().get(game)
     if entry is None:
         raise ValueError(f"unknown game {game}; see padmint list")
     home = tools.tools_root().parent
-    assets = {}
-    if ref is None:
-        ref, assets = latest_release(entry["repo_url"])
-    source = home / "games" / f"{game}-{re.sub(r'[^A-Za-z0-9._-]', '_', ref)}"
-    if not source.exists():
-        check_free_space(home, entry.get("free_space_gb", 0))
-        get_game(game, source, ref)
+    source, ref, assets = release_source(game, ref)
     manifest, _source = manifest_for(game, source)
     target = manifest["targets"].get(platform_name)
     if target is None or ("command" not in target and "steps" not in target):
@@ -545,6 +544,9 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
         disc = None  # the game file is added in the app, not read by the build
     elif disc is None:
         raise ValueError(f"{manifest['name']} needs your own game file (--disc)")
+    missing = tools.missing_system_library(target.get("tools", []), host_id())
+    if missing:
+        raise ValueError(missing[1])
     accepted = game_file.check_before_tools(manifest, target, disc, host_id())
     if accepted:
         print(f"Your game file: {accepted}", flush=True)
@@ -569,7 +571,9 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
     safe_version = re.sub(r"[^A-Za-z0-9._-]", "_", version)  # a branch name such as codex/x has a slash
     result = out / f"{manifest['name']}-v{safe_version}-{platform_name}-personal{args.output_path.suffix}"
     shutil.copyfile(args.output_path, result)
-    print(f"Your {manifest['name']} for {platform_name}: {result}")
+    print(f"Your {manifest['name']} for {PLATFORM_NAMES.get(platform_name, platform_name)}: {result}")
+    if results is not None:
+        results.append(result)
     save_game_data(args.output_path, out, manifest["name"])
     print("It contains game code made from your own copy: keep it to yourself.")
     return 0
@@ -638,6 +642,14 @@ def doctor(game, target_name, repo=None, stream=None):
     else:
         state = target["hosts"].get(host, "unsupported")
         report(state in RUNNABLE_STATES, f"{target_name} builds on {host}", state)
+        for name in target.get("tools", []):  # tools PadMint itself supplies (install nothing here)
+            tool = tools.lock()[name]
+            if host in tool["hosts"]:
+                report(True, f"{name} {tools.version(tool, host)}",
+                       "PadMint's copy" if tools.installed(name, host) else "PadMint downloads it for the first build")
+        missing = tools.missing_system_library(target.get("tools", []), host)
+        if missing:
+            report(False, missing[0], missing[1])
     for tool in manifest.get("requirements", {}).get("tools", []):
         path = shutil.which(tool["name"])
         if path is None:
@@ -679,8 +691,38 @@ def doctor(game, target_name, repo=None, stream=None):
 
 PLATFORM_LABELS = {"android": "Android phone or tablet",
                    "ios": "iPhone or iPad (needs this Mac)"}
+PLATFORM_NAMES = {"android": "Android", "ios": "iPhone and iPad", "macos": "Mac"}
 # The phone's Download folder, shared with its apps (Termux asks once for access).
 PHONE_DOWNLOADS = Path("/sdcard/Download")
+
+
+def next_steps(entry, platform_name, result, stream):
+    """After a build: the few steps that get this file into the game, in the player's words."""
+    guide = entry.get("player_help") or f"{entry['repo_url']}#get-{entry['id']}"
+    steps = (entry.get("player_next") or {}).get(platform_name)
+    if not steps or result is None:
+        print(f"Next: {guide}", file=stream)
+        return
+    print("\nWhat to do next:", file=stream)
+    for number, step in enumerate(steps["steps"], 1):
+        print(f"  {number}. {step.format(file=result.name)}", file=stream)
+    if steps.get("note"):
+        print(steps["note"], file=stream)
+    print(f"Full guide: {guide}", file=stream)
+
+
+def reveal(path):
+    """Show the finished file in Finder, File Explorer or the file manager. Optional."""
+    try:
+        if sys.platform == "darwin":
+            subprocess.run(["open", "-R", str(path)], check=False)
+        elif os.name == "nt":
+            subprocess.run(["explorer", f"/select,{path}"], check=False)
+        elif shutil.which("xdg-open"):
+            subprocess.Popen(["xdg-open", str(path.parent)], stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+    except OSError:
+        pass
 
 
 def dropped_path(text):
@@ -726,8 +768,36 @@ def choose(title, options, ask, stream):
             return options[int(answer) - 1][0]
 
 
+def file_problem(disc):
+    """Why a dropped path can't be used yet, in the player's words; None when it can."""
+    if not disc.is_file():
+        return f"No file at {disc}"
+    if game_file.cloud_only(disc):
+        return game_file.CLOUD_ONLY.format(name=disc.name)
+    return None
+
+
+def game_from_file(disc, games, stream):
+    """The one offered game whose catalog entry lists the file's disc ID, else None.
+    Reading the ID needs only nodtool (a few MB); anything unexpected falls back to asking."""
+    if game_file.cloud_only(disc):
+        return None
+    try:
+        tools.install(["nodtool"], host_id(), stream=io.StringIO())
+        _title, game_id, _revision = game_file.read_disc(disc, tools.executable("nodtool", host_id()))
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
+        return None
+    matches = [(id_, name) for id_, name, _ in games if game_id in (catalog()[id_].get("game_ids") or [])]
+    if len(matches) != 1:
+        return None
+    print(f"Game: {matches[0][1]} (from your file, {game_id})", file=stream)
+    return matches[0][0]
+
+
 def start(ask=input, stream=None):
-    """The guided path for players: pick the game, then give your game file and a folder."""
+    """The guided path for players: as few questions as possible. When several games are
+    offered and the player's file names exactly one of them, the game is not asked for.
+    The copy is saved to Downloads (padmint make --out chooses another folder)."""
     stream = stream or sys.stdout
     print(f"PadMint {__version__}: make your own copy of a game from your own game file.", file=stream)
     # iPhone builds need Xcode on Apple Silicon; an Intel Mac makes Android copies.
@@ -740,16 +810,30 @@ def start(ask=input, stream=None):
             games.append((game, name, platforms))
     if not games:
         raise ValueError("no game can be made on this computer yet")
-    game = choose("Game", [(game, name) for game, name, _ in games], ask, stream)
+    disc = game = None
+    if len(games) > 1 and any(catalog()[id_].get("game_ids") for id_, _, _ in games):
+        answer = ask("Drag your game file into this window, then press Enter "
+                     "(no file? just press Enter to choose a game): ").strip()
+        while answer:
+            disc = dropped_path(answer)
+            problem = file_problem(disc)
+            if problem is None:
+                break
+            print(problem, file=stream)
+            answer = ask("Drag the file again, or press Enter to choose a game: ").strip()
+            disc = None
+        if disc is not None:
+            game = game_from_file(disc, games, stream)
+    if game is None:
+        game = choose("Game", [(game, name) for game, name, _ in games], ask, stream)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
     target = choose("Make it for", [(p, PLATFORM_LABELS.get(p, p)) for p in platforms], ask, stream)
-    disc = None
-    default = player_folder()
     if catalog()[game].get("player_game_file", "build") == "in-app":
+        disc = None
         print(f"{name} asks for your own game file inside the app, after you install it.", file=stream)
-    else:
+    elif disc is None:
         # A phone has no window to drag files into: offer the game files in its Download folder.
-        found = game_files(default, catalog()[game].get("manifest")) if on_android() else []
+        found = game_files(player_folder(), catalog()[game].get("manifest")) if on_android() else []
         if found:
             disc = choose(f"Your {name} game file", [(path, path.name) for path in found]
                           + [(None, "Another file (type its path)")], ask, stream)
@@ -757,31 +841,97 @@ def start(ask=input, stream=None):
                   else f"Drag your own {name} game file into this window, then press Enter: ")
         while disc is None:
             disc = dropped_path(ask(prompt))
-            if not disc.is_file():
-                print(f"No file at {disc}", file=stream)
+            problem = file_problem(disc)
+            if problem is not None:
+                print(problem, file=stream)
                 disc = None
-    answer = ask(f"Save it in which folder? Press Enter for {default}: ").strip()
-    out = dropped_path(answer) if answer else default
-    code = make(game, target, disc.resolve() if disc else None, out.resolve())
+    out = player_folder()
+    print(f"Your copy will be saved in {out}", file=stream)
+    results = []
+    code = make(game, target, disc.resolve() if disc else None, out.resolve(), results=results)
     if code == 0:
-        entry = catalog()[game]
-        print(f"Next: {entry.get('player_help') or entry['repo_url'] + '#get-' + game}", file=stream)
+        result = results[-1] if results else None
+        next_steps(catalog()[game], target, result, stream)
+        if result is not None:
+            reveal(result)
     return code
 
 
-def get_game(game, dest, ref=None):
+def git_program():
+    """Git: the system's, or the copy PadMint installs (Windows usually has none)."""
+    program = tools.executable("git", host_id())
+    if program == "git" and shutil.which("git") is None:
+        tools.install(["git"], host_id())
+        program = tools.executable("git", host_id())
+    return program
+
+
+def source_complete(source):
+    """A finished download of a game's source: every tracked file is present.
+    An attempt that was interrupted (closed window, lost connection) must not be
+    reused, or later runs fail with misleading errors (padmint#8)."""
+    if not (source / ".git").exists():
+        return False
+    git = [git_program(), "-C", str(source)]
+    head = subprocess.run(git + ["rev-parse", "--verify", "-q", "HEAD"], capture_output=True)
+    if head.returncode:
+        return False
+    missing = subprocess.run(git + ["ls-files", "--deleted"], capture_output=True, text=True)
+    return missing.returncode == 0 and not missing.stdout.strip()
+
+
+def _remove_tree(path):
+    """Remove one of PadMint's own download folders, including Git's read-only files on Windows."""
+    def writable_then_retry(function, name, _info):
+        os.chmod(name, stat.S_IWRITE)
+        function(name)
+    if path.exists():
+        shutil.rmtree(path, onerror=writable_then_retry)
+
+
+def fetch_source(game, source, ref):
+    """Download into a side folder and move it into place only once complete."""
+    if source.exists():
+        print(f"The earlier download in {source} is unfinished; downloading it again.", flush=True)
+        _remove_tree(source)
+    partial = source.with_name(source.name + ".partial")
+    _remove_tree(partial)
+    partial.parent.mkdir(parents=True, exist_ok=True)
+    get_game(game, partial, ref, announce=False)
+    os.replace(partial, source)
+    print(f"{game} source in {source}", flush=True)
+
+
+def release_source(game, ref=None):
+    """The game's source at ref (default: its latest release), downloaded once and reused:
+    (folder, ref, release assets). The recipe players build with lives in it."""
+    entry = catalog().get(game)
+    if entry is None:
+        raise ValueError(f"unknown game {game}; see padmint list")
+    home = tools.tools_root().parent
+    assets = {}
+    if ref is None:
+        ref, assets = latest_release(entry["repo_url"])
+    source = home / "games" / f"{game}-{re.sub(r'[^A-Za-z0-9._-]', '_', ref)}"
+    if not source_complete(source):
+        check_free_space(home, entry.get("free_space_gb", 0))
+        fetch_source(game, source, ref)
+    return source, ref, assets
+
+
+def get_game(game, dest, ref=None, announce=True):
     """Clone a catalogued game's source; its build bootstrap fetches the rest."""
     entry = catalog().get(game)
     if entry is None:
         raise ValueError(f"unknown game {game}; see padmint list")
     if dest.exists() and any(dest.iterdir()):
         raise ValueError(f"{dest} is not empty")
-    if shutil.which("git") is None:
-        tools.install(["git"], host_id())
-    argv = [tools.executable("git", host_id()), "clone"] + (["--branch", ref] if ref else []) \
+    argv = [git_program(), "-c", "advice.detachedHead=false", "clone"] \
+        + (["--branch", ref] if ref else []) \
         + [entry["repo_url"], str(dest)]
     subprocess.run(argv, check=True)
-    print(f"{game} source in {dest}")
+    if announce:
+        print(f"{game} source in {dest}")
     return 0
 
 
@@ -900,8 +1050,15 @@ def main(argv=None):
             repo = args.repo.expanduser().resolve() if args.repo else None
             return doctor(args.game, args.target, repo)
         if args.action == "tools":
-            repo = args.repo.expanduser().resolve() if args.repo else None
-            manifest, _source = manifest_for(args.game, repo)
+            if args.repo:
+                repo = args.repo.expanduser().resolve()
+                where = f"your checkout {repo}"
+            else:
+                repo, ref, _assets = release_source(args.game)
+                where = f"{args.game} {ref}, its latest release"
+            manifest, origin = manifest_for(args.game, repo)
+            print(f"Recipe: {where}" if origin == "repository" else
+                  f"Recipe: PadMint's built-in copy for {args.game} (none found in {where})")
             target = manifest["targets"].get(args.target)
             if target is None:
                 raise ValueError(f"{manifest['name']} has no {args.target} target")

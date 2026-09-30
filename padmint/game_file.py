@@ -6,6 +6,7 @@ with another region or another game hears why at once, in plain words, instead
 of after gigabytes of tools and minutes of extraction.
 """
 import re
+import os
 import shutil
 import subprocess
 
@@ -19,6 +20,25 @@ REGIONS = {"E": "USA", "P": "Europe", "J": "Japan", "K": "Korea", "W": "Taiwan",
 
 def region(game_id):
     return REGIONS.get(game_id[3:4], "another region")
+
+
+SF_DATALESS = 0x40000000  # macOS: the file's contents are in iCloud, not on this Mac
+CLOUD_ONLY = ("{name} is stored only in iCloud, so it is not on this Mac yet. In Finder, "
+              "right-click it, choose Download Now, wait until it finishes, then try again.")
+
+
+def cloud_only(path):
+    """True for a file whose contents are not on this computer (iCloud Drive "Optimize Storage").
+    Reading it would start a multi-gigabyte download with no progress shown."""
+    try:
+        return bool(getattr(os.stat(path), "st_flags", 0) & SF_DATALESS)
+    except OSError:
+        return False
+
+
+def require_local(path):
+    if cloud_only(path):
+        raise ValueError(CLOUD_ONLY.format(name=path.name))
 
 
 def expected_input(manifest):
@@ -57,6 +77,7 @@ def check(manifest, disc, nodtool=None):
     nodtool = nodtool or shutil.which("nodtool")
     if item is None or disc is None or nodtool is None:
         return None
+    require_local(disc)
     title, game_id, revision = read_disc(disc, nodtool)
     wanted = item["game_ids"]
     name = manifest["name"]

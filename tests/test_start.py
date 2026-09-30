@@ -20,6 +20,10 @@ CATALOG = {
 
 
 class StartTests(unittest.TestCase):
+    def setUp(self):
+        downloads = Path.home() / "Downloads"
+        self.out = (downloads if downloads.is_dir() else Path.home()).resolve()
+
     def run_start(self, answers, host):
         replies = iter(answers)
         with mock.patch.object(cli, "catalog", return_value=CATALOG), \
@@ -35,7 +39,7 @@ class StartTests(unittest.TestCase):
             code, make = self.run_start(["1", f"'{disc}'", folder], "linux-x86_64")
         self.assertEqual(code, 0)
         self.assertEqual(make.call_args.args[:3], ("kartpad", "android", disc.resolve()))
-        self.assertEqual(make.call_args.args[3], Path(folder).resolve())
+        self.assertEqual(make.call_args.args[3], self.out)  # saved to Downloads without asking
 
     def test_mac_also_offers_iphone(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -94,7 +98,7 @@ class PhoneStartTests(unittest.TestCase):
             (downloads / "notes.txt").write_text("x")
             disc = downloads / "mkw.rvz"
             disc.write_bytes(b"x")
-            code, make, shown = self.run_on_phone(["1", ""], downloads)
+            code, make, shown = self.run_on_phone(["1"], downloads)
         self.assertEqual(code, 0)
         self.assertEqual(make.call_args.args[:4], ("kartpad", "android", disc.resolve(), downloads.resolve()))
         self.assertIn("1. mkw.rvz", shown)
@@ -108,7 +112,7 @@ class PhoneStartTests(unittest.TestCase):
             other.mkdir()
             disc = other / "disc.rvz"
             disc.write_bytes(b"x")
-            _code, make, _shown = self.run_on_phone(["2", str(disc), ""], downloads)
+            _code, make, _shown = self.run_on_phone(["2", str(disc)], downloads)
         self.assertEqual(make.call_args.args[2], disc.resolve())
 
     def test_folder_without_game_files_asks_for_a_path(self):
@@ -116,8 +120,7 @@ class PhoneStartTests(unittest.TestCase):
             downloads = Path(folder)
             disc = Path(elsewhere) / "disc.iso"
             disc.write_bytes(b"x")
-            code, make, shown = self.run_on_phone([str(Path(elsewhere) / "missing.rvz"), str(disc), ""],
-                                                  downloads)
+            code, make, shown = self.run_on_phone([str(Path(elsewhere) / "missing.rvz"), str(disc)], downloads)
         self.assertEqual(code, 0)
         self.assertEqual(make.call_args.args[2], disc.resolve())
         self.assertIn("No file at", shown)

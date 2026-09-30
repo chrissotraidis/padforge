@@ -6,9 +6,28 @@
     "android",
     "ios"
   ],
+  "game_ids": [
+    "RMCP01"
+  ],
   "free_space_gb": 16,
   "reviewed_revision": null,
   "notes": "Players: padmint make kartpad android|ios (the manifest in KartPad's repository is used). This embedded manifest is the fallback for older checkouts.",
+  "player_next": {
+    "android": {
+      "steps": [
+        "Install KartPad on your phone or tablet from https://github.com/chrissotraidis/kartpad/releases/latest (it updates an older KartPad and keeps your saves; don't uninstall first).",
+        "Copy {file} to the phone or tablet (USB cable, cloud drive or Quick Share).",
+        "Open KartPad and tap Mario Kart Wii. When it asks for your game pack, choose Choose file and pick {file}."
+      ],
+      "note": "Most KartPad updates keep this game pack working: the app asks for a new one only when an update needs it."
+    },
+    "ios": {
+      "steps": [
+        "Install {file} on your iPhone or iPad with AltStore, SideStore or Sideloadly.",
+        "Updating? Install it over your existing KartPad with the same tool and Apple ID to keep your saves."
+      ]
+    }
+  },
   "manifest": {
     "schema_version": 1,
     "id": "kartpad",
