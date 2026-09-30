@@ -28,6 +28,10 @@
       ]
     }
   },
+  "game_data_import": {
+    "android": "Import from Extracted Game Data Folder",
+    "ios": "Import from Extracted Folder"
+  },
   "manifest": {
     "schema_version": 1,
     "id": "kartpad",
