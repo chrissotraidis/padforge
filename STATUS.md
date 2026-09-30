@@ -289,6 +289,23 @@ and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
 0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
 without a Mac (Hubble).
 
+**Update 22:55 (0.2.2):** merged #36 (import button named per platform), #37
+(Android phone via Termux, experimental), #38 (failure messages with the fix),
+#39 (iPhone packs on Windows and Linux: LLVM, libc++ and Apple open-source
+headers pinned; D12), #40 (time left), #41 (doctor reads the release recipe
+and checks only the player path), #42 (newer recipe says "get the latest
+PadMint"), #43 (player-first README), #44 (game data copy on Windows: no "."
+in extended-length paths), #45 (CMake caches left by the .padforge move are
+set up again, padmint#7), #46 (unzip-first message, "Reading your file"), #47
+(keep awake; QuickEdit off while building), #48 (guided start offers
+iPhone/iPad on Windows and Linux for ios_off_mac games: KartPad). Off-Mac
+proof: KartPad 0.7.2 iPhone pack built on Ubuntu 24.04 arm64 (13.5 min) and
+on the Windows 11 ARM64 VM with native arm64 Python (29 min), fingerprint
+35ccf81c both, state check PASS, each raced on the iPhone 14 with the save
+byte-identical. KartPad main had drifted to iOS fingerprint ad53234e (a comment
+in build-ios-device-game-app.sh); kartpad#365 restored 35ccf81c. KartPad 0.7.3
+(kartpad#361, #363) follows this release: its recipe names libcxx.
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadMint 0.1.3.
