@@ -135,6 +135,11 @@ def validate_manifest(data):
             _argv(tool["version_args"], f"tool {tool['name']}.version_args")
         if "min_version" in tool:
             _require(re.fullmatch(r"\d+(\.\d+)*", str(tool["min_version"])), "min_version must be dotted digits")
+        # player: the player installs it (PadMint can't), so the player path checks it before
+        # any download and shows the note, which says how to install it.
+        _require(isinstance(tool.get("player", False), bool), f"tool {tool['name']}.player must be true or false")
+        _require(not tool.get("player") or (isinstance(tool.get("note"), str) and tool["note"].strip()),
+                 f"tool {tool['name']} is for players, so it needs a note saying how to install it")
     disk = requirements.get("disk_gb", 0)
     _require(isinstance(disk, (int, float)) and disk >= 0, "requirements.disk_gb must be a number")
     publication = data.get("publication")

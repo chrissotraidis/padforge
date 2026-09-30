@@ -668,6 +668,12 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
         disc = None  # the game file is added in the app, not read by the build
     elif disc is None:
         raise ValueError(f"{manifest['name']} needs your own game file (--disc)")
+    missing_programs = [(tool, detail) for tool in player_requirements(manifest)
+                        for ok, detail in [check_program(tool)] if not ok]
+    if missing_programs:
+        raise ValueError(f"{manifest['name']} needs these installed first:\n"
+                         + "".join(f"  {tool['name']}: {tool['note']}\n" for tool, _ in missing_programs)
+                         + "Then run PadMint again.")
     missing = tools.missing_system_library(target.get("tools", []), host_id())
     if missing:
         raise ValueError(missing[1])
@@ -750,6 +756,31 @@ def version_tuple(text):
     return tuple(int(part) for part in match.group().split(".")) if match else None
 
 
+def player_requirements(manifest):
+    """Programs the recipe says the player installs themselves (requirements.tools with "player")."""
+    return [tool for tool in manifest.get("requirements", {}).get("tools", []) if tool.get("player")]
+
+
+def check_program(tool):
+    """(ok, detail) for a requirements.tools entry: on PATH, and new enough if it names a minimum."""
+    path = shutil.which(tool["name"])
+    if path is None:
+        return False, tool.get("note", "not found on PATH")
+    if "version_args" not in tool:
+        return True, path
+    try:
+        result = subprocess.run([path, *tool["version_args"]], capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.TimeoutExpired):
+        return False, "could not run version check"
+    text = (result.stdout or result.stderr).strip().splitlines()
+    detail = text[0] if text else path
+    if "min_version" not in tool:
+        return True, detail
+    found = version_tuple(detail)
+    return (found is not None and found >= version_tuple(str(tool["min_version"])),
+            f"{detail} (need {tool['min_version']}+)")
+
+
 def published_recipe(game):
     """(recipe, where it came from): the one the game's latest release publishes, checked
     against the release's SHA256SUMS, or PadMint's built-in copy when that can't be had."""
@@ -811,6 +842,9 @@ def doctor(game, target_name, repo=None, stream=None):
         if missing:
             report(False, missing[0], missing[1])
     if repo is None:
+        for tool in player_requirements(manifest):  # the player installs these; PadMint can't
+            ok, detail = check_program(tool)
+            report(ok, tool["name"], detail if ok or detail == tool["note"] else f"{detail}; {tool['note']}")
         needed = catalog()[game].get("free_space_gb", 0)
         home = tools.tools_root().parent
         existing = next(path for path in [home, *home.parents] if path.exists())
@@ -819,25 +853,7 @@ def doctor(game, target_name, repo=None, stream=None):
         print(f"{problems} item(s) to fix" if problems else "Ready", file=stream)
         return 1 if problems else 0
     for tool in manifest.get("requirements", {}).get("tools", []):
-        path = shutil.which(tool["name"])
-        if path is None:
-            report(False, tool["name"], tool.get("note", "not found on PATH"))
-            continue
-        detail = path
-        ok = True
-        if "version_args" in tool:
-            try:
-                result = subprocess.run([path, *tool["version_args"]], capture_output=True,
-                                        text=True, timeout=30)
-                text = (result.stdout or result.stderr).strip().splitlines()
-                detail = text[0] if text else path
-                found = version_tuple(detail)
-                if "min_version" in tool:
-                    minimum = version_tuple(str(tool["min_version"]))
-                    ok = found is not None and found >= minimum
-                    detail += f" (need {tool['min_version']}+)"
-            except (OSError, subprocess.TimeoutExpired):
-                ok, detail = False, "could not run version check"
+        ok, detail = check_program(tool)
         report(ok, tool["name"], detail)
     needed = manifest.get("requirements", {}).get("disk_gb", 0)
     location = Path(repo) if repo else Path.cwd()
