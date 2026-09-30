@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/sh
 # PadMint on an Android phone or tablet, with no computer. In the Termux app
-# (from F-Droid or GitHub; the Google Play version is too old), paste:
+# (from F-Droid or GitHub; Google Play is unvalidated for PadMint), paste:
 #
 #   curl -fsSL https://raw.githubusercontent.com/chrissotraidis/padmint/main/launchers/padmint-android.sh | sh
 #

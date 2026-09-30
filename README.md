@@ -109,11 +109,11 @@ more.
 
 1. Install **Termux** from [F-Droid](https://f-droid.org/packages/com.termux/)
    or its [GitHub releases](https://github.com/termux/termux-app/releases)
-   (the `arm64-v8a` APK). Open it once. On newer Android, Play Protect may say
-   **Unsafe app blocked** because Termux is built for an older Android version
-   on purpose: tap **More details**, then **Install anyway**. Get every Termux
-   part from the same place; the Google Play version is a different build that
-   PadMint hasn't been tried with.
+   (the `arm64-v8a` APK). Open it once. If Android or Play Protect blocks the
+   installation, do not bypass the warning or disable security settings. This
+   experimental route does not work on every phone; use a computer instead if
+   installation is blocked. Get every Termux part from the same place; the
+   Google Play version is a different build that PadMint hasn't been tried with.
 2. Copy your disc image into the phone's **Download** folder.
 3. In Termux, paste this line and press Enter:
 
