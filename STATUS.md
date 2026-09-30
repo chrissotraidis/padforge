@@ -220,6 +220,17 @@ survive app updates) approved with notes for 0.7.0. OpenMobileTTS
 v3.1.0-preview.2 published. The PaperPad catalog note now names PaperBoat's
 scripts.
 
+**Update 13:50:** KartPad 0.6.1 published (Latest): Replace Game Pack, the
+shared Retro Rewind download and the PadForge game data folder. Gates with the
+public PadForge 0.1.8 from fresh homes: iPhone 14 race (Mac IPA, 12 min);
+emulator update from 0.6.0 raced with the Mac pack (6 min, Retro Rewind from
+the cache), then with Replace Game Pack, then with the Windows 11 VM pack
+(about 60 min, Defender slows the ARM VM); a new emulator install imported
+"KartPad game data" with no key and raced. Pinned #338 is version-free now.
+Open: padforge#25 asks us to rename PadForge (owner decision); kartpad#350
+(ABI 3 packs, 0.7.0), #351 (stale tests) and #352 (fresh-install status line)
+from the PadForge-experience chat.
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
