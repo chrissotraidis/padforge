@@ -743,15 +743,12 @@ def get_game(game, dest, ref=None):
 
 
 def list_games(stream=None):
+    """What a player can build, per game. Each game's own padforge.json is the
+    source of truth for build hosts, so only the catalog's player targets show."""
     stream = stream or sys.stdout
     for game, entry in sorted(catalog().items()):
-        manifest = entry.get("manifest")
-        if manifest is None:
-            print(f"{game:12} manifest in repository  {entry['repo_url']}", file=stream)
-            continue
-        cells = ", ".join(f"{target}: " + "/".join(f"{host} {state}" for host, state in sorted(info["hosts"].items()))
-                          for target, info in sorted(manifest["targets"].items()))
-        print(f"{game:12} {manifest['kind']:17} {manifest['status']:15} {cells}", file=stream)
+        targets = ", ".join(entry.get("player_targets") or []) or "see repo"
+        print(f"{game:12} {targets:12} {entry['repo_url']}", file=stream)
     return 0
 
 
