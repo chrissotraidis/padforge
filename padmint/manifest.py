@@ -138,6 +138,9 @@ def validate_manifest(data):
         # player: the player installs it (PadMint can't), so the player path checks it before
         # any download and shows the note, which says how to install it.
         _require(isinstance(tool.get("player", False), bool), f"tool {tool['name']}.player must be true or false")
+        # label: what players read instead of the program's name (xcrun checks the Metal Toolchain).
+        _require(isinstance(tool.get("label", "x"), str) and tool.get("label", "x").strip(),
+                 f"tool {tool['name']}.label must be text")
         _require(not tool.get("player") or (isinstance(tool.get("note"), str) and tool["note"].strip()),
                  f"tool {tool['name']} is for players, so it needs a note saying how to install it")
     disk = requirements.get("disk_gb", 0)

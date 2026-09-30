@@ -672,7 +672,7 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
                         for ok, detail in [check_program(tool)] if not ok]
     if missing_programs:
         raise ValueError(f"{manifest['name']} needs these installed first:\n"
-                         + "".join(f"  {tool['name']}: {tool['note']}\n" for tool, _ in missing_programs)
+                         + "".join(f"  {label(tool)}: {tool['note']}\n" for tool, _ in missing_programs)
                          + "Then run PadMint again.")
     missing = tools.missing_system_library(target.get("tools", []), host_id())
     if missing:
@@ -761,8 +761,15 @@ def player_requirements(manifest):
     return [tool for tool in manifest.get("requirements", {}).get("tools", []) if tool.get("player")]
 
 
+def label(tool):
+    """What a requirements.tools entry is called for people: its label, else the program's name."""
+    return tool.get("label", tool["name"])
+
+
 def check_program(tool):
-    """(ok, detail) for a requirements.tools entry: on PATH, and new enough if it names a minimum."""
+    """(ok, detail) for a requirements.tools entry: on PATH, its version check runs without an
+    error (xcrun is always there, but xcrun metal fails until the Metal Toolchain is installed),
+    and new enough if it names a minimum."""
     path = shutil.which(tool["name"])
     if path is None:
         return False, tool.get("note", "not found on PATH")
@@ -774,6 +781,8 @@ def check_program(tool):
         return False, "could not run version check"
     text = (result.stdout or result.stderr).strip().splitlines()
     detail = text[0] if text else path
+    if result.returncode:
+        return False, tool.get("note") or f"{detail} (exit {result.returncode})"
     if "min_version" not in tool:
         return True, detail
     found = version_tuple(detail)
@@ -844,7 +853,7 @@ def doctor(game, target_name, repo=None, stream=None):
     if repo is None:
         for tool in player_requirements(manifest):  # the player installs these; PadMint can't
             ok, detail = check_program(tool)
-            report(ok, tool["name"], detail if ok or detail == tool["note"] else f"{detail}; {tool['note']}")
+            report(ok, label(tool), detail if ok or detail == tool["note"] else f"{detail}; {tool['note']}")
         needed = catalog()[game].get("free_space_gb", 0)
         home = tools.tools_root().parent
         existing = next(path for path in [home, *home.parents] if path.exists())
@@ -854,7 +863,7 @@ def doctor(game, target_name, repo=None, stream=None):
         return 1 if problems else 0
     for tool in manifest.get("requirements", {}).get("tools", []):
         ok, detail = check_program(tool)
-        report(ok, tool["name"], detail)
+        report(ok, label(tool), detail)
     needed = manifest.get("requirements", {}).get("disk_gb", 0)
     location = Path(repo) if repo else Path.cwd()
     free = shutil.disk_usage(location).free / 1e9
