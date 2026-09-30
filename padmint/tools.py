@@ -181,7 +181,11 @@ def _extract_zip(archive, folder, members=None):
 
 def _extract_tar(archive, folder, members=None):
     with tarfile.open(archive) as bundle:
-        chosen = None if members is None else [item for item in bundle.getmembers() if _wanted(item.name, members)]
+        chosen = [item for item in bundle.getmembers() if _wanted(item.name, members)]
+        if os.name == "nt":
+            # Extended-length paths (\\?\C:\...) accept only backslashes; tar names use "/".
+            for item in chosen:
+                item.name = item.name.replace("/", "\\")
         if sys.version_info >= (3, 12):
             bundle.extractall(_long(folder), members=chosen, filter="data")
         else:
