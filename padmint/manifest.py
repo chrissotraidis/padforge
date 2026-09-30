@@ -166,6 +166,14 @@ def catalog():
             raise ValueError(f"catalog/{path.name}: player_targets lists android, ios or macos")
         if entry.get("player_game_file", "build") not in ("build", "in-app"):
             raise ValueError(f"catalog/{path.name}: player_game_file is build or in-app")
+        for platform, steps in (entry.get("player_next") or {}).items():
+            if platform not in targets or not isinstance(steps, dict) or not steps.get("steps") \
+                    or not all(isinstance(step, str) for step in steps["steps"]):
+                raise ValueError(f"catalog/{path.name}: player_next.{platform} needs a player target "
+                                 "and a list of steps")
+        ids = entry.get("game_ids", [])
+        if not isinstance(ids, list) or not all(re.fullmatch(r"[0-9A-Z]{6}", str(i)) for i in ids):
+            raise ValueError(f"catalog/{path.name}: game_ids lists six-character disc IDs")
         space = entry.get("free_space_gb", 0)
         if not isinstance(space, int) or isinstance(space, bool) or space < 0:
             raise ValueError(f"catalog/{path.name}: free_space_gb is a whole number of GB")

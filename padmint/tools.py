@@ -4,11 +4,13 @@ The lock (tools.lock.json, made by scripts/update-tools-lock.py) names every
 download and the publisher's digest. Nothing is installed system-wide: builds
 get the tools on PATH, plus the environment variables they need.
 """
+import ctypes
 import hashlib
 import json
 import os
 import shutil
 import stat
+import subprocess
 import sys
 import tarfile
 import urllib.request
@@ -176,6 +178,100 @@ def _long(path):
     return "\\\\?\\" + full
 
 
+# Libraries a downloaded tool loads from the system, per host. Checked before any
+# download: LLVM's linker for Linux arm64 needs libxml2.so.2, which minimal Linux
+# installs lack and Ubuntu 25.10 and later no longer ship (they have libxml2.so.16).
+SYSTEM_LIBRARIES = {("llvm", "linux-arm64"): {"library": "libxml2.so.2", "newer": "libxml2.so.16"}}
+
+
+def _loadable(library):
+    try:
+        ctypes.CDLL(library)
+        return True
+    except OSError:
+        return False
+
+
+def missing_system_library(names, host):
+    """(library, how to fix it) for the first system library these tools need and this
+    computer lacks; None when everything is there. A newer library PadMint can link to
+    (libxml2.so.16 for libxml2.so.2) counts as there."""
+    table = lock()
+    for name in _with_companions([n for n in names if n in table], host, table):
+        need = SYSTEM_LIBRARIES.get((name, host))
+        if need and not _loadable(need["library"]) and not _loadable(need["newer"]):
+            return need["library"], system_library_fix(need["library"])
+    return None
+
+
+def system_library_fix(library):
+    if library == "libxml2.so.2" and _only_new_libxml2():
+        command = "sudo apt install libxml2-16"
+    elif shutil.which("apt-get"):
+        command = "sudo apt install libxml2"
+    elif shutil.which("dnf"):
+        command = "sudo dnf install libxml2"
+    else:
+        command = "install the package that provides libxml2.so.2 or libxml2.so.16"
+    return (f"LLVM's linker, which PadMint downloads for this computer, needs the libxml2 library "
+            f"({library}). Install it first ({command}), then run PadMint again. Nothing has been "
+            "downloaded yet.")
+
+
+def _system_path(library):
+    """Where the system keeps a shared library (Linux), or None."""
+    for ldconfig in ("ldconfig", "/sbin/ldconfig"):
+        try:
+            listing = subprocess.run([ldconfig, "-p"], capture_output=True, text=True).stdout
+        except OSError:
+            continue
+        for line in listing.splitlines():
+            name, _, path = line.strip().partition(" => ")
+            if name.split(" (")[0] == library and path:
+                return Path(path)
+    for folder in ("/usr/lib/aarch64-linux-gnu", "/lib/aarch64-linux-gnu", "/usr/lib64", "/usr/lib"):
+        if (Path(folder) / library).exists():
+            return Path(folder) / library
+    return None
+
+
+def link_system_library(name, host, folder):
+    """When the system has only the newer library, point the tool's own lib folder at it
+    (LLVM's binaries look in $ORIGIN/../lib first). Only PadMint's folder is changed."""
+    need = SYSTEM_LIBRARIES.get((name, host))
+    if not need:
+        return None
+    root = next(iter(lock()[name].get("env", {}).values()), "")
+    link = folder / root / "lib" / need["library"]
+    if _loadable(need["library"]):
+        if link.is_symlink():
+            link.unlink()  # the system has the real library now
+        return None
+    if link.is_symlink() or link.exists():
+        return link
+    target = _system_path(need["newer"])
+    if target is None:
+        return None
+    link.parent.mkdir(parents=True, exist_ok=True)
+    link.symlink_to(target)
+    return link
+
+
+def _only_new_libxml2(os_release=Path("/etc/os-release")):
+    """Ubuntu 25.10 and later ship only libxml2.so.16 (package libxml2-16)."""
+    try:
+        fields = dict(line.split("=", 1) for line in os_release.read_text().splitlines() if "=" in line)
+    except OSError:
+        return False
+    if fields.get("ID", "").strip('"') != "ubuntu":
+        return False
+    try:
+        version = tuple(int(part) for part in fields.get("VERSION_ID", "").strip('"').split("."))
+    except ValueError:
+        return False
+    return version >= (25, 10)
+
+
 def _with_companions(names, host, table):
     """names plus the tools a host's download declares it comes "with" (the
     Linux arm64 NDK comes with LLVM), so game manifests need not name them."""
@@ -209,6 +305,7 @@ def install(names, host, stream=None):
         folder = _folder(name, tool, host)
         if _installed(folder):
             print(f"ok   {name} {version(tool, host)}", file=stream)
+            _report_link(link_system_library(name, host, folder), stream)
             continue
         staging = folder.with_name(folder.name + ".partial")
         if staging.exists():
@@ -232,6 +329,12 @@ def install(names, host, stream=None):
         staging.replace(folder)
         _marker(folder).write_text(json.dumps(entry) + "\n")
         print(f"got  {name} {version(tool, host)}", file=stream)
+        _report_link(link_system_library(name, host, folder), stream)
+
+
+def _report_link(link, stream):
+    if link is not None:
+        print(f"ok   {link.name} (uses this computer's {Path(os.readlink(link)).name})", file=stream)
 
 
 def environment(names, host, base=None):
