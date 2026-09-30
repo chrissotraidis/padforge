@@ -231,6 +231,14 @@ Open: padforge#25 asks us to rename PadForge (owner decision); kartpad#350
 (ABI 3 packs, 0.7.0), #351 (stale tests) and #352 (fresh-install status line)
 from the PadForge-experience chat.
 
+**Update 14:45:** KartPad 0.7.0 published (Latest): pack ABI 3, so game packs
+survive app updates (kartpad#347/#350, merged via #353). Gates: emulator update
+from 0.6.1 (prompt, 0.6.1 pack refused, 0.7.0 pack imported, old file removed,
+raced); iPhone 14 race; a version-only test build kept the pack and raced with
+no PadForge run, and PadForge reused the pack (Android compile skipped with an
+identical file, iPhone IPA in 72 s); a header-change test build refused the
+pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
