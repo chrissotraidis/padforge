@@ -530,13 +530,7 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
     if entry is None:
         raise ValueError(f"unknown game {game}; see padmint list")
     home = tools.tools_root().parent
-    assets = {}
-    if ref is None:
-        ref, assets = latest_release(entry["repo_url"])
-    source = home / "games" / f"{game}-{re.sub(r'[^A-Za-z0-9._-]', '_', ref)}"
-    if not source_complete(source):
-        check_free_space(home, entry.get("free_space_gb", 0))
-        fetch_source(game, source, ref)
+    source, ref, assets = release_source(game, ref)
     manifest, _source = manifest_for(game, source)
     target = manifest["targets"].get(platform_name)
     if target is None or ("command" not in target and "steps" not in target):
@@ -776,6 +770,23 @@ def fetch_source(game, source, ref):
     print(f"{game} source in {source}", flush=True)
 
 
+def release_source(game, ref=None):
+    """The game's source at ref (default: its latest release), downloaded once and reused:
+    (folder, ref, release assets). The recipe players build with lives in it."""
+    entry = catalog().get(game)
+    if entry is None:
+        raise ValueError(f"unknown game {game}; see padmint list")
+    home = tools.tools_root().parent
+    assets = {}
+    if ref is None:
+        ref, assets = latest_release(entry["repo_url"])
+    source = home / "games" / f"{game}-{re.sub(r'[^A-Za-z0-9._-]', '_', ref)}"
+    if not source_complete(source):
+        check_free_space(home, entry.get("free_space_gb", 0))
+        fetch_source(game, source, ref)
+    return source, ref, assets
+
+
 def get_game(game, dest, ref=None, announce=True):
     """Clone a catalogued game's source; its build bootstrap fetches the rest."""
     entry = catalog().get(game)
@@ -907,8 +918,15 @@ def main(argv=None):
             repo = args.repo.expanduser().resolve() if args.repo else None
             return doctor(args.game, args.target, repo)
         if args.action == "tools":
-            repo = args.repo.expanduser().resolve() if args.repo else None
-            manifest, _source = manifest_for(args.game, repo)
+            if args.repo:
+                repo = args.repo.expanduser().resolve()
+                where = f"your checkout {repo}"
+            else:
+                repo, ref, _assets = release_source(args.game)
+                where = f"{args.game} {ref}, its latest release"
+            manifest, origin = manifest_for(args.game, repo)
+            print(f"Recipe: {where}" if origin == "repository" else
+                  f"Recipe: PadMint's built-in copy for {args.game} (none found in {where})")
             target = manifest["targets"].get(args.target)
             if target is None:
                 raise ValueError(f"{manifest['name']} has no {args.target} target")
