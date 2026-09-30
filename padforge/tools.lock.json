@@ -200,6 +200,54 @@
           "sha1": "03d29fbb57e3c05a7d53597dd011d856c1456a4f",
           "size": 1049519838,
           "archive": "zip"
+        },
+        "linux-arm64": {
+          "url": "https://dl.google.com/android/repository/android-ndk-r29-linux.zip",
+          "sha1": "87e2bb7e9be5d6a1c6cdf5ec40dd4e0c6d07c30b",
+          "size": 783549481,
+          "archive": "zip",
+          "members": [
+            "android-ndk-r29/source.properties",
+            "android-ndk-r29/build/",
+            "android-ndk-r29/meta/",
+          "android-ndk-r29/toolchains/llvm/prebuilt/linux-x86_64/sysroot/",
+          "android-ndk-r29/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/21/lib/linux/"
+        ],
+        "with": [
+          "llvm"
+        ]
+      }
+      }
+    },
+    "llvm": {
+      "version": "21.1.8",
+      "only_where_listed": true,
+      "note": "Linux arm64 only: compiles Android game packs with the NDK's portable parts.",
+      "env": {
+        "PADFORGE_LLVM_ROOT": "LLVM-21.1.8-Linux-ARM64"
+      },
+      "hosts": {
+        "linux-arm64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-Linux-ARM64.tar.xz",
+          "sha256": "65ce0b329514e5643407db2d02a5bd34bf33d159055dafa82825c8385bd01993",
+          "size": 1873847788,
+          "archive": "tar.xz",
+          "members": [
+            "LLVM-21.1.8-Linux-ARM64/bin/clang",
+            "LLVM-21.1.8-Linux-ARM64/bin/clang++",
+            "LLVM-21.1.8-Linux-ARM64/bin/clang-21",
+            "LLVM-21.1.8-Linux-ARM64/bin/lld",
+            "LLVM-21.1.8-Linux-ARM64/bin/ld.lld",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-ar",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-ranlib",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-nm",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-strip",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-objcopy",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-readelf",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-readobj",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-cxxfilt",
+            "LLVM-21.1.8-Linux-ARM64/lib/clang/21/include/"
+          ]
         }
       }
     },

@@ -18,6 +18,16 @@ CMAKE = "3.31.6"
 NINJA = "v1.13.2"
 NDK = ("29.0.14206865", "r29")
 NODTOOL = "v2.0.0-alpha.9"
+# Google publishes no Linux arm64 NDK. There, Android game packs use LLVM's own
+# arm64 build (the NDK's clang major version) with the host-independent parts
+# of the Linux NDK: its build scripts, sysroot and Android runtime libraries.
+LLVM = "21.1.8"
+NDK_PORTABLE = [f"android-ndk-{NDK[1]}/{path}" for path in (
+    "source.properties", "build/", "meta/",
+    "toolchains/llvm/prebuilt/linux-x86_64/sysroot/",
+    "toolchains/llvm/prebuilt/linux-x86_64/lib/clang/21/lib/linux/")]
+LLVM_TOOLS = ["clang", "clang++", "clang-21", "lld", "ld.lld", "llvm-ar", "llvm-ranlib", "llvm-nm",
+              "llvm-strip", "llvm-objcopy", "llvm-readelf", "llvm-readobj", "llvm-cxxfilt"]
 
 
 def fetch(url):
@@ -95,6 +105,18 @@ def main():
         tools["android-ndk"]["hosts"][host] = {
             "url": f"https://dl.google.com/android/repository/{name}", algo: digest,
             "size": int(size), "archive": "zip"}
+    size, algo, digest = archives[f"android-ndk-{NDK[1]}-linux.zip"]
+    tools["android-ndk"]["hosts"]["linux-arm64"] = {
+        "url": f"https://dl.google.com/android/repository/android-ndk-{NDK[1]}-linux.zip", algo: digest,
+        "size": int(size), "archive": "zip", "members": NDK_PORTABLE, "with": ["llvm"]}
+
+    llvm = github_assets("llvm/llvm-project", f"llvmorg-{LLVM}")
+    top = f"LLVM-{LLVM}-Linux-ARM64"
+    tools["llvm"] = {"version": LLVM, "only_where_listed": True,
+                     "note": "Linux arm64 only: compiles Android game packs with the NDK's portable parts.",
+                     "env": {"PADFORGE_LLVM_ROOT": top}, "hosts": {
+        "linux-arm64": github_file(llvm, f"{top}.tar.xz", archive="tar.xz", members=[
+            *(f"{top}/bin/{tool}" for tool in LLVM_TOOLS), f"{top}/lib/clang/21/include/"])}}
 
     nod = github_assets("encounter/nod", NODTOOL)
     nod_names = {"windows-arm64": "nodtool-windows-arm64.exe", "windows-x86_64": "nodtool-windows-x86_64.exe",
