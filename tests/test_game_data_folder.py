@@ -1,6 +1,7 @@
 import io
 import errno
 import os
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -46,6 +47,29 @@ class GameDataFolderTests(unittest.TestCase):
     def test_backends_without_a_folder_are_unchanged(self):
         with tempfile.TemporaryDirectory() as temporary:
             self.assertIsNone(cli.save_game_data(Path(temporary) / "personal.ipa", Path(temporary), "Game"))
+
+    def test_copied_paths_have_no_dot_parts(self):
+        """Windows' extended-length paths (\\\\?\\) take "." literally: C:\\out\\.\\cert.bin fails."""
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary) / "data"
+            (source / "sys").mkdir(parents=True)
+            (source / "cert.bin").write_bytes(b"top")
+            (source / "sys/main.dol").write_bytes(b"nested")
+            target = str(Path(temporary) / "out")
+            written = []
+            real_copy = shutil.copyfile
+
+            def recording_copy(src, dst):
+                written.append(dst)
+                return real_copy(src, dst)
+
+            with mock.patch.object(cli.shutil, "copyfile", recording_copy):
+                cli.copy_files(str(source), target)
+            self.assertEqual(len(written), 2)
+            for path in written:
+                self.assertNotIn(os.curdir, Path(path).relative_to(target).parts[:-1], path)
+                self.assertNotIn(os.sep + os.curdir + os.sep, path)
+            self.assertEqual((Path(target) / "cert.bin").read_bytes(), b"top")
 
     @unittest.skipIf(os.name == "nt", "symbolic links need extra rights on Windows")
     def test_links_that_cannot_be_read_as_links_are_copied(self):
