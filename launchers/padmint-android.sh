@@ -41,7 +41,8 @@ main() {
 
   say "Ubuntu inside Termux (the first time takes a few minutes)"
   export DEBIAN_FRONTEND=noninteractive
-  if ! proot-distro install --help 2>/dev/null | grep -q -- --name; then
+  # proot-distro 5 (Docker images, --name); older versions are updated first.
+  if ! proot-distro install --help 2>&1 | grep -q -- --name; then
     yes | pkg update -y -o Dpkg::Options::=--force-confnew
     yes | pkg install -y -o Dpkg::Options::=--force-confnew proot-distro
   fi
