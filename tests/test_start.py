@@ -43,6 +43,13 @@ class StartTests(unittest.TestCase):
             _code, make = self.run_start(["1", "2", str(disc), folder], "macos-arm64")
         self.assertEqual(make.call_args.args[1], "ios")
 
+    def test_intel_mac_offers_android_only(self):
+        with tempfile.TemporaryDirectory() as folder:
+            disc = Path(folder) / "disc.wbfs"
+            disc.write_bytes(b"x")
+            _code, make = self.run_start(["1", str(disc), folder], "macos-x86_64")
+        self.assertEqual(make.call_args.args[:2], ("kartpad", "android"))
+
     def test_game_file_added_in_the_app_is_not_asked_for(self):
         with tempfile.TemporaryDirectory() as folder:
             _code, make = self.run_start(["3", folder], "macos-arm64")

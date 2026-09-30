@@ -60,6 +60,11 @@
           "url": "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.425/dotnet-sdk-8.0.425-osx-arm64.tar.gz",
           "sha512": "d42156be70b489236479a415536013a89a9fd6eaca57d5716a7017612fcc65bdb459068973d7cffd6fe710f2799af8bee95b2046ba032762d47df176f5c4a7d6",
           "archive": "tar.gz"
+        },
+        "macos-x86_64": {
+          "url": "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.425/dotnet-sdk-8.0.425-osx-x64.tar.gz",
+          "sha512": "3b27552358905f1bde600dd0315a23051ef1cbd055a50eb64c675ee25a04e658c2ed735177125436c5bec38dfcd958fee338299611348299cd34a9bea8b8011f",
+          "archive": "tar.gz"
         }
       }
     },
@@ -105,6 +110,14 @@
           "bin": [
             "cmake-3.31.6-macos-universal/CMake.app/Contents/bin"
           ]
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-macos-universal.tar.gz",
+          "sha256": "330b9514f5112e5ed4fb08b8b05803b776fd9b539a6ae12927d14dcc0ee2ba8d",
+          "archive": "tar.gz",
+          "bin": [
+            "cmake-3.31.6-macos-universal/CMake.app/Contents/bin"
+          ]
         }
       }
     },
@@ -143,6 +156,12 @@
           "sha256": "c99048673aa765960a99cf10c6ddb9f1fad506099ff0a0e137ad8960a88f321b",
           "size": 314051,
           "archive": "zip"
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-mac.zip",
+          "sha256": "c99048673aa765960a99cf10c6ddb9f1fad506099ff0a0e137ad8960a88f321b",
+          "size": 314051,
+          "archive": "zip"
         }
       }
     },
@@ -171,6 +190,12 @@
           "archive": "zip"
         },
         "macos-arm64": {
+          "url": "https://dl.google.com/android/repository/android-ndk-r29-darwin.zip",
+          "sha1": "03d29fbb57e3c05a7d53597dd011d856c1456a4f",
+          "size": 1049519838,
+          "archive": "zip"
+        },
+        "macos-x86_64": {
           "url": "https://dl.google.com/android/repository/android-ndk-r29-darwin.zip",
           "sha1": "03d29fbb57e3c05a7d53597dd011d856c1456a4f",
           "size": 1049519838,
@@ -216,6 +241,13 @@
           "url": "https://github.com/encounter/nod/releases/download/v2.0.0-alpha.9/nodtool-macos-arm64",
           "sha256": "5b1c355a4d1a04a69149f6e5e78aba7383329a29a10e029229debe829939c7af",
           "size": 3360000,
+          "archive": "file",
+          "rename": "nodtool"
+        },
+        "macos-x86_64": {
+          "url": "https://github.com/encounter/nod/releases/download/v2.0.0-alpha.9/nodtool-macos-x86_64",
+          "sha256": "e97ac1b80c4a105780f109628e8468c6f422351e253148f8821aeed6548bac87",
+          "size": 3672900,
           "archive": "file",
           "rename": "nodtool"
         }
