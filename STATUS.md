@@ -9,6 +9,10 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- Owner scope update: this loop now owns PadMint and non-KartPad build compatibility.
+  A different agent owns KartPad app bugs. Builder reports in KartPad issues remain
+  in scope, but no new rendering/runtime diagnostics or repeated player test asks.
+  Small checked fixes can proceed; major process/UX changes need owner discussion.
 - PadMint 0.2.8 is published (Latest, #65): #63 preserves tracked, staged, untracked and
   ignored dependency edits during interrupted-download recovery; #64 clarifies
   phone file selection, rejects disc IDs with an actionable menu message and
@@ -26,29 +30,47 @@ tracker; this file mirrors progress so work can resume after interruption.
   setup needs about 25 GB free. The guide explains file-menu numbers versus RMCP01.
 - AnnePad 0.2.2 build 7 rebuilt after two interruptions. Draft #14, recipe/checksums
   pass both content checks. In-place iPhone install preserved every backed-up
-  file; attract sequence runs. Interactive battle check remains open because
-  XCTest could not start, including after restarting the developer test service.
+  file; attract sequence runs. The blocked test runner was the iPhone's explicit
+  Enable UI Automation passcode approval. Chris approved it; the userspace device
+  driver now starts and passes without capturing the Mac keyboard. Interactive
+  battle acceptance remains open; test-runner success is not gameplay acceptance.
 - Published PadMint 0.2.7 made AgePad 0.1.0's personal IPA in 45 seconds. HarkinianPad,
   BarrelPad and BellPad also built through that package. HarkinianPad took 2519 s,
   including a stalled Xcode child cleared without restarting shared services;
   BarrelPad took 15 s and BellPad 20 s with warm caches. These are build checks,
-  not new device-play acceptance. Six further games are running through 0.2.8.
-  BlueWake's resumed build continues; the full current-version sweep is incomplete.
+  not new device-play acceptance. Published 0.2.8 has since built BrawlerPad (60 s),
+  BallPad (350 s), MaskPad (50 s), PaperPad (100 s), SpaghettiPad (125 s) and GoldenPad
+  (325 s), with warm caches. BlueWake's resumed 0.2.7 personal build completed,
+  including its translated game module. The remaining 0.2.8 sweep is incomplete.
+- StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
+  the iOS compile. Draft starshippad#20 fixes SDK selection/cache invalidation;
+  local app and device/simulator SDK probes pass. Packaged candidate verification
+  and CI remain open. Main alone cannot repair release-pinned player builds;
+  any successor must retain source-only publication and the private release gates.
+- Public entrypoint audit: all 19 buildable catalog games have current PadMint
+  release recipes. Current README/release branding has no obsolete PadForge wording
+  except deliberate KartPad migration help. Historical release tags may still use
+  padforge.json; PadMint deliberately supports that filename. Checksums/parser/tag
+  comparisons are checked separately from actual compilation and device play.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
-- GitHub triage is reviewing older open build reports as well as recent comments.
+- GitHub triage reviewed older open build reports as well as recent comments.
   KartPad #104 (S24 graphics), #357 (S26 Automatic) and #366 (phone storage) remain
   actionable. #366's first-build timing corrected. Draft #369's diagnostic modes
-  are being checked on the emulator; affected Adreno hardware is still needed.
+  were checked on the emulator; affected Adreno hardware is still needed. These
+  app-specific follow-ups are handed off, not owned by this loop after the scope update.
 - The wider sweep covered 61 repositories and 82 open issues. Replied to new
   KartPad #370 (M2 iPad black screen), corrected #332's obsolete setup advice,
   and edited #192 to remove the request for a private diagnostic archive.
-  Existing #301 idle-freeze logs and #304 PowerVR fix provenance are under review.
+  Existing #301 logs did not establish the idle-freeze cause. #304's published APK
+  lacks the earlier promised PowerVR correction; bounded staging is preserved for
+  the KartPad agent, with no claimed handset fix or public release.
 - New Discord report: PWR Jaypp says flickering persists in 0.7.3 in both Original
   and Retro Rewind. Platform and scene are unknown; the earlier startup fix does
   not establish that this report is resolved.
 
-Local continuation handles and evidence: `.codex/scratch/pm027/current-builds-results.jsonl`,
+Local continuation handles and evidence: `.codex/scratch/pm028/current-builds-results.jsonl`,
+`.codex/scratch/pm028/player-entrypoints.json`,
 the BlueWake run `09959a9f8e454a708859f3eecb6b876e`, and
 `.codex/scratch/release-rerun/annepad/device-022`. Personal outputs stay local.
 
