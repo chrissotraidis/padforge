@@ -18,7 +18,10 @@ tracker; this file mirrors progress so work can resume after interruption.
   checks. The Windows VM was suspended after discovering Chris's request in the
   BlueWake chat to keep Parallels off for Mac responsiveness. Draft #65 adds a
   hosted Windows check using the included Python and actual public packages;
-  this avoids the local VM. Do not publish 0.2.8 before that check passes.
+  this avoids the local VM. The first hosted run passed all 28 player-flow tests;
+  its archive differed only by Windows checkout line endings. CI now preserves
+  source bytes so its checked packages can be matched to the staged downloads.
+  Do not publish 0.2.8 before that exact-package comparison passes.
 - KartPad #371 merged: device choice means where the player will play; phone-only
   setup needs about 25 GB free. The guide explains file-menu numbers versus RMCP01.
 - AnnePad 0.2.2 build 7 rebuilt after two interruptions. Draft #14, recipe/checksums
