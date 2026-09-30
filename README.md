@@ -65,8 +65,8 @@ Drag your own KartPad game file into this window, then press Enter: Mario Kart W
 Your copy will be saved in C:\Users\you\Downloads
 ```
 
-On a Mac with Apple Silicon, PadMint asks for the file first, then asks
-**Android** or **iPhone/iPad**: choose Android.
+If PadMint asks which device to build for, choose **Android phone or tablet**.
+That choice describes where you will play, regardless of which computer you use.
 
 Keep the window open. Keep the computer plugged in; PadMint keeps it awake while
 it builds. The first build takes about 15 minutes to an hour, while
@@ -121,11 +121,23 @@ more.
    curl -fsSL https://raw.githubusercontent.com/chrissotraidis/padmint/main/launchers/padmint-android.sh | sh
    ```
 
-4. Tap **Allow** when Android asks about files and running in the background.
-   Type the number of your disc image and press Enter. Keep Termux open with the
-   screen on until it says your game is ready.
-5. Your game pack and `KartPad game data` folder are now in Download. Continue
-   at [step 4 above](#4-put-them-on-your-phone), skipping the copying.
+4. Tap **Allow** if Android asks about access to your files. Wait for setup to
+   finish; the first run downloads tools before it asks you to choose a file.
+5. PadMint lists the game files in **Download**, for example `1. Mario Kart Wii.rvz`.
+   When it asks for a number, type `1` for that example and press Enter.
+   This is the number beside the **filename**, not a disc ID like `RMCP01`.
+   If there is no list yet, do not type a number. Wait for setup to finish.
+   Keep Termux open with the screen on until it says your game is ready.
+6. In KartPad, tap **Import Game** (or **Play Game**) on the Mario Kart Wii
+   card. At **Add your game pack**, tap **Choose file** and select the
+   `KartPad-v…-android-personal.so` in Download. Then, at **Game Data & Saves**,
+   tap **Import from Extracted Game Data Folder…**, choose the `KartPad game data`
+   folder in Download and tap **Done**. Tap **Play Game**.
+
+**Typed a number and nothing happened?** PadMint needs to be showing its file
+list and number prompt first. If Termux shows only a `$` prompt, type `padmint`
+and press Enter to start it. If setup stopped with an error, share that error
+text in a [PadMint issue](https://github.com/chrissotraidis/padmint/issues).
 
 Next time, type `padmint` in Termux. If Android stops the build ("Process
 completed (signal 9)"), turn on **Settings → System → Developer options →
@@ -142,7 +154,7 @@ stays).
   AMD Windows PCs haven't been tried yet.
 
 1. Start PadMint as in [step 1](#1-start-padmint), drag in your disc image and,
-   on a Mac, choose **iPhone/iPad**.
+   when asked which device to build for, choose **iPhone or iPad**.
 2. PadMint saves `KartPad-v…-ios-personal.ipa` and a `KartPad game data`
    folder in Downloads.
 3. Install the `.ipa` with Sideloadly, AltStore or SideStore. Updating? Install

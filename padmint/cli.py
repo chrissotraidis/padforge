@@ -978,7 +978,7 @@ def game_files(folder, manifest):
     return sorted(found, key=lambda path: path.stat().st_mtime, reverse=True)
 
 
-def choose(title, options, ask, stream):
+def choose(title, options, ask, stream, prompt="Number: "):
     """options: [(value, label)]. One option is chosen without asking."""
     if len(options) == 1:
         print(f"{title}: {options[0][1]}", file=stream)
@@ -987,9 +987,10 @@ def choose(title, options, ask, stream):
     for number, (_value, label) in enumerate(options, 1):
         print(f"  {number}. {label}", file=stream)
     while True:
-        answer = ask("Number: ").strip()
+        answer = ask(prompt).strip()
         if answer.isdigit() and 1 <= int(answer) <= len(options):
             return options[int(answer) - 1][0]
+        print(f"Enter a menu number from 1 to {len(options)}.", file=stream, flush=True)
 
 
 def file_problem(disc):
@@ -1072,8 +1073,15 @@ def start(ask=input, stream=None):
         # A phone has no window to drag files into: offer the game files in its Download folder.
         found = game_files(player_folder(), catalog()[game].get("manifest")) if on_android() else []
         if found:
+            print("Choose a file from your phone's Download folder. Enter the number beside its "
+                  "filename, not the game's disc ID (such as RMCP01).", file=stream, flush=True)
             disc = choose(f"Your {name} game file", [(path, path.name) for path in found]
-                          + [(None, "Another file (type its path)")], ask, stream)
+                          + [(None, "Another file (type its path)")], ask, stream,
+                          prompt="File number: ")
+        elif on_android():
+            print("No supported game file was found in your phone's Download folder. "
+                  "Copy your disc image there and run padmint again, or enter its full file path below.",
+                  file=stream, flush=True)
         prompt = (f"Type the path of your own {name} game file, then press Enter: " if on_android()
                   else f"Drag your own {name} game file into this window, then press Enter: ")
         while disc is None:
@@ -1082,6 +1090,8 @@ def start(ask=input, stream=None):
             if problem is not None:
                 print(problem, file=stream)
                 disc = None
+        if on_android():
+            print(f"Using file: {disc.name}", file=stream, flush=True)
     out = player_folder()
     print(f"Your copy will be saved in {out}", file=stream)
     results = []

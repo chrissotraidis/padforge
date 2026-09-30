@@ -146,6 +146,18 @@ class PhoneStartTests(unittest.TestCase):
             _code, make, _shown = self.run_on_phone(["2", str(disc)], downloads)
         self.assertEqual(make.call_args.args[2], disc.resolve())
 
+    def test_disc_id_is_rejected_with_guidance_before_selecting_a_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            downloads = Path(folder)
+            disc = downloads / "Mario Kart Wii.rvz"
+            disc.write_bytes(b"x")
+            code, make, shown = self.run_on_phone(["RMCP01", "1"], downloads)
+        self.assertEqual(code, 0)
+        self.assertEqual(make.call_count, 1)
+        self.assertEqual(make.call_args.args[2], disc.resolve())
+        self.assertIn("Enter a menu number from 1 to 2.", shown)
+        self.assertIn("Using file: Mario Kart Wii.rvz", shown)
+
     def test_folder_without_game_files_asks_for_a_path(self):
         with tempfile.TemporaryDirectory() as folder, tempfile.TemporaryDirectory() as elsewhere:
             downloads = Path(folder)
