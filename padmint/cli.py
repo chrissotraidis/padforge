@@ -719,6 +719,7 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
     args = argparse.Namespace(game=game, repo=source, revision=git(source, "rev-parse", "HEAD"),
                               disc=disc, target=platform_name, workspace_root=None, jobs=jobs,
                               source_only=False, no_mods=False, app=app)
+    finish_submodules(source)
     code = execute(args, source, disc)
     if code != 0:
         if code != 130:
@@ -1100,6 +1101,32 @@ def git_program():
         tools.install(["git"], host_id())
         program = tools.executable("git", host_id())
     return program
+
+
+def finish_submodules(repo, stream=None):
+    """A download that stops partway can leave a submodule half cloned. Git reports it as
+    changed (" M lib/rt64"), so PadMint's clean-checkout check refused every later run.
+    Only for PadMint's own game folders, and only when every reported difference is a
+    submodule: update exactly those once. Anything else keeps the refusal (execute re-checks)."""
+    games = (tools.tools_root().parent / "games").resolve()
+    if games not in Path(repo).resolve().parents or not (Path(repo) / ".git").exists():
+        return []
+    command = [git_program(), "-C", str(repo)]
+    status = subprocess.run(command + ["status", "--porcelain=v1", "-z", "--untracked-files=normal"],
+                            capture_output=True, text=True)
+    stage = subprocess.run(command + ["ls-files", "--stage", "-z"], capture_output=True, text=True)
+    if status.returncode or stage.returncode or not status.stdout:
+        return []
+    gitlinks = {entry.split("\t", 1)[1] for entry in stage.stdout.split("\0") if entry.startswith("160000 ")}
+    entries = [entry for entry in status.stdout.split("\0") if entry]
+    # Unstaged (first column blank) changes to gitlinks only; a rename or staged change is not ours.
+    if not all(entry[0] == " " and entry[3:] in gitlinks for entry in entries):
+        return []
+    paths = [entry[3:] for entry in entries]
+    print(f"PadMint is finishing {', '.join(paths)} in {Path(repo).name}: an earlier download "
+          "stopped partway.", file=stream or sys.stdout, flush=True)
+    subprocess.run(command + ["submodule", "update", "--init", "--recursive", "--force", "--", *paths])
+    return paths
 
 
 def source_complete(source):
