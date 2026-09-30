@@ -4,8 +4,12 @@
 Every download PadMint installs is pinned here: URL, size where published and
 the publisher's digest (GitHub release digests, CMake's SHA-256 list, Google's
 SDK repository index, Microsoft's .NET release metadata). Nothing is hashed by
-hand. Run it, review the diff, commit.
+hand. Apple publishes no digest for its open-source archives, so those are
+fetched at their release tag's commit and hashed here. Run it, review the
+diff, commit.
 """
+import functools
+import hashlib
 import json
 import re
 import urllib.request
@@ -35,6 +39,30 @@ NDK_PORTABLE = [f"android-ndk-{NDK[1]}/{path}" for path in (
     "toolchains/llvm/prebuilt/linux-x86_64/lib/clang/21/lib/linux/")]
 LLVM_TOOLS = ["clang", "clang++", "clang-{major}", "lld", "ld.lld", "llvm-ar", "llvm-ranlib", "llvm-nm",
               "llvm-strip", "llvm-objcopy", "llvm-readelf", "llvm-readobj", "llvm-cxxfilt"]
+# iPhone game packs off a Mac: Apple's SDK may only be used on Apple computers,
+# so Windows and Linux compile them with LLVM, libc++'s headers and headers from
+# Apple's open-source releases (APSL 2.0), which the game assembles into an SDK
+# (KartPad: builder/kartpad_builder/ios_sdk.py). A game names "libcxx", which
+# has downloads only there and brings LLVM and the Apple headers with it; Macs
+# keep Xcode and download none of these.
+IOS_LLVM_TOOLS = ["ld64.lld", "llvm-install-name-tool"]
+OFF_MAC = ("windows-arm64", "windows-x86_64", "linux-x86_64", "linux-arm64")
+LLVM_OFF_MAC = {"linux-x86_64": "LLVM-{v}-Linux-X64", "windows-arm64": "clang+llvm-{v}-aarch64-pc-windows-msvc",
+                "windows-x86_64": "clang+llvm-{v}-x86_64-pc-windows-msvc"}
+APPLE = {  # tool: (repository, release tag, the tag's commit, folders and files needed)
+    "apple-libc": ("Libc", "Libc-1752.120.2", "4e34d0559e3a1b081afeb8604d9e204a1f31321d",
+                   ["include/", "APPLE_LICENSE"]),
+    "apple-xnu": ("xnu", "xnu-12377.121.6", "ac9718fb1af618d5ce8678d0dc6e8a58f252216f",
+                  ["bsd/sys/", "bsd/arm/", "bsd/machine/", "osfmk/mach/", "libkern/libkern/", "APPLE_LICENSE"]),
+    "apple-libpthread": ("libpthread", "libpthread-539.100.4", "1f4f5265b319111142f1bf3a27d4484ef5a98314",
+                         ["include/"]),
+    "apple-libmalloc": ("libmalloc", "libmalloc-812.100.31", "c49dafa25f1efe8607701ae6014a663ad2ee437f",
+                        ["include/malloc/"]),
+    "apple-libplatform": ("libplatform", "libplatform-375.120.2", "b7ed7cf5cf7dd12b98672435db2225a860f199d8",
+                          ["include/", "LICENSE"]),
+    "apple-availability": ("AvailabilityVersions", "AvailabilityVersions-157.2",
+                           "149b1777f3e8c2133042d8e188f72e3adf6a7110", None),
+}
 
 
 def fetch(url):
@@ -42,6 +70,7 @@ def fetch(url):
         return response.read()
 
 
+@functools.lru_cache(maxsize=None)
 def github_assets(repo, tag):
     data = json.loads(fetch(f"https://api.github.com/repos/{repo}/releases/tags/{tag}"))
     return {asset["name"]: asset for asset in data["assets"]}
@@ -53,13 +82,16 @@ def github_file(assets, name, **extra):
     return {"url": asset["browser_download_url"], algo: digest, "size": asset["size"], **extra}
 
 
-def llvm_download(release, top, **extra):
-    """LLVM's release tarball, unpacking only the compilers, linkers and headers."""
+def llvm_download(release, top, extra=(), windows=False, **fields):
+    """LLVM's release tarball, unpacking only the compilers, linkers and headers.
+    Windows builds name their programs .exe and have no clang-NN."""
     major = release.split(".")[0]
+    names = [tool.format(major=major) for tool in [*LLVM_TOOLS, *extra]]
+    if windows:
+        names = [name + ".exe" for name in names if name != f"clang-{major}"]
     return github_file(github_assets("llvm/llvm-project", f"llvmorg-{release}"), f"{top}.tar.xz",
-                       archive="tar.xz", **extra, members=[
-                           *(f"{top}/bin/{tool.format(major=major)}" for tool in LLVM_TOOLS),
-                           f"{top}/lib/clang/{major}/include/"])
+                       archive="tar.xz", **fields, members=[
+                           *(f"{top}/bin/{name}" for name in names), f"{top}/lib/clang/{major}/include/"])
 
 
 def main():
@@ -132,12 +164,39 @@ def main():
                      "note": "Linux arm64: compiles Android game packs with the NDK's portable parts. "
                              "macOS: compiles N64 patch code (GoldenPad); Apple's clang cannot target MIPS. "
                              f"Apple Silicon Macs get {LLVM_MAC} (Homebrew's version, whose output GoldenPad "
-                             f"checks); Intel Macs get {LLVM_INTEL_MAC}, LLVM's newest build for them.",
+                             f"checks); Intel Macs get {LLVM_INTEL_MAC}, LLVM's newest build for them. "
+                             "Windows and Linux: compiles iPhone game packs (with libcxx).",
                      "env": {"PADMINT_LLVM_ROOT": top}, "hosts": {
-        "linux-arm64": llvm_download(LLVM, top),
+        "linux-arm64": llvm_download(LLVM, top, extra=IOS_LLVM_TOOLS),
         "macos-arm64": llvm_download(LLVM_MAC, mac, version=LLVM_MAC, env={"PADMINT_LLVM_ROOT": mac}),
         "macos-x86_64": llvm_download(LLVM_INTEL_MAC, intel_mac, version=LLVM_INTEL_MAC,
                                       env={"PADMINT_LLVM_ROOT": intel_mac})}}
+    for host, name in LLVM_OFF_MAC.items():
+        name = name.format(v=LLVM)
+        tools["llvm"]["hosts"][host] = llvm_download(LLVM, name, extra=IOS_LLVM_TOOLS,
+                                                     windows=host.startswith("windows"),
+                                                     env={"PADMINT_LLVM_ROOT": name})
+
+    top = f"libcxx-{LLVM}.src"
+    libcxx = github_file(github_assets("llvm/llvm-project", f"llvmorg-{LLVM}"), f"{top}.tar.xz",
+                         archive="tar.xz", members=[f"{top}/include/", f"{top}/vendor/llvm/", f"{top}/LICENSE.TXT"])
+    libcxx["with"] = ["llvm", *APPLE]
+    tools["libcxx"] = {"version": LLVM, "only_where_listed": True, "license": "Apache-2.0 WITH LLVM-exception",
+                       "note": "iPhone game packs on Windows and Linux: libc++ headers, with LLVM and "
+                               "Apple's open-source headers.",
+                       "env": {"PADMINT_LIBCXX": top}, "hosts": {host: libcxx for host in OFF_MAC}}
+
+    for name, (repository, tag, commit, members) in APPLE.items():
+        url = f"https://github.com/apple-oss-distributions/{repository}/archive/{commit}.tar.gz"
+        data = fetch(url)
+        top = f"{repository}-{commit}"
+        entry = {"url": url, "sha256": hashlib.sha256(data).hexdigest(), "size": len(data), "archive": "tar.gz"}
+        if members:
+            entry["members"] = [f"{top}/{member}" for member in members]
+        tools[name] = {"version": tag.split("-", 1)[1], "only_where_listed": True, "license": "APSL-2.0",
+                       "note": f"Apple open-source {tag} headers for iPhone game packs on Windows and Linux.",
+                       "env": {f"PADMINT_{name.upper().replace('-', '_')}": top},
+                       "hosts": {host: entry for host in OFF_MAC}}
 
     nod = github_assets("encounter/nod", NODTOOL)
     nod_names = {"windows-arm64": "nodtool-windows-arm64.exe", "windows-x86_64": "nodtool-windows-x86_64.exe",
