@@ -1,4 +1,7 @@
-# PadForge status
+# PadMint status
+
+PadMint was named PadForge until 0.2.0 (padforge#25); older entries below use
+the current name.
 
 Resumable record for the overnight goal loop. Source of truth for decisions and
 per-repo state is the Notion "Public Repo Proprietary-Content Audit" and its
@@ -6,20 +9,20 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Loop 2: formula, KartPad 0.6.0, then every repo (started 29 Sep 09:05)
 
-Plan and owner decisions: Notion "PadForge release formula and pilot plan".
+Plan and owner decisions: Notion "PadMint release formula and pilot plan".
 
 - **Step 1 done (09:20).** Windows 11 VM at 16 GB / 8 cores, commands run
   inside it; Docker Desktop runs Linux containers (image pulls work).
 - **Step 2 done (09:55).** #336 merged (`87467f3`); main's GitHub source
   archive passes the content check. iOS (11m44s) and Mac (10m42s) builds
-  complete through PadForge at 0.6.0/240. CI `boundaries` has failed on main
+  complete through PadMint at 0.6.0/240. CI `boundaries` has failed on main
   since 26 Sep (unrelated pipeline-budget probe). Details:
   KartPad #336 now passes the content check:
   REL guard fixture built from the guard's own anchors; synthetic g6/g7
   translator fixtures generated in tests and checked by SHA-256; translated-build
   log and candidate record moved to private scratch; translator pinned as fork
   branch `kartpad-translator` (same tree). One version file, `version.json`
-  (0.6.0 / build 240), read by Android, Mac, the iOS builder and PadForge's
+  (0.6.0 / build 240), read by Android, Mac, the iOS builder and PadMint's
   build record. Verification builds (iOS, Mac) running.
 - **Step 3 design notes.** Translated code self-registers through static
   registrars, so a separately loaded game library can register itself if the
@@ -56,13 +59,13 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
   (0 address-named functions) and installs in place on the iPhone 14 with data
   intact; the iPhone pack builds and passes the state check. The iPhone race
   waits on iPhone Mirroring, which needs the phone locked once by hand.
-- **Step 4 (12:45 to 15:00).** `padforge tools` (pinned, digest-checked
-  Git, .NET 8, CMake, Ninja, NDK, nodtool), `padforge get` and
-  `padforge make GAME PLATFORM --disc FILE`. KartPad's pack build is now
+- **Step 4 (12:45 to 15:00).** `padmint tools` (pinned, digest-checked
+  Git, .NET 8, CMake, Ninja, NDK, nodtool), `padmint get` and
+  `padmint make GAME PLATFORM --disc FILE`. KartPad's pack build is now
   pure Python (no bash, perl, rsync). Windows fixes: Git by full path,
   forward-slash paths, nodtool.EXE version text, blob symbol spellings, paths
   under 260 characters, llvm-cxxfilt instead of c++filt.
-- **Android gate PASS (15:00).** A clean `padforge make kartpad android` in
+- **Android gate PASS (15:00).** A clean `padmint make kartpad android` in
   the Windows 11 VM made a pack (SHA-256 `c248cb3c...30c3`) that the
   release-signed empty APK imported and raced with (Luigi Circuit, lap 1/3).
   Windows timing on this ARM VM: tools ~2 min, extract + translate ~3 min,
@@ -74,18 +77,18 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
 - **Linux gate PASS, releases staged (17:00).** Clean Ubuntu x86_64: `padforge
   make kartpad android` 21 min end to end; its pack raced in the final APK.
   Fixes found: Git hint, .NET invariant globalization, NDK symlinks, published
-  app name. Mac: `padforge make kartpad ios` from a fresh home, 9 min; the IPA
+  app name. Mac: `padmint make kartpad ios` from a fresh home, 9 min; the IPA
   boots on the iPhone 14 with saves intact. Players get three ZIPs with a
   launcher and a guided start (D8); Windows and Linux downloads checked. KartPad
-  v0.6.0 and PadForge v0.1.0 staged and gate-checked. Waiting on the iPhone
+  v0.6.0 and PadMint v0.1.0 staged and gate-checked. Waiting on the iPhone
   race (the phone must be locked once, or the UI Automation passcode entered).
-- **Published (17:40).** iPhone gate PASS (PadForge-made IPA raced on the
-  iPhone 14); KartPad v0.6.0 and PadForge v0.1.0 released and verified by
+- **Published (17:40).** iPhone gate PASS (PadMint-made IPA raced on the
+  iPhone 14); KartPad v0.6.0 and PadMint v0.1.0 released and verified by
   anonymous download; pinned KartPad issue #338.
 - **Step 7 to 9 (18:30).** D9: iPhone builds target iOS 15 (Xcode 27).
-  PadForge: games whose file is added in the app need no `--disc`.
+  PadMint: games whose file is added in the app need no `--disc`.
   - BlueWake: formula PR #4 (empty IPA via `build.sh --app-only`; the module
-    via `--app`); `padforge make bluewake ios` compiling the module.
+    via `--app`); `padmint make bluewake ios` compiling the module.
   - SunPad: formula PR #50 (app-only build, module added to the published
     IPA, "no game code yet" message); build after BlueWake.
   - HarkinianPad: #30 and #31 merged (0.2.0, recipe only); play-test next.
@@ -102,26 +105,26 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
 - **Status (20:10).** Done means three things per repo: a public release in
   the formula's shape, a README "Get it" section that matches it, and the
   Notion row linking both (new tracker columns: Release, README ready).
-  - KartPad on a real Android phone: the public PadForge v0.1.0 made the pack
+  - KartPad on a real Android phone: the public PadMint v0.1.0 made the pack
     on this Mac (19 min); added through Choose file on a Pixel 9 Pro XL, it
     raced at 60 FPS. Gap for 0.6.1: no button to replace an added pack.
-  - BlueWake: `padforge make bluewake ios` PASS (2 h 19 min including
+  - BlueWake: `padmint make bluewake ios` PASS (2 h 19 min including
     tuning; 412 MB module). Installed in place on the iPhone; the console
     shows the module loading, disc reads and 30 FPS at full speed. The
     gameplay screenshot waits for the iPhone's screen to be woken.
   - Merged: StarshipPad #16, BallPad #9, BrawlerPad #9, DevilTouch #8
     (README points to the release). MaskPad #10: release check reads
     version.json. VaultPad #8 (README) waits for CI.
-  - HarkinianPad: `padforge make harkinianpad ios --ref main` building; then
-    iPhone gameplay and the recipe-only v0.2.0 release. Then a PadForge build
+  - HarkinianPad: `padmint make harkinianpad ios --ref main` building; then
+    iPhone gameplay and the recipe-only v0.2.0 release. Then a PadMint build
     check and release for BellPad, SpaghettiPad, StarshipPad, BallPad,
     BrawlerPad and MaskPad.
 - **Status (21:50).** The iPhone was dark because iPhone Mirroring was still
   attached (closed at 20:28); it is now locked and needs the owner's unlock
   before any gameplay screenshot. Until then:
-  - Built through PadForge and installed in place (saves kept): HarkinianPad
+  - Built through PadMint and installed in place (saves kept): HarkinianPad
     0.2.0 (main; loads oot.o2r, opening scene), GoldenPad 0.2.0 (#40 branch).
-  - Built through PadForge from main, recipe-only release staged (content
+  - Built through PadMint from main, recipe-only release staged (content
     check PASS): HarkinianPad, BellPad, SpaghettiPad, StarshipPad, BallPad
     1.1.0. BrawlerPad and MaskPad building. `recipe-release.sh` stages each
     release the same way (recipe from the built commit, version.json check,
@@ -130,28 +133,28 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
     GoldenPad #40, BearBirdPad #16, BananaPad #10, AnnePad #7, DinoPad #7,
     BarrelPad #15 (also fixes the build under stock bash 3.2). Build checks
     queued after MaskPad.
-  - PadForge main: guided start handles games whose manifest lives in their
+  - PadMint main: guided start handles games whose manifest lives in their
     repository and takes a per-game help link (64 tests). A v0.1.1 release
     with `player_targets` for each released game follows the first recipe
     releases (v0.1.0 offers only KartPad and asks every game for a disc).
   - Merged: MaskPad #10, VaultPad #8 (README).
-- **Status (00:00, 30 Sep).** Released after a PadForge build and iPhone 14
+- **Status (00:00, 30 Sep).** Released after a PadMint build and iPhone 14
   gameplay with the owner's data: BlueWake 0.1.0 (empty app + module),
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad (recipe only). All twelve
   are in the catalog's guided start. v0.1.1 is the other chat's Windows hotfix;
   main is 0.1.2 (player hardening, PR #5). Before publishing 0.1.2: Windows
   gate with the bundled Python (KartPad build in the VM, C:\\pffix-full.log)
-  and a Mac run through PadForge.command (Apple's Python).
+  and a Mac run through PadMint.command (Apple's Python).
   - BananaPad #10: fresh clones failed verify-sources (submodule fingerprint
     included git describe text); fixed, rebuilding. DinoPad #7: catalogued;
     build next. Then SunPad #50 and MeleePad.
-- **Status (02:15, 30 Sep).** Released since 00:00: PadForge 0.1.2 (Windows
+- **Status (02:15, 30 Sep).** Released since 00:00: PadMint 0.1.2 (Windows
   and Mac builds passed; Linux: the container starts) and BananaPad 0.2.0. Every released repo was
   re-checked on GitHub: the release has the formula's assets, the README points
-  to PadForge, and the Notion row has Release, README ready and L5 set; stale
+  to PadMint, and the Notion row has Release, README ready and L5 set; stale
   "Next action" text on those rows was rewritten.
-  - DinoPad #7 builds through PadForge (0.2.0 build 4) and is installed in
+  - DinoPad #7 builds through PadMint (0.2.0 build 4) and is installed in
     place on the iPhone (ROM and save kept). Gameplay check waits for the
     phone: XCTest shows an "Enable UI Automation" passcode prompt.
   - SunPad #50: the empty app failed the content check (Wii retail and Korean
@@ -159,11 +162,11 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
     with D11 (RecompCore `da96175`, ModernGekko `8f49c55` on
     `codex/sunpad-apple`), notices skip archives, and build-ios-app.sh now
     merges the fresh core (it linked a stale `libSunPadCore.a`). The empty
-    IPA passes; a fresh-home PadForge build from the branch is running.
+    IPA passes; a fresh-home PadMint build from the branch is running.
   - MeleePad #35: same fix cherry-picked (RecompCore `3f2a51f`, ModernGekko
     `9be2c5b` on `codex/meleepad-slippi-preview5`); empty-app build next.
 - **Status (04:00, 30 Sep).** Four more ports build end to end through
-  PadForge from fresh homes and run on the iPhone 14 (installed in place,
+  PadMint from fresh homes and run on the iPhone 14 (installed in place,
   saves kept); each release is staged with the content check passing, and each
   PR names its one remaining step: controlled gameplay on the phone, which
   waits for the phone's UI automation to be re-enabled with the passcode.
@@ -177,7 +180,7 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
   - Catalog entries for MeleePad and PaperPad: PR #10 (draft until released).
   - Phone: CoreDevice file copies from the phone stall (AFC works); XCTest hangs
     or asks for the passcode. Installs, launches and screenshots work.
-- **Status (04:30, 30 Sep).** PadForge 0.1.3 published: BananaPad in the
+- **Status (04:30, 30 Sep).** PadMint 0.1.3 published: BananaPad in the
   guided start (it was released but not offered), and the gate reads gzip,
   bzip2, xz and tar contents (#11), which let PeonPad #8 merge. Checked on Mac,
   Windows 11 VM (bundled Python) and Linux (Python 3.9); anonymous downloads
@@ -190,13 +193,13 @@ Plan and owner decisions: Notion "PadForge release formula and pilot plan".
 **Update 08:15:** the phone recovered after restarting its `dtfileserviced`
 and `testmanagerd` from the Mac (`devicectl device process signal`). Played on
 the iPhone 14 and released: SunPad, MeleePad, PaperPad, DinoPad (0.2.0 each);
-DevilTouch's published app reached Tristram (L5). PadForge 0.1.4 offers all 18
+DevilTouch's published app reached Tristram (L5). PadMint 0.1.4 offers all 18
 games. VaultPad (iPad-only) and the owner decisions below remain.
 
-**Update 09:20:** player path verified end to end: the published PadForge 0.1.4
+**Update 09:20:** player path verified end to end: the published PadMint 0.1.4
 from an empty home downloaded the published SunPad 0.2.0 app and recipe and
 built a personal IPA in 47.6 min; it boots on the iPhone with the save kept.
-PadForge 0.1.5 published with the PadForge-experience chat's #13-#16, a quieter
+PadMint 0.1.5 published with the PadMint-experience chat's #13-#16, a quieter
 end-of-build message and safe output names. VaultPad #6 merged after a
 fresh-home build. KartPad #343 (game_ids for #14's check) waits for the next
 KartPad release.
@@ -208,11 +211,11 @@ PaperPad 0.2.1 builds PaperBoat (played on the iPhone); six READMEs still said
 "a new version is in progress" (fixed or merging); GalaxyPad #15 merged.
 `catalog/paperpad.json`'s note still names build-ios-device.sh (cosmetic).
 
-**Update 12:10:** PadForge 0.1.6 (Windows long paths), 0.1.7 (Android packs on
+**Update 12:10:** PadMint 0.1.6 (Windows long paths), 0.1.7 (Android packs on
 ARM Linux, raced in the emulator) and 0.1.8 published. 0.1.8 carries the
-PadForge-experience chat's #22 (`PADFORGE_CACHE`, one download cache for
+PadMint-experience chat's #22 (`PADFORGE_CACHE`, one download cache for
 every game version) and #23 (a backend's game data folder saved once for the
-player), and `padforge list` now shows player targets instead of the
+player), and `padmint list` now shows player targets instead of the
 built-in fallback manifests. Each checked on Mac, Linux (Docker) and the
 Windows 11 VM; anonymous downloads match SHA256SUMS. KartPad #343-#348 merged;
 KartPad 0.6.1 (kartpad#349) is being built and gated. kartpad#347 (packs that
@@ -221,33 +224,43 @@ v3.1.0-preview.2 published. The PaperPad catalog note now names PaperBoat's
 scripts.
 
 **Update 13:50:** KartPad 0.6.1 published (Latest): Replace Game Pack, the
-shared Retro Rewind download and the PadForge game data folder. Gates with the
-public PadForge 0.1.8 from fresh homes: iPhone 14 race (Mac IPA, 12 min);
+shared Retro Rewind download and the PadMint game data folder. Gates with the
+public PadMint 0.1.8 from fresh homes: iPhone 14 race (Mac IPA, 12 min);
 emulator update from 0.6.0 raced with the Mac pack (6 min, Retro Rewind from
 the cache), then with Replace Game Pack, then with the Windows 11 VM pack
 (about 60 min, Defender slows the ARM VM); a new emulator install imported
 "KartPad game data" with no key and raced. Pinned #338 is version-free now.
-Open: padforge#25 asks us to rename PadForge (owner decision); kartpad#350
+Open: padforge#25 asked us to rename the project (done in PadMint 0.2.0); kartpad#350
 (ABI 3 packs, 0.7.0), #351 (stale tests) and #352 (fresh-install status line)
-from the PadForge-experience chat.
+from the PadMint-experience chat.
 
 **Update 14:45:** KartPad 0.7.0 published (Latest): pack ABI 3, so game packs
 survive app updates (kartpad#347/#350, merged via #353). Gates: emulator update
 from 0.6.1 (prompt, 0.6.1 pack refused, 0.7.0 pack imported, old file removed,
 raced); iPhone 14 race; a version-only test build kept the pack and raced with
-no PadForge run, and PadForge reused the pack (Android compile skipped with an
+no PadMint run, and PadMint reused the pack (Android compile skipped with an
 identical file, iPhone IPA in 72 s); a header-change test build refused the
-pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
+pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 (renamed to PadMint).
+
+**Update 15:45:** Renamed to PadMint (padforge#25; committed there for 7 Oct).
+#26 merged (package, `padmint` command, launchers, ~/.padforge moved to
+~/.padmint once; padforge.json and PADFORGE_* still accepted); repo renamed
+to chrissotraidis/padmint; PadMint 0.2.0 published and checked on Mac (full
+KartPad Android build from the published 0.7.0 in 132 s, pack reused),
+Windows 11 VM (real old home moved, no downloads) and Linux. The 0.1.x
+PadForge releases are drafts now (tags kept). Game repos: 17 rename PRs
+merged, MaskPad, MeleePad and SunPad wait on CI; KartPad 0.7.1 carries the
+in-app wording and the runtime's pack messages (fingerprints unchanged).
 
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
-  BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
+  BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadMint 0.1.3.
 - **Needs 5 minutes with the iPhone, then publish** (runbook:
   `~/.codex/scratch/release-staging/READY-30sep.md`): SunPad #50 (press Start),
   MeleePad #35 (Import Game Data → On My iPhone → MeleePad → the .iso),
   PaperPad #12 (press Start), DinoPad #7 (Start Dinosaur Planet). Each is the
-  PadForge build, installed in place with saves kept; releases are staged and
-  pass the content check. Then PadForge PR #10 + 0.1.4 for the guided start.
+  PadMint build, installed in place with saves kept; releases are staged and
+  pass the content check. Then PadMint PR #10 + 0.1.4 for the guided start.
 - **Phone:** XCTest needs "Enable UI Automation" (passcode) and now stalls at
   "waiting for workers to materialize"; CoreDevice file copies from the phone
   stall too (AFC works). Unplugging and replugging the cable, then entering the
@@ -259,7 +272,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
   HarkinianPad #28 patch context, UTP, CTRPad, KidPad listing. EctoPad needs a
   bootstrap script first.
 - **Notes:** the local `~/.codex/release-gate/release_gate.py` that AGENTS
-  rules cite is an older copy of PadForge's gate (no compressed-file support).
+  rules cite is an older copy of PadMint's gate (no compressed-file support).
   KartPad's pinned #338 is closed (still pinned). Phone copies to tidy: Melee ISO
   in MeleePad Documents (for the import), DK64.v64 and Animal Crossing.iso in
   BlueWake Documents, a stray copy in BellPad's Library.
@@ -273,7 +286,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
 
 ## Morning handoff (06:15)
 
-- **Complete personal builds through PadForge (16 games):** KartPad (iOS and
+- **Complete personal builds through PadMint (16 games):** KartPad (iOS and
   Mac), GoldenPad, SunPad, AnnePad, SnapPad, MaskPad, HarkinianPad, DevilTouch,
   BarrelPad, VaultPad, StarshipPad, BrawlerPad, SpaghettiPad, BearBirdPad,
   BellPad, BallPad. The gate rejects every output as personal. On `main`:
@@ -281,7 +294,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
 - **Not verified:** no device install or gameplay (no L5); no non-Mac host build.
 - **Nothing published, nothing deleted.** Moved-aside folders and cleanup
   candidates with sizes are in the Notion morning summary.
-- **Next session:** owner decisions below; then device tests; then the PadForge
+- **Next session:** owner decisions below; then device tests; then the PadMint
   follow-ups (job cap, Homebrew leak warning).
 
 ## Rules for this run
@@ -294,7 +307,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
   checkouts with other agents' uncommitted work are not touched.
 - Public game-repo PRs merge only for docs/manifest/wrapper/AGENTS changes whose
   tree passes the gate and the repo's own checks. Everything else stays a PR.
-- Public READMEs do not mention PadForge while it is private.
+- Public READMEs do not mention PadMint while it is private.
 - One heavy build at a time, none while another agent's build runs, `-j8` max.
   No new full build below 50 GB free; stop below 30 GB. Nothing is deleted for space.
 
@@ -304,16 +317,16 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
 |---|---|
 | L0 | Contained: affected downloads hidden |
 | L1 | Docs accurate, dead release links fixed, gate rule present, source tree passes gate |
-| L2 | Validated `padforge.json`; `padforge plan` succeeds |
-| L3 | Source stages run through PadForge with verified outputs |
-| L4 | Personal build through PadForge; gate rejects output as personal, passes source |
+| L2 | Validated `padforge.json`; `padmint plan` succeeds |
+| L3 | Source stages run through PadMint with verified outputs |
+| L4 | Personal build through PadMint; gate rejects output as personal, passes source |
 | L5 | Verified on a physical device (owner) |
 
 ## Log
 
 - 23:49 Environment: BlueWake cold trained build compiling (other agent, read-only
   for this run); 71 GB free; load ~230. Active agents: BlueWake, YomiBoy.
-- 23:55 PadForge PR #1 merged to `main` (`5361f33`); 26 tests pass.
+- 23:55 PadMint PR #1 merged to `main` (`5361f33`); 26 tests pass.
 - 00:10 Decisions + feasibility in `docs/DECISIONS.md` (iPhone module links
   without Apple SDK for one real chunk; Android host-neutral is conditional).
   Core on main `70de086`: manifests, catalog, list/doctor/check-manifest/audit,
@@ -330,22 +343,22 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
   Sweep of 23 repos; retired-link PRs merged for HarkinianPad #27, SpaghettiPad
   #17, BrawlerPad #6, BearBirdPad #13, VaultPad #3; open for SunPad #49,
   MeleePad #34, AnnePad #7, CTRPad #40, GalaxyPad #15, SnapPad #7 (see Notion).
-- 00:35 MaskPad fresh build through PadForge failed at configure on Xcode 27
+- 00:35 MaskPad fresh build through PadMint failed at configure on Xcode 27
   (upstream caches a 10.15 deployment target; Xcode 27 minimum iOS is 15.0).
   Fixed on the MaskPad branch; rebuild running.
 - 00:45 HarkinianPad fork → patches: three patches against upstream Shipwright,
   libultraship and ZAPDTR reproduce the fork trees exactly; gate PASS.
   Draft PR #28 (decompiled context lines need owner policy).
-- 00:47 MaskPad complete build through PadForge: 17m28s, exit 0, 17.7 MB personal
+- 00:47 MaskPad complete build through PadMint: 17m28s, exit 0, 17.7 MB personal
   IPA, gate FAIL on the IPA as expected, source PASS (draft PR #9, L4 on branch).
-- 00:50 PadForge: `steps` manifests, per-step env, `padforge ui` (checked live).
+- 00:50 PadMint: `steps` manifests, per-step env, `padmint ui` (checked live).
 - 00:55 L2 merged: StarshipPad #14, BrawlerPad #7, SpaghettiPad #18,
   DevilTouch #5, BellPad #15, BearBirdPad #14, BarrelPad #13, VaultPad #4.
   Manifests on open PRs: AnnePad #7, SnapPad #7, SunPad #49.
 - 01:00 KartPad bootstrap verified; StarshipPad complete build running.
-- 01:08 StarshipPad complete build through PadForge from main: 13m38s, exit 0,
+- 01:08 StarshipPad complete build through PadMint from main: 13m38s, exit 0,
   6.9 MB IPA, gate FAIL as expected → L4; manifest marked experimental (#15).
-- 01:10–01:27 KartPad through PadForge: fixed two Builder bugs on #336
+- 01:10–01:27 KartPad through PadMint: fixed two Builder bugs on #336
   (interrupted-bootstrap recovery; work-root vs shared download cache), then a
   complete build: 17m25s, exit 0, 64.8 MB IPA, provenance check passed, gate
   FAIL as intended, **no Wii key in the personal IPA** (confirms #335).
@@ -362,7 +375,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
   it fails on Xcode 27, so #30 is required.
 - 02:00 GoldenPad L2 blocker: pinned GoldenEye64Recomp fork lacks `us.toml` and
   the TLB-free patch; maintainer builds used a local upstream checkout.
-- 02:10 `padforge history --repo` added. Clean engines' public IPAs all pass
+- 02:10 `padmint history --repo` added. Clean engines' public IPAs all pass
   the gate.
 - 02:14 SpaghettiPad complete build from main (19m55s) → L4; manifest experimental.
 - 02:26 BearBirdPad complete build from main with the owner's ROM (11m48s) → L4.
@@ -427,7 +440,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
 - 04:30 EctoPad (never released, source passes): gate rule merged (#4) → L1.
 - 04:30 SunPad passed the step that failed before (Dolphin tools on the macOS
   27 SDK); now translating. Its module build runs `ninja -j 16` internally,
-  ignoring the PadForge job cap (noted, harmless tonight).
+  ignoring the PadMint job cap (noted, harmless tonight).
 - 04:35 Clean engines: full git history (all refs) passes the gate for KidPad,
   CaesarPad, EmeraldTablet, RAtouch and DaggerPad; PeonPad passes after
   decompressing its upstream .gz/.bz2 fixtures. Scanner positive control:
@@ -451,24 +464,24 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
   core Homebrew's macOS minizip-ng, so the bundled archive was never built.
   Host leak fixed with `-DUSE_SYSTEM_MINIZIP-NG=OFF` (`eb6a17b`; fresh configure
   confirms bundled). Old iOS core folder renamed aside. Re-queued after GoldenPad.
-  PadForge lesson: builds should not depend on what Homebrew has installed;
+  PadMint lesson: builds should not depend on what Homebrew has installed;
   worth a doctor warning later.
-- 05:17 AnnePad on #7 (33m42s): every stage ran through PadForge and AnnePad's
+- 05:17 AnnePad on #7 (33m42s): every stage ran through PadMint and AnnePad's
   own app audit passed; the packager then refused because it only writes under
   `artifacts/`. Manifest fixed (`89208c4`: package there, then export). The
   corrected packaging run on that build produced an 84.7 MB personal IPA; gate
   FAIL as intended → **L3** (L4 needs a clean rerun). AnnePad's iOS step runs
   ninja with no job limit (~38 compilers). KartPad Mac build started 05:17.
-- 05:28 **KartPad Mac target complete through PadForge** (#336 at `cbf6818`):
+- 05:28 **KartPad Mac target complete through PadMint** (#336 at `cbf6818`):
   11m05s, exit 0, 168 MB `KartPad.app` passes the repo's own Mac package audit,
   gate FAIL as intended, no Wii key. KartPad now builds iOS and Mac personal
-  copies through PadForge. GoldenPad (#39) build started.
-- 05:31 **GoldenPad complete personal build through PadForge** (#39 at
+  copies through PadMint. GoldenPad (#39) build started.
+- 05:31 **GoldenPad complete personal build through PadMint** (#39 at
   `fd92db5`): 2m45s, exit 0, all 91 objects fresh (63 recompiled-function
   files), primary IPA audit passed, 7.2 MB IPA, gate FAIL as intended. Repo
   checks pass; tree passes the gate. #39 merged (`8617c3d`), manifest
   experimental → **L4 on main** (was L1 blocked). SunPad (#49) build started.
-- 05:34 **SunPad complete personal build through PadForge** (#49 at
+- 05:34 **SunPad complete personal build through PadMint** (#49 at
   `eb6a17b`): exit 0, bundled minizip-ng, module provisioned, SunPad's own iOS
   package audit passed, 26.8 MB IPA, gate FAIL as intended; check-repository
   passes → **L4 on branch** (script fixes, so #49 is the owner's to merge).
@@ -479,7 +492,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
   had cached the failed checks from the broken Xcode 27 configure (a fresh
   folder configures fine); stale folder renamed aside. Queue: AnnePad clean
   rerun (running) → DinoPad → SnapPad.
-- 06:02 **AnnePad complete personal build through PadForge** (#7 at
+- 06:02 **AnnePad complete personal build through PadMint** (#7 at
   `89208c4`): 26m07s, exit 0, all stages including packaging and export,
   84.7 MB IPA, gate FAIL as intended → **L4 on branch**. DinoPad started.
 - 06:02 DinoPad reached the iOS compile, then the base-edition preparation
@@ -488,7 +501,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
   generation has none. Fixed on #7 (`b8f864a`: skip when nothing to undo,
   still refuse renamed code without the map); base preparation verified.
   Re-queued after SnapPad (running).
-- 06:10 **SnapPad complete personal build through PadForge** (#7 at
+- 06:10 **SnapPad complete personal build through PadMint** (#7 at
   `779583e`): 7m42s, exit 0, Xcode 27 configure passes with the RT64 patch,
   7.7 MB IPA, gate FAIL as intended. Formal level stays L0 (source-gate test
   stub policy). Finding: SnapPad's packager prints "Public unsigned SnapPad IPA
@@ -511,7 +524,7 @@ pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 rename decision.
 
 ## Repo queue
 
-1. PadForge core  2. KartPad  3. MaskPad  4. GoldenPad  5. HarkinianPad
+1. PadMint core  2. KartPad  3. MaskPad  4. GoldenPad  5. HarkinianPad
 6. StarshipPad, BrawlerPad, F0X  7. MeleePad (review only)  8. SunPad, GalaxyPad,
 AnnePad, BearBirdPad, SnapPad, BananaPad, BarrelPad, DinoPad  9. SpaghettiPad,
 PaperPad, BellPad, BallPad, DevilTouch  10. VaultPad, UTP  11. CTRPad (private,
@@ -530,7 +543,7 @@ PR only)  12. Clean engines  13. Supporting repos (status only)
    HarkinianPad #30, DevilTouch #6. Each builds completely on its branch.
 4. **Runtime-only public apps:** feasible in principle (S1); BlueWake, SunPad
    and MeleePad already separate app and game module. Publishing is your call.
-5. **Make PadForge public** (public READMEs cannot point to it until then).
+5. **Make PadMint public** (public READMEs cannot point to it until then).
 6. **Gate rule for CaesarPad, KidPad and RAtouch:** add AGENTS.md yourself (or
    with `[skip ci]`). Their CI builds/uploads IPAs or can create a "latest"
    release on push, so nothing was pushed overnight. Full history of all six
@@ -542,14 +555,14 @@ PR only)  12. Clean engines  13. Supporting repos (status only)
    clones of BananaPad and PaperPad.
 9. Existing: delete the 157 drafts; retire forks; history rewrites.
 
-## Follow-ups for PadForge itself
+## Follow-ups for PadMint itself
 
 - Several repo scripts ignore the job cap (SunPad's module build `-j16`,
   AnnePad's iOS ninja unlimited). Done 06:30: every backend now gets
   `CMAKE_BUILD_PARALLEL_LEVEL` = `--jobs` (test added; 49 pass); scripts
   calling ninja/make/xcodebuild directly still need `{jobs}`.
 - Host leaks: Homebrew libraries can be picked up by iOS builds (SunPad's
-  minizip-ng). `padforge doctor` could warn about known offenders.
+  minizip-ng). `padmint doctor` could warn about known offenders.
 - Detached-HEAD pushes: queue runners detach worktrees; commit on the branch.
 
 ## Merge queue (PRs that need an owner or a bootstrapped check)
