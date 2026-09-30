@@ -24,7 +24,8 @@ import uuid
 
 from . import __version__, game_file, gate, tools
 from .manifest import (RUNNABLE_STATES, catalog, expand, host_id, load_manifest,
-                       manifest_for, manifest_sha256, needs_build_input, repository_manifest)
+                       manifest_for, manifest_sha256, needs_build_input, on_android,
+                       repository_manifest)
 from .package import validate_ipa
 
 
@@ -630,13 +631,24 @@ def save_game_data(built, out, name, stream=None, import_label=None):
     print(f"Saving your {name} game data folder (about "
           f"{sum(p.stat().st_size for p in data.rglob('*') if p.is_file()) / (1 << 30):.1f} GB)…",
           file=stream, flush=True)
-    shutil.copytree(tools._long(data), tools._long(partial))
+    copy_files(tools._long(data), tools._long(partial))
     partial.replace(target)
     print(f"Your {name} game data folder: {target}\n"
           f"  New to {name}? Copy it to your device and choose it with "
           f"{import_label or 'Import from Extracted Folder'}. "
           "It needs no key.", file=stream)
     return target
+
+
+def copy_files(source, target):
+    """Copy a folder's files (contents only) into target. Unlike copytree it never
+    reads links: on an Android phone (Ubuntu in Termux) the backend's hard links
+    are listed as links but cannot be read as links ("Invalid argument")."""
+    for folder, _folders, files in os.walk(source):
+        destination = os.path.join(target, os.path.relpath(folder, source))
+        os.makedirs(destination, exist_ok=True)
+        for name in files:
+            shutil.copyfile(os.path.join(folder, name), os.path.join(destination, name))
 
 
 def version_tuple(text):
@@ -714,6 +726,8 @@ def doctor(game, target_name, repo=None, stream=None):
 PLATFORM_LABELS = {"android": "Android phone or tablet",
                    "ios": "iPhone or iPad (needs this Mac)"}
 PLATFORM_NAMES = {"android": "Android", "ios": "iPhone and iPad", "macos": "Mac"}
+# The phone's Download folder, shared with its apps (Termux asks once for access).
+PHONE_DOWNLOADS = Path("/sdcard/Download")
 
 
 def next_steps(entry, platform_name, result, stream):
@@ -753,6 +767,25 @@ def dropped_path(text):
     elif os.name != "nt":
         text = re.sub(r"\\(.)", r"\1", text)
     return Path(text).expanduser()
+
+
+def player_folder():
+    """Where a player's own files usually are: on a phone its Download folder,
+    else Downloads (or the home folder)."""
+    if on_android() and PHONE_DOWNLOADS.is_dir():
+        return PHONE_DOWNLOADS
+    default = Path.home() / "Downloads"
+    return default if default.is_dir() else Path.home()
+
+
+def game_files(folder, manifest):
+    """Files in folder with an extension one of the manifest's inputs accepts, newest first."""
+    formats = {"." + name for item in (manifest or {}).get("inputs", []) for name in item.get("formats", [])}
+    try:
+        found = [path for path in folder.iterdir() if path.is_file() and path.suffix.lower() in formats]
+    except OSError:
+        return []
+    return sorted(found, key=lambda path: path.stat().st_mtime, reverse=True)
 
 
 def choose(title, options, ask, stream):
@@ -833,14 +866,20 @@ def start(ask=input, stream=None):
         disc = None
         print(f"{name} asks for your own game file inside the app, after you install it.", file=stream)
     elif disc is None:
-        while True:
-            disc = dropped_path(ask(f"Drag your own {name} game file into this window, then press Enter: "))
+        # A phone has no window to drag files into: offer the game files in its Download folder.
+        found = game_files(player_folder(), catalog()[game].get("manifest")) if on_android() else []
+        if found:
+            disc = choose(f"Your {name} game file", [(path, path.name) for path in found]
+                          + [(None, "Another file (type its path)")], ask, stream)
+        prompt = (f"Type the path of your own {name} game file, then press Enter: " if on_android()
+                  else f"Drag your own {name} game file into this window, then press Enter: ")
+        while disc is None:
+            disc = dropped_path(ask(prompt))
             problem = file_problem(disc)
-            if problem is None:
-                break
-            print(problem, file=stream)
-    out = Path.home() / "Downloads"
-    out = out if out.is_dir() else Path.home()
+            if problem is not None:
+                print(problem, file=stream)
+                disc = None
+    out = player_folder()
     print(f"Your copy will be saved in {out}", file=stream)
     results = []
     code = make(game, target, disc.resolve() if disc else None, out.resolve(), results=results)

@@ -18,10 +18,16 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
+from .manifest import on_android
+
 LOCK = Path(__file__).with_name("tools.lock.json")
 DIGESTS = ("sha512", "sha256", "sha1")
 # Seconds without any data before a download counts as stalled.
 TIMEOUT = 60
+# .NET reserves 256 GB of address space for its heap unless the heap has a limit;
+# Android kernels give a program less ("GC heap initialization failed"), so on a
+# phone the heap gets a limit above any phone's memory.
+ANDROID_DOTNET_HEAP = "0x400000000"
 
 
 def open_url(url):
@@ -357,6 +363,8 @@ def environment(names, host, base=None):
         for key, relative in entry.get("env", tool.get("env", {})).items():
             env[key] = str(folder / relative)
         env.update(tool.get("set", {}))
+        if name == "dotnet" and on_android():
+            env.setdefault("DOTNET_GCHeapHardLimit", ANDROID_DOTNET_HEAP)
     if paths:
         env["PATH"] = os.pathsep.join(paths + [env.get("PATH", "")])
     return env

@@ -36,6 +36,8 @@ unzip it and start it:
   Terminal, type `sh `, drag `PadMint.command` into the window and press
   Return.)
 - **Linux:** in the folder, run `sh padmint.sh` (needs Python 3.9+ and Git).
+- **Android phone or tablet, no computer (experimental, KartPad only):** see
+  [On an Android phone](#on-an-android-phone).
 
 PadMint asks for your own game file (drag it into the window and press Enter)
 and, where there is a choice, the game and the platform. When your file names
@@ -58,6 +60,38 @@ KartPad's [Get KartPad](https://github.com/chrissotraidis/kartpad#get-kartpad).
 
 **Experimental.** See [STATUS.md](STATUS.md) for what has been verified on
 each system and [docs/DECISIONS.md](docs/DECISIONS.md) for why it works this way.
+
+### On an Android phone
+
+A 64-bit Android phone or tablet can make its own KartPad game pack, with no
+computer. It needs about 8 GB of memory, about 25 GB free (your game file
+included) and Wi-Fi for about 6 GB of downloads. The first run took about an
+hour on a fast phone-sized emulator; expect longer on a real phone.
+
+1. Install **Termux** from [F-Droid](https://f-droid.org/packages/com.termux/)
+   or its [GitHub releases](https://github.com/termux/termux-app/releases)
+   (the `arm64-v8a` APK; the Google Play version is a different build that
+   has not been tried). Open it once.
+2. Copy your own game file (for example `.rvz` or `.iso`) into the phone's
+   **Download** folder.
+3. In Termux, paste this line and press Enter:
+
+   ```
+   curl -fsSL https://raw.githubusercontent.com/chrissotraidis/padmint/main/launchers/padmint-android.sh | sh
+   ```
+
+   Choose **Allow** when Android asks about your files and about running in the
+   background. PadMint then sets up Ubuntu inside Termux, lists the game files
+   in Download (type the number of yours) and saves your game pack and the
+   `KartPad game data` folder there. Keep Termux open with the screen on until
+   it says your game is ready, then add both in KartPad as its README
+   describes. Next time, just type `padmint`.
+
+If Android stops the build ("Process completed (signal 9)"), turn on
+**Settings → System → Developer options → Disable child process
+restrictions** (Android 14 and newer) and run `padmint` again; finished steps
+are kept. To free the space afterwards, in Termux: `proot-distro remove padmint`
+(removes PadMint's tools and build files, not your saved game pack).
 
 ## All commands
 
