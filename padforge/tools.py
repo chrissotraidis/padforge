@@ -81,6 +81,7 @@ def _download(entry, destination, stream):
 
 def _extract_zip(archive, folder):
     links = []
+    base = Path(_long(folder))
     with zipfile.ZipFile(archive) as bundle:
         for info in bundle.infolist():
             mode = info.external_attr >> 16
@@ -89,12 +90,12 @@ def _extract_zip(archive, folder):
                 # clang is a link to clang-NN); make real links afterwards.
                 links.append((info.filename, bundle.read(info).decode()))
                 continue
-            path = bundle.extract(info, folder)
+            path = bundle.extract(info, base)
             if mode & 0o111 and os.name != "nt":
                 os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    root = Path(folder).resolve()
+    root = base.resolve()
     for name, target in links:
-        link = Path(folder) / name
+        link = base / name
         source = (link.parent / target).resolve()
         if Path(target).is_absolute() or not source.is_relative_to(root):
             raise RuntimeError(f"link {name} -> {target} leaves the tool folder; nothing was installed")
@@ -111,9 +112,27 @@ def _extract_zip(archive, folder):
 def _extract_tar(archive, folder):
     with tarfile.open(archive) as bundle:
         if sys.version_info >= (3, 12):
-            bundle.extractall(folder, filter="data")
+            bundle.extractall(_long(folder), filter="data")
         else:
-            bundle.extractall(folder)
+            bundle.extractall(_long(folder))
+
+
+def _long(path):
+    r"""On Windows, the extended-length form of path (\\?\C:\...).
+
+    The Android NDK nests files about 235 characters deep, so below
+    C:\Users\<name>\.padforge it passes Windows' 260-character limit once the
+    user name is longer than 24 characters. Extended-length paths have no such
+    limit. Other systems get the path unchanged.
+    """
+    if os.name != "nt":
+        return str(path)
+    full = os.path.abspath(str(path))
+    if full.startswith("\\\\?\\"):
+        return full
+    if full.startswith("\\\\"):  # \\server\share\... on a network drive
+        return "\\\\?\\UNC\\" + full[2:]
+    return "\\\\?\\" + full
 
 
 def install(names, host, stream=None):
@@ -139,7 +158,7 @@ def install(names, host, stream=None):
             continue
         staging = folder.with_name(folder.name + ".partial")
         if staging.exists():
-            shutil.rmtree(staging)
+            shutil.rmtree(_long(staging))
         staging.mkdir(parents=True)
         archive = staging / "download"
         _download(entry, archive, stream)
@@ -155,7 +174,7 @@ def install(names, host, stream=None):
             archive.replace(target)
             target.chmod(0o755)
         if folder.exists():
-            shutil.rmtree(folder)
+            shutil.rmtree(_long(folder))
         staging.replace(folder)
         _marker(folder).write_text(json.dumps(entry) + "\n")
         print(f"got  {name} {tool['version']}", file=stream)
