@@ -289,6 +289,15 @@ and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
 0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
 without a Mac (Hubble).
 
+**Update 01:45, 1 Oct (0.2.5):** the full build sweep with 0.2.2 (James) found
+MaskPad failing from a clean folder: "building for 'iOS', but linking in dylib
+... MacOSX.sdk/usr/lib/libz.1.tbd". Cause: PadMint.command runs Apple's
+/usr/bin/python3, an xcrun shim that exports SDKROOT=MacOSX.sdk,
+CPATH=/usr/local/include and LIBRARY_PATH=/usr/local/lib to every build, so
+CMake resolved the iPhone build's zlib from the Mac SDK. Earlier MaskPad checks
+reused a configured folder. #57 drops the three for ios/tvos targets and says
+so in the log; no recipe uses them.
+
 **Update 00:50, 1 Oct (0.2.4):** PadMint 0.2.3 published 1 Oct 00:20 (Latest,
 checked on Mac, Linux and the Windows VM). town3r's GoldenPad build next
 stopped on Xcode's Metal Toolchain (downloaded separately since Xcode 26).
