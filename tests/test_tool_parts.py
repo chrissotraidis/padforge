@@ -77,6 +77,20 @@ class ToolPartsTests(unittest.TestCase):
         env = tools.environment(["llvm"], "intel-mac", {"PATH": ""})
         self.assertEqual(env["PADMINT_LLVM_ROOT"], str(self.root / "home/tools/llvm-20/llvm/bin/.."))
 
+    def test_a_changed_lock_entry_installs_again(self):
+        tools.install(["llvm"], "arm-host", io.StringIO())
+        self.lock["llvm"]["hosts"]["arm-host"]["members"].append("llvm/bin/clang-tidy")
+        output = io.StringIO()
+        tools.install(["llvm"], "arm-host", output)
+        self.assertIn("got  llvm 21", output.getvalue())
+        self.assertEqual((self.root / "home/tools/llvm-21/llvm/bin/clang-tidy").read_bytes(), b"not needed")
+
+    def test_a_download_without_a_listed_file_installs_nothing(self):
+        self.lock["llvm"]["hosts"]["arm-host"]["members"].append("llvm/bin/ld64.lld")
+        with self.assertRaisesRegex(RuntimeError, "no llvm/bin/ld64.lld"):
+            tools.install(["llvm"], "arm-host", io.StringIO())
+        self.assertFalse((self.root / "home/tools/llvm-21").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

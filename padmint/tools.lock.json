@@ -222,7 +222,7 @@
     "llvm": {
       "version": "21.1.8",
       "only_where_listed": true,
-      "note": "Linux arm64: compiles Android game packs with the NDK's portable parts. macOS: compiles N64 patch code (GoldenPad); Apple's clang cannot target MIPS. Apple Silicon Macs get 22.1.8 (Homebrew's version, whose output GoldenPad checks); Intel Macs get 20.1.7, LLVM's newest build for them.",
+      "note": "Linux arm64: compiles Android game packs with the NDK's portable parts. macOS: compiles N64 patch code (GoldenPad); Apple's clang cannot target MIPS. Apple Silicon Macs get 22.1.8 (Homebrew's version, whose output GoldenPad checks); Intel Macs get 20.1.7, LLVM's newest build for them. Windows and Linux: compiles iPhone game packs (with libcxx).",
       "env": {
         "PADMINT_LLVM_ROOT": "LLVM-21.1.8-Linux-ARM64"
       },
@@ -246,6 +246,8 @@
             "LLVM-21.1.8-Linux-ARM64/bin/llvm-readelf",
             "LLVM-21.1.8-Linux-ARM64/bin/llvm-readobj",
             "LLVM-21.1.8-Linux-ARM64/bin/llvm-cxxfilt",
+            "LLVM-21.1.8-Linux-ARM64/bin/ld64.lld",
+            "LLVM-21.1.8-Linux-ARM64/bin/llvm-install-name-tool",
             "LLVM-21.1.8-Linux-ARM64/lib/clang/21/include/"
           ]
         },
@@ -300,6 +302,474 @@
             "LLVM-20.1.7-macOS-X64/bin/llvm-cxxfilt",
             "LLVM-20.1.7-macOS-X64/lib/clang/20/include/"
           ]
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-Linux-X64.tar.xz",
+          "sha256": "b3b7f2801d15d50736acea3c73982994d025b01c2f035b91ae3b49d1b575732b",
+          "size": 2019005384,
+          "archive": "tar.xz",
+          "env": {
+            "PADMINT_LLVM_ROOT": "LLVM-21.1.8-Linux-X64"
+          },
+          "members": [
+            "LLVM-21.1.8-Linux-X64/bin/clang",
+            "LLVM-21.1.8-Linux-X64/bin/clang++",
+            "LLVM-21.1.8-Linux-X64/bin/clang-21",
+            "LLVM-21.1.8-Linux-X64/bin/lld",
+            "LLVM-21.1.8-Linux-X64/bin/ld.lld",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-ar",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-ranlib",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-nm",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-strip",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-objcopy",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-readelf",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-readobj",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-cxxfilt",
+            "LLVM-21.1.8-Linux-X64/bin/ld64.lld",
+            "LLVM-21.1.8-Linux-X64/bin/llvm-install-name-tool",
+            "LLVM-21.1.8-Linux-X64/lib/clang/21/include/"
+          ]
+        },
+        "windows-arm64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/clang%2Bllvm-21.1.8-aarch64-pc-windows-msvc.tar.xz",
+          "sha256": "f214b1226d8de005b5f691dd29d9dfea2b49e22d0de445429916173dbb626f7f",
+          "size": 1059378768,
+          "archive": "tar.xz",
+          "env": {
+            "PADMINT_LLVM_ROOT": "clang+llvm-21.1.8-aarch64-pc-windows-msvc"
+          },
+          "members": [
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/clang.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/clang++.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/lld.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/ld.lld.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-ar.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-ranlib.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-nm.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-strip.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-objcopy.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-readelf.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-readobj.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-cxxfilt.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/ld64.lld.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/bin/llvm-install-name-tool.exe",
+            "clang+llvm-21.1.8-aarch64-pc-windows-msvc/lib/clang/21/include/"
+          ]
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/clang%2Bllvm-21.1.8-x86_64-pc-windows-msvc.tar.xz",
+          "sha256": "749d22f565fcd5718dbed06512572d0e5353b502c03fe1f7f17ee8b8aca21a47",
+          "size": 942572476,
+          "archive": "tar.xz",
+          "env": {
+            "PADMINT_LLVM_ROOT": "clang+llvm-21.1.8-x86_64-pc-windows-msvc"
+          },
+          "members": [
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/clang.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/clang++.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/lld.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/ld.lld.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-ar.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-ranlib.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-nm.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-strip.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-objcopy.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-readelf.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-readobj.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-cxxfilt.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/ld64.lld.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/bin/llvm-install-name-tool.exe",
+            "clang+llvm-21.1.8-x86_64-pc-windows-msvc/lib/clang/21/include/"
+          ]
+        }
+      }
+    },
+    "libcxx": {
+      "version": "21.1.8",
+      "only_where_listed": true,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "note": "iPhone game packs on Windows and Linux: libc++ headers, with LLVM and Apple's open-source headers.",
+      "env": {
+        "PADMINT_LIBCXX": "libcxx-21.1.8.src"
+      },
+      "hosts": {
+        "windows-arm64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/libcxx-21.1.8.src.tar.xz",
+          "sha256": "6422a58a5c29b7f4fda224cfdc07842be8a208a61301bbba7a219116e3351809",
+          "size": 4561840,
+          "archive": "tar.xz",
+          "members": [
+            "libcxx-21.1.8.src/include/",
+            "libcxx-21.1.8.src/vendor/llvm/",
+            "libcxx-21.1.8.src/LICENSE.TXT"
+          ],
+          "with": [
+            "llvm",
+            "apple-libc",
+            "apple-xnu",
+            "apple-libpthread",
+            "apple-libmalloc",
+            "apple-libplatform",
+            "apple-availability"
+          ]
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/libcxx-21.1.8.src.tar.xz",
+          "sha256": "6422a58a5c29b7f4fda224cfdc07842be8a208a61301bbba7a219116e3351809",
+          "size": 4561840,
+          "archive": "tar.xz",
+          "members": [
+            "libcxx-21.1.8.src/include/",
+            "libcxx-21.1.8.src/vendor/llvm/",
+            "libcxx-21.1.8.src/LICENSE.TXT"
+          ],
+          "with": [
+            "llvm",
+            "apple-libc",
+            "apple-xnu",
+            "apple-libpthread",
+            "apple-libmalloc",
+            "apple-libplatform",
+            "apple-availability"
+          ]
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/libcxx-21.1.8.src.tar.xz",
+          "sha256": "6422a58a5c29b7f4fda224cfdc07842be8a208a61301bbba7a219116e3351809",
+          "size": 4561840,
+          "archive": "tar.xz",
+          "members": [
+            "libcxx-21.1.8.src/include/",
+            "libcxx-21.1.8.src/vendor/llvm/",
+            "libcxx-21.1.8.src/LICENSE.TXT"
+          ],
+          "with": [
+            "llvm",
+            "apple-libc",
+            "apple-xnu",
+            "apple-libpthread",
+            "apple-libmalloc",
+            "apple-libplatform",
+            "apple-availability"
+          ]
+        },
+        "linux-arm64": {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/libcxx-21.1.8.src.tar.xz",
+          "sha256": "6422a58a5c29b7f4fda224cfdc07842be8a208a61301bbba7a219116e3351809",
+          "size": 4561840,
+          "archive": "tar.xz",
+          "members": [
+            "libcxx-21.1.8.src/include/",
+            "libcxx-21.1.8.src/vendor/llvm/",
+            "libcxx-21.1.8.src/LICENSE.TXT"
+          ],
+          "with": [
+            "llvm",
+            "apple-libc",
+            "apple-xnu",
+            "apple-libpthread",
+            "apple-libmalloc",
+            "apple-libplatform",
+            "apple-availability"
+          ]
+        }
+      }
+    },
+    "apple-libc": {
+      "version": "1752.120.2",
+      "only_where_listed": true,
+      "license": "APSL-2.0",
+      "note": "Apple open-source Libc-1752.120.2 headers for iPhone game packs on Windows and Linux.",
+      "env": {
+        "PADMINT_APPLE_LIBC": "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d"
+      },
+      "hosts": {
+        "windows-arm64": {
+          "url": "https://github.com/apple-oss-distributions/Libc/archive/4e34d0559e3a1b081afeb8604d9e204a1f31321d.tar.gz",
+          "sha256": "b5d2e89a8656178d7bb02d389ee528a8c518d539357350073165b37269758151",
+          "size": 1817674,
+          "archive": "tar.gz",
+          "members": [
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/include/",
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/APPLE_LICENSE"
+          ]
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/Libc/archive/4e34d0559e3a1b081afeb8604d9e204a1f31321d.tar.gz",
+          "sha256": "b5d2e89a8656178d7bb02d389ee528a8c518d539357350073165b37269758151",
+          "size": 1817674,
+          "archive": "tar.gz",
+          "members": [
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/include/",
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/APPLE_LICENSE"
+          ]
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/Libc/archive/4e34d0559e3a1b081afeb8604d9e204a1f31321d.tar.gz",
+          "sha256": "b5d2e89a8656178d7bb02d389ee528a8c518d539357350073165b37269758151",
+          "size": 1817674,
+          "archive": "tar.gz",
+          "members": [
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/include/",
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/APPLE_LICENSE"
+          ]
+        },
+        "linux-arm64": {
+          "url": "https://github.com/apple-oss-distributions/Libc/archive/4e34d0559e3a1b081afeb8604d9e204a1f31321d.tar.gz",
+          "sha256": "b5d2e89a8656178d7bb02d389ee528a8c518d539357350073165b37269758151",
+          "size": 1817674,
+          "archive": "tar.gz",
+          "members": [
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/include/",
+            "Libc-4e34d0559e3a1b081afeb8604d9e204a1f31321d/APPLE_LICENSE"
+          ]
+        }
+      }
+    },
+    "apple-xnu": {
+      "version": "12377.121.6",
+      "only_where_listed": true,
+      "license": "APSL-2.0",
+      "note": "Apple open-source xnu-12377.121.6 headers for iPhone game packs on Windows and Linux.",
+      "env": {
+        "PADMINT_APPLE_XNU": "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f"
+      },
+      "hosts": {
+        "windows-arm64": {
+          "url": "https://github.com/apple-oss-distributions/xnu/archive/ac9718fb1af618d5ce8678d0dc6e8a58f252216f.tar.gz",
+          "sha256": "577f4a220304296332e28c802779e7b5e6a27a46812315aacf61c0269a03e12a",
+          "size": 18043169,
+          "archive": "tar.gz",
+          "members": [
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/sys/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/arm/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/machine/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/osfmk/mach/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/libkern/libkern/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/APPLE_LICENSE"
+          ]
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/xnu/archive/ac9718fb1af618d5ce8678d0dc6e8a58f252216f.tar.gz",
+          "sha256": "577f4a220304296332e28c802779e7b5e6a27a46812315aacf61c0269a03e12a",
+          "size": 18043169,
+          "archive": "tar.gz",
+          "members": [
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/sys/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/arm/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/machine/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/osfmk/mach/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/libkern/libkern/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/APPLE_LICENSE"
+          ]
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/xnu/archive/ac9718fb1af618d5ce8678d0dc6e8a58f252216f.tar.gz",
+          "sha256": "577f4a220304296332e28c802779e7b5e6a27a46812315aacf61c0269a03e12a",
+          "size": 18043169,
+          "archive": "tar.gz",
+          "members": [
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/sys/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/arm/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/machine/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/osfmk/mach/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/libkern/libkern/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/APPLE_LICENSE"
+          ]
+        },
+        "linux-arm64": {
+          "url": "https://github.com/apple-oss-distributions/xnu/archive/ac9718fb1af618d5ce8678d0dc6e8a58f252216f.tar.gz",
+          "sha256": "577f4a220304296332e28c802779e7b5e6a27a46812315aacf61c0269a03e12a",
+          "size": 18043169,
+          "archive": "tar.gz",
+          "members": [
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/sys/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/arm/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/bsd/machine/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/osfmk/mach/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/libkern/libkern/",
+            "xnu-ac9718fb1af618d5ce8678d0dc6e8a58f252216f/APPLE_LICENSE"
+          ]
+        }
+      }
+    },
+    "apple-libpthread": {
+      "version": "539.100.4",
+      "only_where_listed": true,
+      "license": "APSL-2.0",
+      "note": "Apple open-source libpthread-539.100.4 headers for iPhone game packs on Windows and Linux.",
+      "env": {
+        "PADMINT_APPLE_LIBPTHREAD": "libpthread-1f4f5265b319111142f1bf3a27d4484ef5a98314"
+      },
+      "hosts": {
+        "windows-arm64": {
+          "url": "https://github.com/apple-oss-distributions/libpthread/archive/1f4f5265b319111142f1bf3a27d4484ef5a98314.tar.gz",
+          "sha256": "48b84991ace3ce5018103bda2c5566f6308cd468fff062027809ffe21b2652bf",
+          "size": 230730,
+          "archive": "tar.gz",
+          "members": [
+            "libpthread-1f4f5265b319111142f1bf3a27d4484ef5a98314/include/"
+          ]
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/libpthread/archive/1f4f5265b319111142f1bf3a27d4484ef5a98314.tar.gz",
+          "sha256": "48b84991ace3ce5018103bda2c5566f6308cd468fff062027809ffe21b2652bf",
+          "size": 230730,
+          "archive": "tar.gz",
+          "members": [
+            "libpthread-1f4f5265b319111142f1bf3a27d4484ef5a98314/include/"
+          ]
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/libpthread/archive/1f4f5265b319111142f1bf3a27d4484ef5a98314.tar.gz",
+          "sha256": "48b84991ace3ce5018103bda2c5566f6308cd468fff062027809ffe21b2652bf",
+          "size": 230730,
+          "archive": "tar.gz",
+          "members": [
+            "libpthread-1f4f5265b319111142f1bf3a27d4484ef5a98314/include/"
+          ]
+        },
+        "linux-arm64": {
+          "url": "https://github.com/apple-oss-distributions/libpthread/archive/1f4f5265b319111142f1bf3a27d4484ef5a98314.tar.gz",
+          "sha256": "48b84991ace3ce5018103bda2c5566f6308cd468fff062027809ffe21b2652bf",
+          "size": 230730,
+          "archive": "tar.gz",
+          "members": [
+            "libpthread-1f4f5265b319111142f1bf3a27d4484ef5a98314/include/"
+          ]
+        }
+      }
+    },
+    "apple-libmalloc": {
+      "version": "812.100.31",
+      "only_where_listed": true,
+      "license": "APSL-2.0",
+      "note": "Apple open-source libmalloc-812.100.31 headers for iPhone game packs on Windows and Linux.",
+      "env": {
+        "PADMINT_APPLE_LIBMALLOC": "libmalloc-c49dafa25f1efe8607701ae6014a663ad2ee437f"
+      },
+      "hosts": {
+        "windows-arm64": {
+          "url": "https://github.com/apple-oss-distributions/libmalloc/archive/c49dafa25f1efe8607701ae6014a663ad2ee437f.tar.gz",
+          "sha256": "52371f7fa3f5bf1d5d11d59e0812196c8cb3eb45f58632d49042cfc65ca1a861",
+          "size": 599556,
+          "archive": "tar.gz",
+          "members": [
+            "libmalloc-c49dafa25f1efe8607701ae6014a663ad2ee437f/include/malloc/"
+          ]
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/libmalloc/archive/c49dafa25f1efe8607701ae6014a663ad2ee437f.tar.gz",
+          "sha256": "52371f7fa3f5bf1d5d11d59e0812196c8cb3eb45f58632d49042cfc65ca1a861",
+          "size": 599556,
+          "archive": "tar.gz",
+          "members": [
+            "libmalloc-c49dafa25f1efe8607701ae6014a663ad2ee437f/include/malloc/"
+          ]
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/libmalloc/archive/c49dafa25f1efe8607701ae6014a663ad2ee437f.tar.gz",
+          "sha256": "52371f7fa3f5bf1d5d11d59e0812196c8cb3eb45f58632d49042cfc65ca1a861",
+          "size": 599556,
+          "archive": "tar.gz",
+          "members": [
+            "libmalloc-c49dafa25f1efe8607701ae6014a663ad2ee437f/include/malloc/"
+          ]
+        },
+        "linux-arm64": {
+          "url": "https://github.com/apple-oss-distributions/libmalloc/archive/c49dafa25f1efe8607701ae6014a663ad2ee437f.tar.gz",
+          "sha256": "52371f7fa3f5bf1d5d11d59e0812196c8cb3eb45f58632d49042cfc65ca1a861",
+          "size": 599556,
+          "archive": "tar.gz",
+          "members": [
+            "libmalloc-c49dafa25f1efe8607701ae6014a663ad2ee437f/include/malloc/"
+          ]
+        }
+      }
+    },
+    "apple-libplatform": {
+      "version": "375.120.2",
+      "only_where_listed": true,
+      "license": "APSL-2.0",
+      "note": "Apple open-source libplatform-375.120.2 headers for iPhone game packs on Windows and Linux.",
+      "env": {
+        "PADMINT_APPLE_LIBPLATFORM": "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8"
+      },
+      "hosts": {
+        "windows-arm64": {
+          "url": "https://github.com/apple-oss-distributions/libplatform/archive/b7ed7cf5cf7dd12b98672435db2225a860f199d8.tar.gz",
+          "sha256": "3a97539c061b1696c5b27bb887f75364518e1a21f75c2e3d22c95f628e1a4e92",
+          "size": 116007,
+          "archive": "tar.gz",
+          "members": [
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/include/",
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/LICENSE"
+          ]
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/libplatform/archive/b7ed7cf5cf7dd12b98672435db2225a860f199d8.tar.gz",
+          "sha256": "3a97539c061b1696c5b27bb887f75364518e1a21f75c2e3d22c95f628e1a4e92",
+          "size": 116007,
+          "archive": "tar.gz",
+          "members": [
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/include/",
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/LICENSE"
+          ]
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/libplatform/archive/b7ed7cf5cf7dd12b98672435db2225a860f199d8.tar.gz",
+          "sha256": "3a97539c061b1696c5b27bb887f75364518e1a21f75c2e3d22c95f628e1a4e92",
+          "size": 116007,
+          "archive": "tar.gz",
+          "members": [
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/include/",
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/LICENSE"
+          ]
+        },
+        "linux-arm64": {
+          "url": "https://github.com/apple-oss-distributions/libplatform/archive/b7ed7cf5cf7dd12b98672435db2225a860f199d8.tar.gz",
+          "sha256": "3a97539c061b1696c5b27bb887f75364518e1a21f75c2e3d22c95f628e1a4e92",
+          "size": 116007,
+          "archive": "tar.gz",
+          "members": [
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/include/",
+            "libplatform-b7ed7cf5cf7dd12b98672435db2225a860f199d8/LICENSE"
+          ]
+        }
+      }
+    },
+    "apple-availability": {
+      "version": "157.2",
+      "only_where_listed": true,
+      "license": "APSL-2.0",
+      "note": "Apple open-source AvailabilityVersions-157.2 headers for iPhone game packs on Windows and Linux.",
+      "env": {
+        "PADMINT_APPLE_AVAILABILITY": "AvailabilityVersions-149b1777f3e8c2133042d8e188f72e3adf6a7110"
+      },
+      "hosts": {
+        "windows-arm64": {
+          "url": "https://github.com/apple-oss-distributions/AvailabilityVersions/archive/149b1777f3e8c2133042d8e188f72e3adf6a7110.tar.gz",
+          "sha256": "e903feb1c82e5ba24db19d43ecd75591d73eaa22855148b18a239749dceef156",
+          "size": 50029,
+          "archive": "tar.gz"
+        },
+        "windows-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/AvailabilityVersions/archive/149b1777f3e8c2133042d8e188f72e3adf6a7110.tar.gz",
+          "sha256": "e903feb1c82e5ba24db19d43ecd75591d73eaa22855148b18a239749dceef156",
+          "size": 50029,
+          "archive": "tar.gz"
+        },
+        "linux-x86_64": {
+          "url": "https://github.com/apple-oss-distributions/AvailabilityVersions/archive/149b1777f3e8c2133042d8e188f72e3adf6a7110.tar.gz",
+          "sha256": "e903feb1c82e5ba24db19d43ecd75591d73eaa22855148b18a239749dceef156",
+          "size": 50029,
+          "archive": "tar.gz"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/apple-oss-distributions/AvailabilityVersions/archive/149b1777f3e8c2133042d8e188f72e3adf6a7110.tar.gz",
+          "sha256": "e903feb1c82e5ba24db19d43ecd75591d73eaa22855148b18a239749dceef156",
+          "size": 50029,
+          "archive": "tar.gz"
         }
       }
     },

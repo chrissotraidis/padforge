@@ -92,8 +92,18 @@ def _marker(folder):
     return folder / ".padmint-installed"
 
 
-def _installed(folder):
-    return _marker(folder).is_file() or (folder / ".padforge-installed").is_file()
+def _installed(folder, entry=None):
+    """Installed from this lock entry. A changed entry (for example more members
+    of the same archive) installs again; PadForge's markers are kept as they are."""
+    marker = _marker(folder)
+    if not marker.is_file():
+        return (folder / ".padforge-installed").is_file()
+    if entry is None:
+        return True
+    try:
+        return json.loads(marker.read_text()) == entry
+    except ValueError:
+        return False
 
 
 def _download(entry, destination, stream):
@@ -127,6 +137,14 @@ def _wanted(name, members):
     if members is None:
         return True
     return any(name == item or (item.endswith("/") and name.startswith(item)) for item in members)
+
+
+def _check_members(folder, members):
+    """Every file the lock names must be in the download (folders may be empty)."""
+    for item in members or []:
+        path = Path(_long(folder / item))
+        if not item.endswith("/") and not (path.exists() or path.is_symlink()):
+            raise RuntimeError(f"the download has no {item}; nothing was installed")
 
 
 def _extract_zip(archive, folder, members=None):
@@ -313,7 +331,7 @@ def install(names, host, stream=None):
                     "then run PadMint again.")
             raise RuntimeError(f"{name} {tool['version']} has no download for {host}")
         folder = _folder(name, tool, host)
-        if _installed(folder):
+        if _installed(folder, entry):
             print(f"ok   {name} {version(tool, host)}", file=stream)
             _report_link(link_system_library(name, host, folder), stream)
             continue
@@ -334,6 +352,7 @@ def install(names, host, stream=None):
             target = staging / entry["rename"]
             archive.replace(target)
             target.chmod(0o755)
+        _check_members(staging, entry.get("members"))
         if folder.exists():
             shutil.rmtree(_long(folder))
         staging.replace(folder)
