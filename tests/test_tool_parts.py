@@ -64,6 +64,19 @@ class ToolPartsTests(unittest.TestCase):
         self.assertTrue((self.root / "home/tools/android-ndk-1/ndk/prebuilt").exists())
         self.assertFalse((self.root / "home/tools/llvm-21").exists())
 
+    def test_a_host_may_pin_its_own_version_and_folder(self):
+        # Intel Macs get an older LLVM than the tool's version (no 21.x build exists for them).
+        llvm = self.lock["llvm"]
+        llvm["hosts"]["intel-mac"] = dict(llvm["hosts"]["arm-host"], version="20",
+                                          env={"PADMINT_LLVM_ROOT": "llvm/bin/.."})
+        self.assertFalse(tools.installed("llvm", "intel-mac"))
+        tools.install(["llvm"], "intel-mac", io.StringIO())
+        self.assertTrue(tools.installed("llvm", "intel-mac"))
+        self.assertTrue((self.root / "home/tools/llvm-20/llvm/bin/clang").is_file())
+        self.assertFalse((self.root / "home/tools/llvm-21").exists())
+        env = tools.environment(["llvm"], "intel-mac", {"PATH": ""})
+        self.assertEqual(env["PADMINT_LLVM_ROOT"], str(self.root / "home/tools/llvm-20/llvm/bin/.."))
+
 
 if __name__ == "__main__":
     unittest.main()

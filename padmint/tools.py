@@ -63,8 +63,19 @@ def home():
     return folder
 
 
-def _folder(name, tool):
-    return tools_root() / f"{name}-{tool['version']}"
+def version(tool, host):
+    """A host's download may pin its own version (LLVM has no 21.x build for
+    Intel Macs, so they get 20.1.7)."""
+    return tool["hosts"].get(host, {}).get("version", tool["version"])
+
+
+def _folder(name, tool, host):
+    return tools_root() / f"{name}-{version(tool, host)}"
+
+
+def installed(name, host):
+    """True when PadMint's own copy of a tool is ready for this host."""
+    return _installed(_folder(name, lock()[name], host))
 
 
 def _marker(folder):
@@ -291,9 +302,9 @@ def install(names, host, stream=None):
                     "(for example: sudo apt install git, or on a Mac: xcode-select --install), "
                     "then run PadMint again.")
             raise RuntimeError(f"{name} {tool['version']} has no download for {host}")
-        folder = _folder(name, tool)
+        folder = _folder(name, tool, host)
         if _installed(folder):
-            print(f"ok   {name} {tool['version']}", file=stream)
+            print(f"ok   {name} {version(tool, host)}", file=stream)
             _report_link(link_system_library(name, host, folder), stream)
             continue
         staging = folder.with_name(folder.name + ".partial")
@@ -317,7 +328,7 @@ def install(names, host, stream=None):
             shutil.rmtree(_long(folder))
         staging.replace(folder)
         _marker(folder).write_text(json.dumps(entry) + "\n")
-        print(f"got  {name} {tool['version']}", file=stream)
+        print(f"got  {name} {version(tool, host)}", file=stream)
         _report_link(link_system_library(name, host, folder), stream)
 
 
@@ -334,12 +345,12 @@ def environment(names, host, base=None):
     for name in _with_companions(names, host, table):
         tool = table[name]
         entry = tool["hosts"].get(host)
-        folder = _folder(name, tool)
+        folder = _folder(name, tool, host)
         if entry is None or not _installed(folder):
             continue
         for relative in entry.get("bin", tool.get("bin", [])):
             paths.append(str(folder / relative))
-        for key, relative in tool.get("env", {}).items():
+        for key, relative in entry.get("env", tool.get("env", {})).items():
             env[key] = str(folder / relative)
         env.update(tool.get("set", {}))
     if paths:
