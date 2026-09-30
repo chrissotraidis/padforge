@@ -1,8 +1,8 @@
-"""PadForge: build your own copy of a supported Pad game on your own computer.
+"""PadMint: build your own copy of a supported Pad game on your own computer.
 
 Run with no command for the guided path. Other commands: make, list, doctor,
 tools, get, check-manifest, audit, plan, build. Game backends keep their own
-validation and caching; PadForge validates inputs, runs the backend, relays
+validation and caching; PadMint validates inputs, runs the backend, relays
 progress, and records and audits the result.
 """
 import argparse
@@ -22,7 +22,7 @@ import uuid
 
 from . import __version__, game_file, gate, tools
 from .manifest import (RUNNABLE_STATES, catalog, expand, host_id, load_manifest,
-                       manifest_for, manifest_sha256, needs_build_input)
+                       manifest_for, manifest_sha256, needs_build_input, repository_manifest)
 from .package import validate_ipa
 
 
@@ -54,7 +54,7 @@ def workspace_lock(path):
             try:
                 msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
             except OSError:
-                raise ValueError("Another PadForge process is using this checkout") from None
+                raise ValueError("Another PadMint process is using this checkout") from None
             try:
                 yield
             finally:
@@ -65,7 +65,7 @@ def workspace_lock(path):
         try:
             fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            raise ValueError("Another PadForge process is using this checkout") from None
+            raise ValueError("Another PadMint process is using this checkout") from None
         try:
             yield
         finally:
@@ -228,7 +228,7 @@ def run_process(argv, cwd, log_path, event_path, emit, before_spawn=None, append
 
 
 def run_steps(steps, argvs, cwd, log_path, event_path, emit, before_each, values=None, tool_names=()):
-    """Run a manifest's ordered steps; PadForge emits the stage events itself."""
+    """Run a manifest's ordered steps; PadMint emits the stage events itself."""
     event_path.parent.mkdir(parents=True, exist_ok=True)
     code, cancelled = 0, False
     for step, argv in zip(steps, argvs):
@@ -257,7 +257,7 @@ def placeholder_values(args, repo, disc, work, output):
 def with_python_path(argv, env):
     """Run a `{python} -m module` step with its PYTHONPATH on sys.path itself.
 
-    Windows PadForge ships Python's embeddable package, whose ._pth file makes
+    Windows PadMint ships Python's embeddable package, whose ._pth file makes
     Python ignore PYTHONPATH, so `-m` could not find a game's builder there."""
     if not env.get("PYTHONPATH") or len(argv) < 3 or argv[0] != sys.executable or argv[1] != "-m":
         return argv
@@ -273,14 +273,18 @@ def app_path(args):
 
 
 def backend_env(jobs, tool_names=()):
-    """Environment for backend processes: PadForge's tools first on PATH, and the
-    job cap for `cmake --build`. PADFORGE_CACHE is a folder shared by every
+    """Environment for backend processes: PadMint's tools first on PATH, and the
+    job cap for `cmake --build`. PADMINT_CACHE is a folder shared by every
     checkout of every game version, for downloads a backend can reuse after an
     update (it must still check them, as for any cache)."""
     env = tools.environment(tool_names, host_id()) if tool_names else dict(os.environ)
     if jobs:
         env.setdefault("CMAKE_BUILD_PARALLEL_LEVEL", str(jobs))
-    env.setdefault("PADFORGE_CACHE", str(tools.tools_root().parent / "cache"))
+    env.setdefault("PADMINT_CACHE", str(tools.tools_root().parent / "cache"))
+    # Game repositories written for PadForge (PadMint's name before 0.2.0) read
+    # PADFORGE_* names; give them the same values until they read PADMINT_*.
+    for key in [key for key in env if key.startswith("PADMINT_")]:
+        env["PADFORGE_" + key[len("PADMINT_"):]] = env[key]
     return env
 
 
@@ -298,7 +302,7 @@ def read_game_version(repo):
 
 def workspace_root(args, repo):
     selected = getattr(args, "workspace_root", None)
-    root = selected.expanduser().resolve() if selected else (repo / "build/padforge").resolve()
+    root = selected.expanduser().resolve() if selected else (repo / "build/padmint").resolve()
     # Compare resolved paths: a home folder reached through a link (macOS /tmp,
     # a moved or synced user folder) otherwise stops every build here.
     if repo.resolve() / "build" not in root.parents:
@@ -325,18 +329,18 @@ def publication_gate(output):
 def execute(args, repo, disc):
     manifest, target_name, target = selection(args, repo)
     # One lock per backend checkout also covers caches outside the selected work dir.
-    lock_root = repo / "build/padforge"
+    lock_root = repo / "build/padmint"
     root = workspace_root(args, repo)
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
     if subprocess.run([tools.executable("git", host_id()), "-C", str(repo), "check-ignore", "-q",
                        str(root)]).returncode:
-        raise ValueError("Backend must ignore build/padforge before running")
+        raise ValueError("Backend must ignore build/padmint before running")
     lock_root.mkdir(parents=True, exist_ok=True, mode=0o700)
     with workspace_lock(lock_root / "runner.lock"):
         if disc:
             print("Hashing the disc for the build record…", flush=True)
         mods = (not args.no_mods) if "no-mods" in target.get("options", {}) else "backend-default"
-        identity = {"schema_version": 1, "padforge_version": __version__,
+        identity = {"schema_version": 1, "padmint_version": __version__,
                     "game": args.game, "revision": args.revision,
                     "disc_sha256": digest(disc) if disc else None, "target": target_name,
                     "mods": mods, "source_only": args.source_only, "jobs": args.jobs}
@@ -515,15 +519,15 @@ def check_free_space(folder, needed_gb):
     existing = next(path for path in [folder, *folder.parents] if path.exists())
     free_gb = shutil.disk_usage(existing).free / (1 << 30)
     if free_gb < needed_gb:
-        raise ValueError(f"PadForge needs about {needed_gb} GB free for this build, but the drive with "
-                         f"{folder} has {free_gb:.1f} GB free. Free up space and run PadForge again.")
+        raise ValueError(f"PadMint needs about {needed_gb} GB free for this build, but the drive with "
+                         f"{folder} has {free_gb:.1f} GB free. Free up space and run PadMint again.")
 
 
 def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
     """The player's command: from their own game file to their own copy, in one step."""
     entry = catalog().get(game)
     if entry is None:
-        raise ValueError(f"unknown game {game}; see padforge list")
+        raise ValueError(f"unknown game {game}; see padmint list")
     home = tools.tools_root().parent
     assets = {}
     if ref is None:
@@ -574,7 +578,7 @@ def save_game_data(built, out, name, stream=None):
     """A backend may leave the game data folder the player imports into the app
     (files/ and sys/, as Dolphin's Extract Entire Disc makes) beside its output,
     as "<output>.data". Copy it once into the player's folder: a real copy, so
-    it never shares files with PadForge's build cache."""
+    it never shares files with PadMint's build cache."""
     stream = stream or sys.stdout
     data = Path(str(built) + ".data")
     if not data.is_dir():
@@ -692,7 +696,7 @@ def choose(title, options, ask, stream):
 def start(ask=input, stream=None):
     """The guided path for players: pick the game, then give your game file and a folder."""
     stream = stream or sys.stdout
-    print(f"PadForge {__version__}: make your own copy of a game from your own game file.", file=stream)
+    print(f"PadMint {__version__}: make your own copy of a game from your own game file.", file=stream)
     # iPhone builds need Xcode on Apple Silicon; an Intel Mac makes Android copies.
     apple_silicon = host_id() == "macos-arm64"
     games = []
@@ -730,7 +734,7 @@ def get_game(game, dest, ref=None):
     """Clone a catalogued game's source; its build bootstrap fetches the rest."""
     entry = catalog().get(game)
     if entry is None:
-        raise ValueError(f"unknown game {game}; see padforge list")
+        raise ValueError(f"unknown game {game}; see padmint list")
     if dest.exists() and any(dest.iterdir()):
         raise ValueError(f"{dest} is not empty")
     if shutil.which("git") is None:
@@ -743,7 +747,7 @@ def get_game(game, dest, ref=None):
 
 
 def list_games(stream=None):
-    """What a player can build, per game. Each game's own padforge.json is the
+    """What a player can build, per game. Each game's own padmint.json is the
     source of truth for build hosts, so only the catalog's player targets show."""
     stream = stream or sys.stdout
     for game, entry in sorted(catalog().items()):
@@ -774,7 +778,7 @@ def history(repo, stream=None):
         size = f"{output.stat().st_size / 1e6:.1f} MB" if record.get("output") and output.is_file() else "-"
         records.append((path.stat().st_mtime, record, seconds, size))
     if not records:
-        print("No PadForge build records in this checkout", file=stream)
+        print("No PadMint build records in this checkout", file=stream)
         return 0
     for _mtime, record, seconds, size in sorted(records, key=lambda item: item[0]):
         gate_result = record.get("publication_gate", {}).get("result", "-")
@@ -786,9 +790,9 @@ def history(repo, stream=None):
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(prog="padforge", description=__doc__,
+    parser = argparse.ArgumentParser(prog="padmint", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--version", action="version", version=f"PadForge {__version__}")
+    parser.add_argument("--version", action="version", version=f"PadMint {__version__}")
     commands = parser.add_subparsers(dest="action")
     commands.add_parser("start", help="Guided: pick a game, your game file and a folder (the default)")
     commands.add_parser("list", help="Show supported games and platforms")
@@ -818,7 +822,7 @@ def build_parser():
                              help="Parallel compile jobs (default: from this computer's cores and memory)")
     make_parser.add_argument("--ref", help=argparse.SUPPRESS)
     make_parser.add_argument("--app", type=Path, help=argparse.SUPPRESS)
-    manifest_parser = commands.add_parser("check-manifest", help="Validate a padforge.json file")
+    manifest_parser = commands.add_parser("check-manifest", help="Validate a padmint.json file")
     manifest_parser.add_argument("path", type=Path)
     audit_parser = commands.add_parser("audit", help="Run the release gate on files or folders")
     audit_parser.add_argument("paths", nargs="+", type=Path)
@@ -834,7 +838,7 @@ def build_parser():
         sub.add_argument("--target", default="ios")
         sub.add_argument("--app", type=Path, help="The published app a game pack links against")
         sub.add_argument("--workspace-root", type=Path,
-                         help="Ignored directory below backend build/ (default: build/padforge)")
+                         help="Ignored directory below backend build/ (default: build/padmint)")
         sub.add_argument("--jobs", type=int, choices=range(1, 9), default=2)
         sub.add_argument("--source-only", action="store_true", help="Stop before compilation (if supported)")
         sub.add_argument("--no-mods", action="store_true", help="Build without mods (if supported)")
@@ -874,7 +878,8 @@ def main(argv=None):
             return make(args.game, args.platform, disc, args.out.expanduser().resolve(), args.ref,
                         args.app.expanduser().resolve() if args.app else None, args.jobs)
         if args.action == "check-manifest":
-            path = args.path / "padforge.json" if args.path.is_dir() else args.path
+            path = (repository_manifest(args.path) or args.path / "padmint.json"
+                    if args.path.is_dir() else args.path)
             data = load_manifest(path)
             print(f"ok {path}: {data['id']} ({data['kind']}, {data['status']})")
             return 0
@@ -894,7 +899,7 @@ def main(argv=None):
             raise ValueError(f"{manifest['name']} {target_name} builds are {state} on {host_id()}")
         return execute(args, repo, disc)
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
-        print(f"PadForge: {error}", file=sys.stderr)
+        print(f"PadMint: {error}", file=sys.stderr)
         return 1
     except (KeyboardInterrupt, EOFError):
         return 130

@@ -1,4 +1,4 @@
-"""Check the player's game file before PadForge downloads anything large.
+"""Check the player's game file before PadMint downloads anything large.
 
 A disc game's manifest may list the disc IDs (and revisions) its builder
 supports. `nodtool info` reads the disc header in milliseconds, so a player
@@ -32,13 +32,13 @@ def read_disc(path, nodtool):
     try:
         result = subprocess.run([nodtool, "info", str(path)], capture_output=True, text=True, timeout=300)
     except (OSError, subprocess.TimeoutExpired) as error:
-        raise ValueError(f"PadForge could not read {path.name}: {error}") from error
+        raise ValueError(f"PadMint could not read {path.name}: {error}") from error
     text = result.stdout
     game_id = re.search(r"^Game ID: ([0-9A-Z]{6})", text, re.M)
     if result.returncode or not game_id:
         detail = (result.stderr or text).strip().splitlines()
         raise ValueError(
-            f"PadForge could not read {path.name} as a Wii or GameCube disc image"
+            f"PadMint could not read {path.name} as a Wii or GameCube disc image"
             + (f" ({detail[-1]})" if detail else "") + ". The file may be incomplete, for example "
             "still downloading or stored only in iCloud, or it may not be a disc image.")
     title = re.search(r"^Title: (.+)$", text, re.M)

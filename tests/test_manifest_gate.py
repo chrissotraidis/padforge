@@ -9,9 +9,9 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from padforge import gate
-from padforge.cli import doctor, main
-from padforge.manifest import catalog, expand, manifest_for, validate_manifest
+from padmint import gate
+from padmint.cli import doctor, main
+from padmint.manifest import catalog, expand, manifest_for, validate_manifest
 
 FAKE_KEY = bytes(range(0xA0, 0xB0))
 FAKE = {"Synthetic key": (FAKE_KEY[:4].hex(), hashlib.sha256(FAKE_KEY).hexdigest())}
@@ -54,7 +54,7 @@ class ManifestTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             data = minimal()
             data["status"] = "supported"
-            (Path(folder) / "padforge.json").write_text(json.dumps(data))
+            (Path(folder) / "padmint.json").write_text(json.dumps(data))
             self.assertEqual(manifest_for("kartpad", folder), (data, "repository"))
             with self.assertRaisesRegex(ValueError, "declares kartpad"):
                 manifest_for("bluewake", folder)

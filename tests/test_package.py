@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from fixtures import entries, write_ipa
-from padforge.package import validate_ipa
+from padmint.package import validate_ipa
 
 
 class PackageTests(unittest.TestCase):

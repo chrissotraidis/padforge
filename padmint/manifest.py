@@ -1,6 +1,6 @@
-"""`padforge.json` schema v1: what a game repository declares to PadForge.
+"""`padmint.json` schema v1: what a game repository declares to PadMint.
 
-A game repository owns its manifest. PadForge's catalog (`catalog/*.json`) lists
+A game repository owns its manifest. PadMint's catalog (`catalog/*.json`) lists
 supported games and may carry an interim manifest for a repository that has not
 added its own yet. Game-specific work stays in the game repository.
 """
@@ -18,8 +18,8 @@ HOSTS = {"macos-arm64", "macos-x86_64", "linux-x86_64", "linux-arm64", "windows-
 HOST_STATES = {"verified", "experimental", "planned", "unsupported"}
 RUNNABLE_STATES = {"verified", "experimental"}
 TARGETS = {"ios", "macos", "android", "windows", "linux"}
-# {app}: the published app a game pack links against (padforge build --app).
-# {python}: the Python running PadForge (Windows has no python3 command).
+# {app}: the published app a game pack links against (padmint build --app).
+# {python}: the Python running PadMint (Windows has no python3 command).
 PLACEHOLDERS = {"repo", "disc", "work", "output", "jobs", "app", "python"}
 CHECKS = {"bluewake-ipa", "kartpad-ipa", "ipa", "none"}
 INPUT_TIMES = {"build", "in-app"}
@@ -29,7 +29,7 @@ _ID = re.compile(r"[a-z0-9][a-z0-9-]{0,39}")
 
 def _require(condition, message):
     if not condition:
-        raise ValueError(f"padforge.json: {message}")
+        raise ValueError(f"padmint.json: {message}")
 
 
 def _argv(value, where):
@@ -105,7 +105,7 @@ def validate_manifest(data):
             known = lock()
             _require(isinstance(target["tools"], list)
                      and all(isinstance(item, str) and item in known for item in target["tools"]),
-                     f"{where}.tools must name tools from PadForge's tool lock: {sorted(known)}")
+                     f"{where}.tools must name tools from PadMint's tool lock: {sorted(known)}")
         if "published_app" in target:
             _require(isinstance(target["published_app"], str) and "{version}" in target["published_app"],
                      f"{where}.published_app must name the release asset, with {{version}}")
@@ -177,18 +177,27 @@ def catalog():
     return entries
 
 
+def repository_manifest(repo):
+    """A checkout's padmint.json, or padforge.json from before the rename (0.2.0)."""
+    for name in ("padmint.json", "padforge.json"):
+        if (Path(repo) / name).is_file():
+            return Path(repo) / name
+    return None
+
+
 def manifest_for(game, repo=None):
     """The game repository's own manifest wins; otherwise the catalog's interim one."""
-    if repo is not None and (Path(repo) / "padforge.json").is_file():
-        data = load_manifest(Path(repo) / "padforge.json")
+    path = repository_manifest(repo) if repo is not None else None
+    if path is not None:
+        data = load_manifest(path)
         if data["id"] != game:
-            raise ValueError(f"Checkout's padforge.json declares {data['id']}, not {game}")
+            raise ValueError(f"Checkout's {path.name} declares {data['id']}, not {game}")
         return data, "repository"
     entry = catalog().get(game)
     if entry is None:
-        raise ValueError(f"Unknown game {game}; see 'padforge list'")
+        raise ValueError(f"Unknown game {game}; see 'padmint list'")
     if entry.get("manifest") is None:
-        raise ValueError(f"{game} expects padforge.json in its checkout")
+        raise ValueError(f"{game} expects padmint.json in its checkout")
     return entry["manifest"], "catalog"
 
 

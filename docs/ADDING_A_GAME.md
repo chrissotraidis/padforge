@@ -1,10 +1,10 @@
-# Adding a game to PadForge
+# Adding a game to PadMint
 
-A game joins PadForge with two small files and no PadForge code changes.
+A game joins PadMint with two small files and no PadMint code changes.
 
-## 1. Add `padforge.json` to the game repository
+## 1. Add `padmint.json` to the game repository
 
-List the scripts the repository already uses, in order. PadForge runs each one
+List the scripts the repository already uses, in order. PadMint runs each one
 as a stage, shows progress, stops at the first failure and audits the result.
 
 ```json
@@ -58,17 +58,17 @@ as a stage, shows progress, stops at the first failure and audits the result.
 - If a step needs submodules, add a first step
   `["git", "-C", "{repo}", "submodule", "update", "--init", "--recursive"]`: fresh
   worktrees start with empty submodule folders.
-- Make sure the repository ignores `build/`: PadForge writes its private
-  workspace to `build/padforge/`.
+- Make sure the repository ignores `build/`: PadMint writes its private
+  workspace to `build/padmint/`.
 
 Check it:
 
 ```sh
-python3 -m padforge check-manifest /path/to/examplepad
-python3 -m padforge plan examplepad --repo /path/to/examplepad --revision FULL_COMMIT
+python3 -m padmint check-manifest /path/to/examplepad
+python3 -m padmint plan examplepad --repo /path/to/examplepad --revision FULL_COMMIT
 ```
 
-## 2. Add a catalog entry to PadForge
+## 2. Add a catalog entry to PadMint
 
 `catalog/examplepad.json`:
 
@@ -81,9 +81,9 @@ python3 -m padforge plan examplepad --repo /path/to/examplepad --revision FULL_C
 
 ## 3. Promote it
 
-1. Run `python3 -m padforge build` from a clean checkout. The record shows each
+1. Run `python3 -m padmint build` from a clean checkout. The record shows each
    stage, the output check and the release gate result.
 2. After a complete build, set `status` to `experimental`; after a build is
    accepted on a device, mark the host `verified` and pin `reviewed_revision`.
 3. Before anything is published, every public file must pass
-   `python3 -m padforge audit`. Personal builds are never published.
+   `python3 -m padmint audit`. Personal builds are never published.

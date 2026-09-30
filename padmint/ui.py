@@ -1,7 +1,7 @@
-"""`padforge ui`: a local browser page over the same commands the CLI runs.
+"""`padmint ui`: a local browser page over the same commands the CLI runs.
 
 Serves only on 127.0.0.1 with a random token, uses the Python standard library,
-and starts builds as `python3 -m padforge build` subprocesses so the page can
+and starts builds as `python3 -m padmint build` subprocesses so the page can
 never do more than the CLI. Nothing is uploaded.
 """
 import contextlib
@@ -42,10 +42,10 @@ class Builds:
         with self.lock:
             if self.process and self.process.poll() is None:
                 raise ValueError("A build is already running")
-            handle, path = tempfile.mkstemp(prefix="padforge-ui-", suffix=".log")
+            handle, path = tempfile.mkstemp(prefix="padmint-ui-", suffix=".log")
             self.log = Path(path)
             stream = open(handle, "wb")
-            self.process = subprocess.Popen([sys.executable, "-m", "padforge", *argv], cwd=ROOT,
+            self.process = subprocess.Popen([sys.executable, "-m", "padmint", *argv], cwd=ROOT,
                                             stdout=stream, stderr=subprocess.STDOUT)
             stream.close()
 
@@ -62,7 +62,7 @@ class Builds:
 
     def cancel(self):
         if self.process and self.process.poll() is None:
-            self.process.send_signal(signal.SIGINT)  # PadForge cancels and keeps finished work
+            self.process.send_signal(signal.SIGINT)  # PadMint cancels and keeps finished work
 
 
 def run_cli(argv):
@@ -109,13 +109,13 @@ def make_handler(token, builds):
 
         def allowed(self):
             query = parse_qs(urlparse(self.path).query)
-            supplied = self.headers.get("X-PadForge-Token") or query.get("token", [""])[0]
+            supplied = self.headers.get("X-PadMint-Token") or query.get("token", [""])[0]
             host = (self.headers.get("Host") or "").split(":")[0]
             return host in ("127.0.0.1", "localhost") and secrets.compare_digest(supplied, token)
 
         def do_GET(self):
             if not self.allowed():
-                return self.reply(403, {"error": "Open the address printed by padforge ui"})
+                return self.reply(403, {"error": "Open the address printed by padmint ui"})
             route = urlparse(self.path).path
             if route == "/":
                 return self.reply(200, PAGE.replace("__TOKEN__", token), "text/html; charset=utf-8")
@@ -163,7 +163,7 @@ def serve(port=0, open_browser=True):
     token = secrets.token_urlsafe(24)
     server = ThreadingHTTPServer(("127.0.0.1", port), make_handler(token, Builds()))
     url = f"http://127.0.0.1:{server.server_address[1]}/?token={token}"
-    print(f"PadForge {__version__} is open at {url}\nPress Ctrl-C to stop.", flush=True)
+    print(f"PadMint {__version__} is open at {url}\nPress Ctrl-C to stop.", flush=True)
     if open_browser:
         webbrowser.open(url)
     try:
@@ -175,7 +175,7 @@ def serve(port=0, open_browser=True):
     return 0
 
 
-PAGE = r"""<!doctype html><html lang="en"><head><meta charset="utf-8"><title>PadForge</title>
+PAGE = r"""<!doctype html><html lang="en"><head><meta charset="utf-8"><title>PadMint</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{font-family:-apple-system,system-ui,sans-serif;color-scheme:light dark}
@@ -188,7 +188,7 @@ pre{background:rgba(127,127,127,.12);padding:.8rem;white-space:pre-wrap;max-heig
 table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:.3rem;border-bottom:1px solid rgba(127,127,127,.3)}
 .done{color:#2e7d32}.failed{color:#c62828}.started{color:#1565c0}
 </style></head><body>
-<h1>PadForge</h1><p class="note">Build your own copy on this computer from your own game files. Nothing is uploaded.</p>
+<h1>PadMint</h1><p class="note">Build your own copy on this computer from your own game files. Nothing is uploaded.</p>
 <label for="game">Game</label><select id="game"></select>
 <label for="repo">Game checkout folder</label><input id="repo" placeholder="/path/to/game-repository">
 <label for="revision">Reviewed commit</label>
@@ -199,7 +199,7 @@ table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:.3rem;bo
 <h2>Stages</h2><table id="stages"><tr><td>No build started</td></tr></table>
 <h2>Output</h2><pre id="out">Choose a game and check this computer first.</pre>
 <script>
-const T="__TOKEN__",H={"Content-Type":"application/json","X-PadForge-Token":T};
+const T="__TOKEN__",H={"Content-Type":"application/json","X-PadMint-Token":T};
 const $=id=>document.getElementById(id), form=()=>({game:$("game").value,repo:$("repo").value,revision:$("revision").value,disc:$("disc").value,target:$("target").value});
 async function post(p,b){const r=await fetch(p,{method:"POST",headers:H,body:JSON.stringify(b)});return r.json()}
 function show(r){$("out").textContent=r.error||r.output||(r.tail||[]).join("\n")||JSON.stringify(r,null,2)}

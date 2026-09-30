@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from padforge import cli, tools
+from padmint import cli, tools
 
 
 class PlayerSafetyTests(unittest.TestCase):

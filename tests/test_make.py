@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from padforge import cli
-from padforge.cli import published_app
+from padmint import cli
+from padmint.cli import published_app
 
 
 class PublishedAppTests(unittest.TestCase):

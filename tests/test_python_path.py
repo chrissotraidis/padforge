@@ -5,7 +5,7 @@ import sys
 import tempfile
 import unittest
 
-from padforge.cli import with_python_path
+from padmint.cli import with_python_path
 
 
 class PythonPathTests(unittest.TestCase):

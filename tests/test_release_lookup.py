@@ -2,7 +2,7 @@ import io
 import unittest
 from unittest import mock
 
-from padforge import cli
+from padmint import cli
 
 
 class Page(io.BytesIO):
@@ -16,7 +16,7 @@ class Page(io.BytesIO):
 
 class LatestReleaseTests(unittest.TestCase):
     def test_uses_release_pages_not_the_api(self):
-        sums = b"aa  Game-v1.2.3-ios-unsigned.ipa\nbb *Game-v1.2.3-padforge.json\n"
+        sums = b"aa  Game-v1.2.3-ios-unsigned.ipa\nbb *Game-v1.2.3-padmint.json\n"
         pages = {
             "https://github.com/x/game/releases/latest": Page("https://github.com/x/game/releases/tag/v1.2.3"),
             "https://github.com/x/game/releases/download/v1.2.3/SHA256SUMS": Page("", sums),
@@ -26,7 +26,7 @@ class LatestReleaseTests(unittest.TestCase):
         self.assertEqual(tag, "v1.2.3")
         self.assertEqual(assets["Game-v1.2.3-ios-unsigned.ipa"],
                          "https://github.com/x/game/releases/download/v1.2.3/Game-v1.2.3-ios-unsigned.ipa")
-        self.assertIn("Game-v1.2.3-padforge.json", assets)
+        self.assertIn("Game-v1.2.3-padmint.json", assets)
         self.assertIn("SHA256SUMS", assets)
         self.assertFalse(any("api.github.com" in call.args[0] for call in opened.call_args_list))
 
