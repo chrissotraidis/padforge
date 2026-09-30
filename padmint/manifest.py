@@ -174,6 +174,10 @@ def catalog():
         ids = entry.get("game_ids", [])
         if not isinstance(ids, list) or not all(re.fullmatch(r"[0-9A-Z]{6}", str(i)) for i in ids):
             raise ValueError(f"catalog/{path.name}: game_ids lists six-character disc IDs")
+        labels = entry.get("game_data_import") or {}
+        if not isinstance(labels, dict) or not all(platform in targets and isinstance(label, str)
+                                                   for platform, label in labels.items()):
+            raise ValueError(f"catalog/{path.name}: game_data_import names a player target's button")
         space = entry.get("free_space_gb", 0)
         if not isinstance(space, int) or isinstance(space, bool) or space < 0:
             raise ValueError(f"catalog/{path.name}: free_space_gb is a whole number of GB")

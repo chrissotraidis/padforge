@@ -573,12 +573,13 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=
     print(f"Your {manifest['name']} for {PLATFORM_NAMES.get(platform_name, platform_name)}: {result}")
     if results is not None:
         results.append(result)
-    save_game_data(args.output_path, out, manifest["name"])
+    save_game_data(args.output_path, out, manifest["name"],
+                   import_label=(entry.get("game_data_import") or {}).get(platform_name))
     print("It contains game code made from your own copy: keep it to yourself.")
     return 0
 
 
-def save_game_data(built, out, name, stream=None):
+def save_game_data(built, out, name, stream=None, import_label=None):
     """A backend may leave the game data folder the player imports into the app
     (files/ and sys/, as Dolphin's Extract Entire Disc makes) beside its output,
     as "<output>.data". Copy it once into the player's folder: a real copy, so
@@ -600,7 +601,8 @@ def save_game_data(built, out, name, stream=None):
     shutil.copytree(tools._long(data), tools._long(partial))
     partial.replace(target)
     print(f"Your {name} game data folder: {target}\n"
-          f"  New to {name}? Copy it to your device and choose it with Import from Extracted Folder. "
+          f"  New to {name}? Copy it to your device and choose it with "
+          f"{import_label or 'Import from Extracted Folder'}. "
           "It needs no key.", file=stream)
     return target
 
