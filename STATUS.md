@@ -7,6 +7,41 @@ Resumable record for the overnight goal loop. Source of truth for decisions and
 per-repo state is the Notion "Public Repo Proprietary-Content Audit" and its
 tracker; this file mirrors progress so work can resume after interruption.
 
+## Current continuation (1 Oct)
+
+- PadMint 0.2.8 is being verified: #63 preserves tracked, staged, untracked and
+  ignored dependency edits during interrupted-download recovery; #64 clarifies
+  phone file selection, rejects disc IDs with an actionable menu message and
+  confirms the chosen filename. Both fixes merged; packages are not published yet.
+  All 190 source tests pass on Apple's Python 3.9. Packaged Mac and Linux checks
+  pass the 14 guided-start and 14 recovery tests; all downloads pass both content
+  checks. The Windows VM was suspended after discovering Chris's request in the
+  BlueWake chat to keep Parallels off for Mac responsiveness. Windows check pending;
+  do not resume the VM or publish 0.2.8 without resolving that check.
+- KartPad #371 merged: device choice means where the player will play; phone-only
+  setup needs about 25 GB free. The guide explains file-menu numbers versus RMCP01.
+- AnnePad 0.2.2 build 7 rebuilt after two interruptions. Draft #14, recipe/checksums
+  pass both content checks. In-place iPhone install preserved every backed-up
+  file; attract sequence runs. Interactive battle check remains open because
+  XCTest could not start, including after restarting the developer test service.
+- Published PadMint 0.2.7 made AgePad 0.1.0's personal IPA in 45 seconds. HarkinianPad,
+  BarrelPad and BellPad are running through that same package. BlueWake's interrupted
+  build resumed with more disk space and is compiling. The full current-version
+  build sweep remains incomplete.
+- Notion's overview now distinguishes published releases from outstanding build
+  and device checks. AgePad's current README and own-code MIT license were verified.
+- GitHub triage is reviewing older open build reports as well as recent comments.
+  KartPad #104 (S24 graphics), #357 (S26 Automatic) and #366 (phone storage) remain
+  actionable. #366's first-build timing corrected. Draft #369's diagnostic modes
+  are being checked on the emulator; affected Adreno hardware is still needed.
+- New Discord report: PWR Jaypp says flickering persists in 0.7.3 in both Original
+  and Retro Rewind. Platform and scene are unknown; the earlier startup fix does
+  not establish that this report is resolved.
+
+Local continuation handles and evidence: `.codex/scratch/pm027/current-builds-results.jsonl`,
+the BlueWake run `09959a9f8e454a708859f3eecb6b876e`, and
+`.codex/scratch/release-rerun/annepad/device-022`. Personal outputs stay local.
+
 ## Loop 2: formula, KartPad 0.6.0, then every repo (started 29 Sep 09:05)
 
 Plan and owner decisions: Notion "PadMint release formula and pilot plan".
