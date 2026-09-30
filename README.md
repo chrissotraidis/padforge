@@ -37,8 +37,9 @@ unzip it and start it:
   Return.)
 - **Linux:** in the folder, run `sh padmint.sh` (needs Python 3.9+ and Git).
 
-PadMint asks which game and platform, then for your own game file (drag it
-into the window and press Enter) and where to save (Enter for Downloads). The
+PadMint asks for your own game file (drag it into the window and press Enter)
+and, where there is a choice, the game and the platform. When your file names
+the game, PadMint picks it for you. Your copy is saved in Downloads. The
 first run downloads about 4 GB of tools, needs about 16 GB free in total, and
 can take from about 10 minutes to an hour, depending on the computer. Running
 it again for the same game version takes seconds. If a build stops, PadMint

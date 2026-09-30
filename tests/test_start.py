@@ -19,6 +19,10 @@ CATALOG = {
 
 
 class StartTests(unittest.TestCase):
+    def setUp(self):
+        downloads = Path.home() / "Downloads"
+        self.out = (downloads if downloads.is_dir() else Path.home()).resolve()
+
     def run_start(self, answers, host):
         replies = iter(answers)
         with mock.patch.object(cli, "catalog", return_value=CATALOG), \
@@ -34,7 +38,7 @@ class StartTests(unittest.TestCase):
             code, make = self.run_start(["1", f"'{disc}'", folder], "linux-x86_64")
         self.assertEqual(code, 0)
         self.assertEqual(make.call_args.args[:3], ("kartpad", "android", disc.resolve()))
-        self.assertEqual(make.call_args.args[3], Path(folder).resolve())
+        self.assertEqual(make.call_args.args[3], self.out)  # saved to Downloads without asking
 
     def test_mac_also_offers_iphone(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -6,6 +6,9 @@
     "android",
     "ios"
   ],
+  "game_ids": [
+    "RMCP01"
+  ],
   "free_space_gb": 16,
   "reviewed_revision": null,
   "notes": "Players: padmint make kartpad android|ios (the manifest in KartPad's repository is used). This embedded manifest is the fallback for older checkouts.",

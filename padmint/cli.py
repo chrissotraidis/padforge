@@ -8,6 +8,7 @@ progress, and records and audits the result.
 import argparse
 import contextlib
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -720,8 +721,36 @@ def choose(title, options, ask, stream):
             return options[int(answer) - 1][0]
 
 
+def file_problem(disc):
+    """Why a dropped path can't be used yet, in the player's words; None when it can."""
+    if not disc.is_file():
+        return f"No file at {disc}"
+    if game_file.cloud_only(disc):
+        return game_file.CLOUD_ONLY.format(name=disc.name)
+    return None
+
+
+def game_from_file(disc, games, stream):
+    """The one offered game whose catalog entry lists the file's disc ID, else None.
+    Reading the ID needs only nodtool (a few MB); anything unexpected falls back to asking."""
+    if game_file.cloud_only(disc):
+        return None
+    try:
+        tools.install(["nodtool"], host_id(), stream=io.StringIO())
+        _title, game_id, _revision = game_file.read_disc(disc, tools.executable("nodtool", host_id()))
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
+        return None
+    matches = [(id_, name) for id_, name, _ in games if game_id in (catalog()[id_].get("game_ids") or [])]
+    if len(matches) != 1:
+        return None
+    print(f"Game: {matches[0][1]} (from your file, {game_id})", file=stream)
+    return matches[0][0]
+
+
 def start(ask=input, stream=None):
-    """The guided path for players: pick the game, then give your game file and a folder."""
+    """The guided path for players: as few questions as possible. When several games are
+    offered and the player's file names exactly one of them, the game is not asked for.
+    The copy is saved to Downloads (padmint make --out chooses another folder)."""
     stream = stream or sys.stdout
     print(f"PadMint {__version__}: make your own copy of a game from your own game file.", file=stream)
     # iPhone builds need Xcode on Apple Silicon; an Intel Mac makes Android copies.
@@ -734,22 +763,37 @@ def start(ask=input, stream=None):
             games.append((game, name, platforms))
     if not games:
         raise ValueError("no game can be made on this computer yet")
-    game = choose("Game", [(game, name) for game, name, _ in games], ask, stream)
+    disc = game = None
+    if len(games) > 1 and any(catalog()[id_].get("game_ids") for id_, _, _ in games):
+        answer = ask("Drag your game file into this window, then press Enter "
+                     "(no file? just press Enter to choose a game): ").strip()
+        while answer:
+            disc = dropped_path(answer)
+            problem = file_problem(disc)
+            if problem is None:
+                break
+            print(problem, file=stream)
+            answer = ask("Drag the file again, or press Enter to choose a game: ").strip()
+            disc = None
+        if disc is not None:
+            game = game_from_file(disc, games, stream)
+    if game is None:
+        game = choose("Game", [(game, name) for game, name, _ in games], ask, stream)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
     target = choose("Make it for", [(p, PLATFORM_LABELS.get(p, p)) for p in platforms], ask, stream)
-    disc = None
     if catalog()[game].get("player_game_file", "build") == "in-app":
+        disc = None
         print(f"{name} asks for your own game file inside the app, after you install it.", file=stream)
-    else:
+    elif disc is None:
         while True:
             disc = dropped_path(ask(f"Drag your own {name} game file into this window, then press Enter: "))
-            if disc.is_file():
+            problem = file_problem(disc)
+            if problem is None:
                 break
-            print(f"No file at {disc}", file=stream)
-    default = Path.home() / "Downloads"
-    default = default if default.is_dir() else Path.home()
-    answer = ask(f"Save it in which folder? Press Enter for {default}: ").strip()
-    out = dropped_path(answer) if answer else default
+            print(problem, file=stream)
+    out = Path.home() / "Downloads"
+    out = out if out.is_dir() else Path.home()
+    print(f"Your copy will be saved in {out}", file=stream)
     results = []
     code = make(game, target, disc.resolve() if disc else None, out.resolve(), results=results)
     if code == 0:
