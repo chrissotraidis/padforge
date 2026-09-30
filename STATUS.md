@@ -267,6 +267,15 @@ that also fails on MaskPad's main (testControlPressReleaseToggleAndLifecycleCanc
 kartpad #104, #316, #327, #329, #330 and #357. iPhone players without a Mac
 (#327) cannot build today; that is the most requested gap.
 
+**Update 21:00:** PadMint 0.2.1 published: #28, #30, #31, #32, #33, #34 (see
+release notes). Checked on Mac, Ubuntu 26.04 ARM64 and the Windows 11 VM.
+Player builds of KartPad 0.7.2 with 0.2.0 on clean Ubuntu 24.04 (plus
+libxml2) and 26.04 (libxml2.so.16 shim) were byte-identical and raced on the
+emulator. Seven game repos now declare their real build tools (goldenpad#42
+and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
+0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
+without a Mac (Hubble).
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadMint 0.1.3.
