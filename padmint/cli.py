@@ -594,12 +594,23 @@ def save_game_data(built, out, name, stream=None):
     print(f"Saving your {name} game data folder (about "
           f"{sum(p.stat().st_size for p in data.rglob('*') if p.is_file()) / (1 << 30):.1f} GB)…",
           file=stream, flush=True)
-    shutil.copytree(tools._long(data), tools._long(partial))
+    copy_files(tools._long(data), tools._long(partial))
     partial.replace(target)
     print(f"Your {name} game data folder: {target}\n"
           f"  New to {name}? Copy it to your device and choose it with Import from Extracted Folder. "
           "It needs no key.", file=stream)
     return target
+
+
+def copy_files(source, target):
+    """Copy a folder's files (contents only) into target. Unlike copytree it never
+    reads links: on an Android phone (Ubuntu in Termux) the backend's hard links
+    are listed as links but cannot be read as links ("Invalid argument")."""
+    for folder, _folders, files in os.walk(source):
+        destination = os.path.join(target, os.path.relpath(folder, source))
+        os.makedirs(destination, exist_ok=True)
+        for name in files:
+            shutil.copyfile(os.path.join(folder, name), os.path.join(destination, name))
 
 
 def version_tuple(text):
