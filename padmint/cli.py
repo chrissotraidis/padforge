@@ -544,6 +544,9 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
         disc = None  # the game file is added in the app, not read by the build
     elif disc is None:
         raise ValueError(f"{manifest['name']} needs your own game file (--disc)")
+    missing = tools.missing_system_library(target.get("tools", []), host_id())
+    if missing:
+        raise ValueError(missing[1])
     accepted = game_file.check_before_tools(manifest, target, disc, host_id())
     if accepted:
         print(f"Your game file: {accepted}", flush=True)
@@ -626,6 +629,9 @@ def doctor(game, target_name, repo=None, stream=None):
     else:
         state = target["hosts"].get(host, "unsupported")
         report(state in RUNNABLE_STATES, f"{target_name} builds on {host}", state)
+        missing = tools.missing_system_library(target.get("tools", []), host)
+        if missing:
+            report(False, missing[0], missing[1])
     for tool in manifest.get("requirements", {}).get("tools", []):
         path = shutil.which(tool["name"])
         if path is None:

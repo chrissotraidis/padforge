@@ -4,6 +4,7 @@ The lock (tools.lock.json, made by scripts/update-tools-lock.py) names every
 download and the publisher's digest. Nothing is installed system-wide: builds
 get the tools on PATH, plus the environment variables they need.
 """
+import ctypes
 import hashlib
 import json
 import os
@@ -163,6 +164,63 @@ def _long(path):
     if full.startswith("\\\\"):  # \\server\share\... on a network drive
         return "\\\\?\\UNC\\" + full[2:]
     return "\\\\?\\" + full
+
+
+# Libraries a downloaded tool loads from the system, per host. Checked before any
+# download: LLVM's linker for Linux arm64 needs libxml2.so.2, which minimal Linux
+# installs lack and Ubuntu 25.10 and later no longer ship (they have libxml2.so.16).
+SYSTEM_LIBRARIES = {("llvm", "linux-arm64"): "libxml2.so.2"}
+
+
+def _loadable(library):
+    try:
+        ctypes.CDLL(library)
+        return True
+    except OSError:
+        return False
+
+
+def missing_system_library(names, host):
+    """(library, how to fix it) for the first system library these tools need and this
+    computer lacks; None when everything is there."""
+    table = lock()
+    for name in _with_companions([n for n in names if n in table], host, table):
+        library = SYSTEM_LIBRARIES.get((name, host))
+        if library and not _loadable(library):
+            return library, system_library_fix(library)
+    return None
+
+
+def system_library_fix(library):
+    if library == "libxml2.so.2" and (_loadable("libxml2.so.16") or _only_new_libxml2()):
+        return ("LLVM's linker, which PadMint downloads for this computer, needs libxml2.so.2, but this "
+                "Linux only has the newer libxml2.so.16 (for example Ubuntu 25.10 and later), so "
+                "installing libxml2 will not help. PadMint cannot build here yet. Ubuntu 24.04, "
+                "Debian 13 and Fedora work. Nothing has been downloaded yet.")
+    if shutil.which("apt-get"):
+        command = "sudo apt install libxml2"
+    elif shutil.which("dnf"):
+        command = "sudo dnf install libxml2"
+    else:
+        command = "install the package that provides libxml2.so.2"
+    return (f"LLVM's linker, which PadMint downloads for this computer, needs the libxml2 library "
+            f"({library}). Install it first ({command}), then run PadMint again. Nothing has been "
+            "downloaded yet.")
+
+
+def _only_new_libxml2(os_release=Path("/etc/os-release")):
+    """Ubuntu 25.10 and later ship only libxml2.so.16 (package libxml2-16)."""
+    try:
+        fields = dict(line.split("=", 1) for line in os_release.read_text().splitlines() if "=" in line)
+    except OSError:
+        return False
+    if fields.get("ID", "").strip('"') != "ubuntu":
+        return False
+    try:
+        version = tuple(int(part) for part in fields.get("VERSION_ID", "").strip('"').split("."))
+    except ValueError:
+        return False
+    return version >= (25, 10)
 
 
 def _with_companions(names, host, table):
