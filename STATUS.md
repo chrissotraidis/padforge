@@ -208,7 +208,7 @@ PaperPad 0.2.1 builds PaperBoat (played on the iPhone); six READMEs still said
 "a new version is in progress" (fixed or merging); GalaxyPad #15 merged.
 `catalog/paperpad.json`'s note still names build-ios-device.sh (cosmetic).
 
-**Update 12:30:** PadForge 0.1.6 (Windows long paths), 0.1.7 (Android packs on
+**Update 12:10:** PadForge 0.1.6 (Windows long paths), 0.1.7 (Android packs on
 ARM Linux, raced in the emulator) and 0.1.8 published. 0.1.8 carries the
 PadForge-experience chat's #22 (`PADFORGE_CACHE`, one download cache for
 every game version) and #23 (a backend's game data folder saved once for the
