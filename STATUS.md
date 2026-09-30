@@ -289,6 +289,12 @@ and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
 0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
 without a Mac (Hubble).
 
+**Update 06:30, 1 Oct (0.2.7):** AgePad 0.1.0 published by Chris (30 Sep,
+22:41; assets pass the content check, anonymous downloads match). #29 adds
+AgePad to the catalog (iPad 8 GB+; PadMint injects the player's own Steam copy
+in about 12 s, checked on this Mac from the published release). #61 measured
+free space for every game (doctor no longer says 0 GB needed).
+
 **Update 06:05, 1 Oct (0.2.6):** rerun census across every game (player path):
 AnnePad 0.2.1 failed on every second run, BallPad on any rerun after
 packaging, MeleePad on reruns and after another folder's build (/tmp module
