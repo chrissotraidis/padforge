@@ -55,6 +55,37 @@ class StartTests(unittest.TestCase):
             _code, make = self.run_start(["1", str(disc), folder], "macos-x86_64")
         self.assertEqual(make.call_args.args[:2], ("kartpad", "android"))
 
+    def test_windows_and_linux_offer_iphone_for_games_marked_ios_off_mac(self):
+        marked = dict(CATALOG, kartpad=dict(CATALOG["kartpad"], ios_off_mac=True))
+        for host in ("windows-x86_64", "linux-arm64"):
+            with self.subTest(host=host), tempfile.TemporaryDirectory() as folder:
+                disc = Path(folder) / "disc.wbfs"
+                disc.write_bytes(b"x")
+                # The other test games are iPhone-only without the mark, so KartPad is the only game.
+                replies, stream = iter(["2", str(disc)]), io.StringIO()
+                with mock.patch.object(cli, "catalog", return_value=marked), \
+                        mock.patch.object(cli, "host_id", return_value=host), \
+                        mock.patch.object(cli, "on_android", return_value=False), \
+                        mock.patch.object(cli, "make", return_value=0) as make:
+                    cli.start(lambda _prompt: next(replies), stream)
+                self.assertEqual(make.call_args.args[:2], ("kartpad", "ios"))
+                self.assertIn("2. iPhone or iPad (experimental)", stream.getvalue())
+
+    def test_iphone_off_a_mac_only_for_marked_games_and_never_on_a_phone(self):
+        marked = dict(CATALOG, kartpad=dict(CATALOG["kartpad"], ios_off_mac=True))
+        for catalog, phone in ((CATALOG, False), (marked, True)):
+            with self.subTest(phone=phone), tempfile.TemporaryDirectory() as folder:
+                disc = Path(folder) / "disc.wbfs"
+                disc.write_bytes(b"x")
+                replies = iter([str(disc)])
+                with mock.patch.object(cli, "catalog", return_value=catalog), \
+                        mock.patch.object(cli, "host_id", return_value="linux-arm64"), \
+                        mock.patch.object(cli, "on_android", return_value=phone), \
+                        mock.patch.object(cli, "game_files", return_value=[]), \
+                        mock.patch.object(cli, "make", return_value=0) as make:
+                    cli.start(lambda _prompt: next(replies), io.StringIO())
+                self.assertEqual(make.call_args.args[:2], ("kartpad", "android"))
+
     def test_game_file_added_in_the_app_is_not_asked_for(self):
         with tempfile.TemporaryDirectory() as folder:
             _code, make = self.run_start(["3", folder], "macos-arm64")

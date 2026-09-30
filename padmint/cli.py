@@ -859,6 +859,8 @@ def doctor(game, target_name, repo=None, stream=None):
 
 PLATFORM_LABELS = {"android": "Android phone or tablet",
                    "ios": "iPhone or iPad (needs this Mac)"}
+# Off a Mac, for games whose catalog entry says iPhone builds work there too.
+OFF_MAC_IOS_LABEL = "iPhone or iPad (experimental)"
 PLATFORM_NAMES = {"android": "Android", "ios": "iPhone and iPad", "macos": "Mac"}
 # The phone's Download folder, shared with its apps (Termux asks once for access).
 PHONE_DOWNLOADS = Path("/sdcard/Download")
@@ -970,11 +972,15 @@ def start(ask=input, stream=None):
     The copy is saved to Downloads (padmint make --out chooses another folder)."""
     stream = stream or sys.stdout
     print(f"PadMint {__version__}: make your own copy of a game from your own game file.", file=stream)
-    # iPhone builds need Xcode on Apple Silicon; an Intel Mac makes Android copies.
-    apple_silicon = host_id() == "macos-arm64"
+    # iPhone builds need Xcode on Apple Silicon, except games marked ios_off_mac, which also
+    # build on Windows and Linux computers. An Intel Mac and a phone make Android copies.
+    host = host_id()
+    apple_silicon = host == "macos-arm64"
+    computer_off_mac = host.startswith(("windows-", "linux-")) and not on_android()
     games = []
     for game, entry in sorted(catalog().items()):
-        platforms = [name for name in entry.get("player_targets", []) if name != "ios" or apple_silicon]
+        ios_here = apple_silicon or (computer_off_mac and entry.get("ios_off_mac", False))
+        platforms = [name for name in entry.get("player_targets", []) if name != "ios" or ios_here]
         if platforms:
             name = (entry.get("manifest") or {}).get("name") or entry.get("name", game)
             games.append((game, name, platforms))
@@ -997,7 +1003,8 @@ def start(ask=input, stream=None):
     if game is None:
         game = choose("Game", [(game, name) for game, name, _ in games], ask, stream)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
-    target = choose("Make it for", [(p, PLATFORM_LABELS.get(p, p)) for p in platforms], ask, stream)
+    labels = dict(PLATFORM_LABELS, **({} if apple_silicon else {"ios": OFF_MAC_IOS_LABEL}))
+    target = choose("Make it for", [(p, labels.get(p, p)) for p in platforms], ask, stream)
     if catalog()[game].get("player_game_file", "build") == "in-app":
         disc = None
         print(f"{name} asks for your own game file inside the app, after you install it.", file=stream)

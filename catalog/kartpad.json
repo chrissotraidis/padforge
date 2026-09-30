@@ -10,6 +10,7 @@
     "RMCP01"
   ],
   "free_space_gb": 16,
+  "ios_off_mac": true,
   "reviewed_revision": null,
   "notes": "Players: padmint make kartpad android|ios (the manifest in KartPad's repository is used). This embedded manifest is the fallback when the release or an older checkout has none; its android target is KartPad v0.7.2's.",
   "player_next": {
