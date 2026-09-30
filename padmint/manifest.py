@@ -208,6 +208,16 @@ def host_id():
     return f"{system}-{machine}"
 
 
+ANDROID_MARK = Path("/system/build.prop")
+
+
+def on_android():
+    """True in Linux on an Android phone or tablet (Ubuntu in Termux, see
+    launchers/padmint-android.sh). host_id() is linux-arm64 there; the kernel,
+    storage and memory are the phone's."""
+    return platform.system() == "Linux" and ANDROID_MARK.is_file()
+
+
 def expand(template, values):
     """Fill placeholders inside a fixed argument list; values never become shell text."""
     return [item.format_map(values) for item in template]

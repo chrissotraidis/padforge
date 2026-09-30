@@ -22,7 +22,8 @@ import uuid
 
 from . import __version__, game_file, gate, tools
 from .manifest import (RUNNABLE_STATES, catalog, expand, host_id, load_manifest,
-                       manifest_for, manifest_sha256, needs_build_input, repository_manifest)
+                       manifest_for, manifest_sha256, needs_build_input, on_android,
+                       repository_manifest)
 from .package import validate_ipa
 
 
@@ -667,6 +668,8 @@ def doctor(game, target_name, repo=None, stream=None):
 
 PLATFORM_LABELS = {"android": "Android phone or tablet",
                    "ios": "iPhone or iPad (needs this Mac)"}
+# The phone's Download folder, shared with its apps (Termux asks once for access).
+PHONE_DOWNLOADS = Path("/sdcard/Download")
 
 
 def dropped_path(text):
@@ -677,6 +680,25 @@ def dropped_path(text):
     elif os.name != "nt":
         text = re.sub(r"\\(.)", r"\1", text)
     return Path(text).expanduser()
+
+
+def player_folder():
+    """Where a player's own files usually are: on a phone its Download folder,
+    else Downloads (or the home folder)."""
+    if on_android() and PHONE_DOWNLOADS.is_dir():
+        return PHONE_DOWNLOADS
+    default = Path.home() / "Downloads"
+    return default if default.is_dir() else Path.home()
+
+
+def game_files(folder, manifest):
+    """Files in folder with an extension one of the manifest's inputs accepts, newest first."""
+    formats = {"." + name for item in (manifest or {}).get("inputs", []) for name in item.get("formats", [])}
+    try:
+        found = [path for path in folder.iterdir() if path.is_file() and path.suffix.lower() in formats]
+    except OSError:
+        return []
+    return sorted(found, key=lambda path: path.stat().st_mtime, reverse=True)
 
 
 def choose(title, options, ask, stream):
@@ -711,16 +733,22 @@ def start(ask=input, stream=None):
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
     target = choose("Make it for", [(p, PLATFORM_LABELS.get(p, p)) for p in platforms], ask, stream)
     disc = None
+    default = player_folder()
     if catalog()[game].get("player_game_file", "build") == "in-app":
         print(f"{name} asks for your own game file inside the app, after you install it.", file=stream)
     else:
-        while True:
-            disc = dropped_path(ask(f"Drag your own {name} game file into this window, then press Enter: "))
-            if disc.is_file():
-                break
-            print(f"No file at {disc}", file=stream)
-    default = Path.home() / "Downloads"
-    default = default if default.is_dir() else Path.home()
+        # A phone has no window to drag files into: offer the game files in its Download folder.
+        found = game_files(default, catalog()[game].get("manifest")) if on_android() else []
+        if found:
+            disc = choose(f"Your {name} game file", [(path, path.name) for path in found]
+                          + [(None, "Another file (type its path)")], ask, stream)
+        prompt = (f"Type the path of your own {name} game file, then press Enter: " if on_android()
+                  else f"Drag your own {name} game file into this window, then press Enter: ")
+        while disc is None:
+            disc = dropped_path(ask(prompt))
+            if not disc.is_file():
+                print(f"No file at {disc}", file=stream)
+                disc = None
     answer = ask(f"Save it in which folder? Press Enter for {default}: ").strip()
     out = dropped_path(answer) if answer else default
     code = make(game, target, disc.resolve() if disc else None, out.resolve())
