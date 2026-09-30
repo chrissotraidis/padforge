@@ -733,9 +733,11 @@ def start(ask=input, stream=None):
 
 def git_program():
     """Git: the system's, or the copy PadMint installs (Windows usually has none)."""
-    if shutil.which("git") is None:
+    program = tools.executable("git", host_id())
+    if program == "git" and shutil.which("git") is None:
         tools.install(["git"], host_id())
-    return tools.executable("git", host_id())
+        program = tools.executable("git", host_id())
+    return program
 
 
 def source_complete(source):
