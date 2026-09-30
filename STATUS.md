@@ -289,6 +289,19 @@ and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
 0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
 without a Mac (Hubble).
 
+**Update 00:50, 1 Oct (0.2.4):** PadMint 0.2.3 published 1 Oct 00:20 (Latest,
+checked on Mac, Linux and the Windows VM). town3r's GoldenPad build next
+stopped on Xcode's Metal Toolchain (downloaded separately since Xcode 26).
+0.2.4: #55 a version check that exits non-zero counts as missing, and
+requirements can carry a label, so a recipe can require the Metal Toolchain
+(xcrun metal --version); #54 README: Play Protect "Unsafe app blocked" for
+Termux on Android 17 (More details, Install anyway). Metal census (player
+path of each latest release): AnnePad, BananaPad, BearBirdPad, DinoPad and
+GoldenPad compile RT64's Metal shaders on the Mac; the libultraship games,
+KartPad, BlueWake, MeleePad, SunPad, BallPad, BellPad and BarrelPad do not.
+Recipes marked (annepad#11, bananapad#14, bearbirdpad#21, dinopad#11,
+goldenpad#47); those games get recipe-only releases next.
+
 **Update 00:10, 1 Oct (0.2.3):** PadMint 0.2.2 and KartPad 0.7.3 published
 30 Sep (both Latest, anonymous downloads verified; KartPad fingerprints
 unchanged, emulator and iPhone 14 in-place updates raced). GoldenPad and
