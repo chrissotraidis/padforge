@@ -18,6 +18,7 @@ import signal
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.parse
 import uuid
@@ -708,10 +709,40 @@ def version_tuple(text):
     return tuple(int(part) for part in match.group().split(".")) if match else None
 
 
+def published_recipe(game):
+    """(recipe, where it came from): the one the game's latest release publishes, checked
+    against the release's SHA256SUMS, or PadMint's built-in copy when that can't be had."""
+    entry = catalog().get(game)
+    if entry is None:
+        raise ValueError(f"unknown game {game}; see padmint list")
+    try:
+        tag, assets = latest_release(entry["repo_url"])
+    except (RuntimeError, ValueError, OSError):
+        why = "could not reach the release"
+    else:
+        name = next((n for n in assets if n.endswith("-padmint.json")), None)
+        if name is None:
+            why = f"the {tag} release publishes no recipe"
+        else:
+            try:
+                with tempfile.TemporaryDirectory() as folder:
+                    return load_manifest(published_app(name, assets, Path(folder))), f"{game} {tag} release"
+            except (RuntimeError, ValueError, OSError):
+                why = "could not reach the release"
+    manifest, _source = manifest_for(game)
+    return manifest, f"PadMint's built-in copy; {why}"
+
+
 def doctor(game, target_name, repo=None, stream=None):
-    """Check this computer against a game's declared requirements; install nothing."""
+    """Check this computer for a game's build; install nothing. Without a checkout this is the
+    player's path: the latest release's recipe, PadMint's own tools and the catalog's free space.
+    With --repo it is a checkout build: that recipe's own requirements apply."""
     stream = stream or sys.stdout
-    manifest, source = manifest_for(game, repo)
+    if repo is None:
+        manifest, source = published_recipe(game)
+    else:
+        manifest, source = manifest_for(game, repo)
+        source = f"your checkout {repo}" if source == "repository" else f"PadMint's built-in copy; {repo} has none"
     problems = 0
 
     def report(ok, label, detail=""):
@@ -719,7 +750,7 @@ def doctor(game, target_name, repo=None, stream=None):
         problems += 0 if ok else 1
         print(f"{'ok  ' if ok else 'FIX '} {label}{': ' + detail if detail else ''}", file=stream)
 
-    print(f"{manifest['name']} ({manifest['status']}, manifest from {source})", file=stream)
+    print(f"{manifest['name']} ({manifest['status']}, recipe: {source})", file=stream)
     report(sys.version_info >= (3, 9), "Python 3.9+", sys.version.split()[0])
     host = host_id()
     target = manifest["targets"].get(target_name)
@@ -736,6 +767,14 @@ def doctor(game, target_name, repo=None, stream=None):
         missing = tools.missing_system_library(target.get("tools", []), host)
         if missing:
             report(False, missing[0], missing[1])
+    if repo is None:
+        needed = catalog()[game].get("free_space_gb", 0)
+        home = tools.tools_root().parent
+        existing = next(path for path in [home, *home.parents] if path.exists())
+        free = shutil.disk_usage(existing).free / (1 << 30)
+        report(free >= needed, "free disk space", f"{free:.0f} GB free, {needed} GB needed")
+        print(f"{problems} item(s) to fix" if problems else "Ready", file=stream)
+        return 1 if problems else 0
     for tool in manifest.get("requirements", {}).get("tools", []):
         path = shutil.which(tool["name"])
         if path is None:

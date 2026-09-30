@@ -4,8 +4,10 @@ import threading
 import unittest
 import urllib.error
 import urllib.request
+from unittest import mock
 from http.server import ThreadingHTTPServer
 
+from padmint import cli
 from padmint.ui import PAGE, Builds, make_handler
 
 
@@ -45,12 +47,15 @@ class UITests(unittest.TestCase):
         request = urllib.request.Request(self.base + "/api/doctor", method="POST",
                                          data=json.dumps({"game": "kartpad", "target": "android"}).encode(),
                                          headers={"X-PadMint-Token": "secret-token"})
-        with urllib.request.urlopen(request, timeout=60) as response:
-            result = json.loads(response.read())
-        self.assertEqual(result["exit_code"], 1)
-        self.assertIn("planned", result["output"])
+        with mock.patch.object(cli, "latest_release", side_effect=RuntimeError("offline")), \
+                mock.patch.object(cli, "host_id", return_value="windows-x86_64"), \
+                mock.patch.object(cli.tools, "missing_system_library", return_value=None):
+            with urllib.request.urlopen(request, timeout=60) as response:
+                result = json.loads(response.read())
+        self.assertIn("recipe: PadMint's built-in copy; could not reach the release", result["output"])
+        self.assertIn("android builds on windows-x86_64: experimental", result["output"])
+        self.assertNotIn("xcodebuild", result["output"])
 
 
 if __name__ == "__main__":
     unittest.main()
-
