@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from padforge import cli
+from padmint import cli
 
 
 class GameDataFolderTests(unittest.TestCase):

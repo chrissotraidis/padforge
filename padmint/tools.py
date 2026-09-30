@@ -1,4 +1,4 @@
-"""Tools PadForge downloads for a game: pinned, checked, kept in PadForge's own folder.
+"""Tools PadMint downloads for a game: pinned, checked, kept in PadMint's own folder.
 
 The lock (tools.lock.json, made by scripts/update-tools-lock.py) names every
 download and the publisher's digest. Nothing is installed system-wide: builds
@@ -31,11 +31,11 @@ def open_url(url):
 
 def download_problem(url, error):
     if "CERTIFICATE_VERIFY_FAILED" in str(error):
-        return ("This Python cannot check website certificates, so PadForge cannot download. "
-                "On a Mac, start PadForge with PadForge.command (it uses Apple's Python), or run "
-                "Install Certificates.command in your Python folder. Then run PadForge again.")
+        return ("This Python cannot check website certificates, so PadMint cannot download. "
+                "On a Mac, start PadMint with PadMint.command (it uses Apple's Python), or run "
+                "Install Certificates.command in your Python folder. Then run PadMint again.")
     return (f"Could not download {url} ({error}). Check your internet connection and run "
-            "PadForge again; finished downloads are kept.")
+            "PadMint again; finished downloads are kept.")
 
 
 def lock():
@@ -43,7 +43,22 @@ def lock():
 
 
 def tools_root():
-    return Path(os.environ.get("PADFORGE_HOME", Path.home() / ".padforge")) / "tools"
+    return home() / "tools"
+
+
+def home():
+    """PadMint's own folder. PadMint was called PadForge before 0.2.0; its folder
+    (~/.padforge) is moved here once so downloaded tools are not fetched again."""
+    chosen = os.environ.get("PADMINT_HOME")
+    if chosen:
+        return Path(chosen)
+    folder, legacy = Path.home() / ".padmint", Path.home() / ".padforge"
+    if not folder.exists() and legacy.is_dir():
+        try:
+            legacy.rename(folder)
+        except OSError:  # For example a file still open on Windows: keep using it.
+            return folder if folder.exists() else legacy
+    return folder
 
 
 def _folder(name, tool):
@@ -51,7 +66,11 @@ def _folder(name, tool):
 
 
 def _marker(folder):
-    return folder / ".padforge-installed"
+    return folder / ".padmint-installed"
+
+
+def _installed(folder):
+    return _marker(folder).is_file() or (folder / ".padforge-installed").is_file()
 
 
 def _download(entry, destination, stream):
@@ -132,7 +151,7 @@ def _long(path):
     r"""On Windows, the extended-length form of path (\\?\C:\...).
 
     The Android NDK nests files about 235 characters deep, so below
-    C:\Users\<name>\.padforge it passes Windows' 260-character limit once the
+    C:\Users\<name>\.padmint it passes Windows' 260-character limit once the
     user name is longer than 24 characters. Extended-length paths have no such
     limit. Other systems get the path unchanged.
     """
@@ -174,10 +193,10 @@ def install(names, host, stream=None):
                 raise RuntimeError(
                     "Git is needed. Install it with your system's package manager "
                     "(for example: sudo apt install git, or on a Mac: xcode-select --install), "
-                    "then run PadForge again.")
+                    "then run PadMint again.")
             raise RuntimeError(f"{name} {tool['version']} has no download for {host}")
         folder = _folder(name, tool)
-        if _marker(folder).is_file():
+        if _installed(folder):
             print(f"ok   {name} {tool['version']}", file=stream)
             continue
         staging = folder.with_name(folder.name + ".partial")
@@ -213,7 +232,7 @@ def environment(names, host, base=None):
         tool = table[name]
         entry = tool["hosts"].get(host)
         folder = _folder(name, tool)
-        if entry is None or not _marker(folder).is_file():
+        if entry is None or not _installed(folder):
             continue
         for relative in entry.get("bin", tool.get("bin", [])):
             paths.append(str(folder / relative))
@@ -226,6 +245,6 @@ def environment(names, host, base=None):
 
 
 def executable(name, host):
-    """Full path to a tool: PadForge's installed copy first, then the system's.
+    """Full path to a tool: PadMint's installed copy first, then the system's.
     (Windows looks programs up on the parent's PATH, so pass full paths.)"""
     return shutil.which(name, path=environment([name], host).get("PATH")) or name

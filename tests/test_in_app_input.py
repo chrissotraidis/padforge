@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import unittest
 
-from padforge.cli import execute, validate
+from padmint.cli import execute, validate
 from fixtures import entries, write_ipa
 
 MANIFEST = {
@@ -24,7 +24,7 @@ MANIFEST = {
 
 class InAppInputTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix="padforge in-app ")
+        self.temp = tempfile.TemporaryDirectory(prefix="padmint in-app ")
         self.addCleanup(self.temp.cleanup)
         root = Path(self.temp.name).resolve()
         self.repo = root / "backend"
@@ -34,7 +34,7 @@ class InAppInputTests(unittest.TestCase):
         members.pop("KartPadBuilderProvenance.json")
         write_ipa(ipa, members)
         (self.repo / ".gitignore").write_text("build/\n")
-        (self.repo / "padforge.json").write_text(json.dumps(MANIFEST))
+        (self.repo / "padmint.json").write_text(json.dumps(MANIFEST))
         (self.repo / "scripts/build-personal-ipa.sh").write_text(
             'while [ $# -gt 0 ]; do if [ "$1" = --output ]; then cp %s "$2"; exit 0; fi; shift; done; exit 2\n'
             % shlex.quote(str(ipa)))
@@ -50,7 +50,7 @@ class InAppInputTests(unittest.TestCase):
         repo, disc = validate(self.args)
         self.assertIsNone(disc)
         self.assertEqual(execute(self.args, repo, disc), 0)
-        record = json.loads(next((self.repo / "build/padforge").glob("*/runs/*/record.json")).read_text())
+        record = json.loads(next((self.repo / "build/padmint").glob("*/runs/*/record.json")).read_text())
         self.assertIsNone(record["disc_sha256"])
         self.assertEqual(record["package_validation"]["check"], "minimal-ipa-structure")
         self.assertEqual(record["publication_gate"]["label"], "personal build, not publishable")

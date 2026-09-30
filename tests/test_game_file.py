@@ -4,8 +4,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from padforge import game_file
-from padforge.manifest import validate_manifest
+from padmint import game_file
+from padmint.manifest import validate_manifest
 
 MANIFEST = {"name": "KartPad", "game": "Mario Kart Wii (Wii, RMCP01)",
             "inputs": [{"type": "wii-disc", "game_ids": ["RMCP01"], "revisions": [0]}]}

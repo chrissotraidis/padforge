@@ -9,6 +9,6 @@
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/brawlerpad#get-started",
   "reviewed_revision": null,
-  "notes": "BrawlerPad owns padforge.json (steps around its existing scripts; ROM chosen in the app).",
+  "notes": "BrawlerPad owns padmint.json (steps around its existing scripts; ROM chosen in the app).",
   "manifest": null
 }

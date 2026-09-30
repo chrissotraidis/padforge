@@ -8,8 +8,8 @@ import subprocess
 import tempfile
 import unittest
 
-from padforge.cli import execute, validate
-from padforge.manifest import validate_manifest
+from padmint.cli import execute, validate
+from padmint.manifest import validate_manifest
 from fixtures import entries, write_ipa
 
 STEPS = {
@@ -26,7 +26,7 @@ STEPS = {
 
 class StepsTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix="padforge steps ")
+        self.temp = tempfile.TemporaryDirectory(prefix="padmint steps ")
         self.addCleanup(self.temp.cleanup)
         root = Path(self.temp.name).resolve()
         self.repo = root / "backend"
@@ -43,7 +43,7 @@ class StepsTests(unittest.TestCase):
         self.commit(STEPS)
 
     def commit(self, manifest):
-        (self.repo / "padforge.json").write_text(json.dumps(manifest))
+        (self.repo / "padmint.json").write_text(json.dumps(manifest))
         if not (self.repo / ".git").exists():
             for command in (["init", "-q"], ["config", "user.email", "t@example.invalid"], ["config", "user.name", "T"]):
                 subprocess.run(["git", "-C", str(self.repo), *command], check=True)
@@ -54,7 +54,7 @@ class StepsTests(unittest.TestCase):
                                        source_only=False, no_mods=False, jobs=2)
 
     def records(self):
-        path = next((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        path = next((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         events = [json.loads(line) for line in (path.parent / "progress.jsonl").read_text().splitlines()]
         return json.loads(path.read_text()), [(e["backend"]["event"], e["backend"]["stage"])
                                                for e in events if e["event"] == "backend_event"]
@@ -129,7 +129,7 @@ class StepsTests(unittest.TestCase):
     def test_history_summarizes_records(self):
         repo, disc = validate(self.args)
         self.assertEqual(execute(self.args, repo, disc), 0)
-        from padforge.cli import history
+        from padmint.cli import history
         import io
         stream = io.StringIO()
         self.assertEqual(history(self.repo, stream), 0)

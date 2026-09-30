@@ -1,4 +1,14 @@
-# PadForge decisions
+# PadMint decisions
+
+## D0. The name is PadMint (30 Sep 2026)
+
+This project was first published as PadForge, a name an established Windows
+controller remapper had used since February 2026. Renamed to PadMint at its
+maintainer's request (padmint#25): repository, command, launchers and release
+files. For existing players and game repositories, PadMint moves the old
+`~/.padforge` folder once (keeping downloaded tools), still reads a checkout's
+`padforge.json`, and also sets the `PADFORGE_*` variables for build steps
+until every game repository reads `PADMINT_*`.
 
 Recorded 29 Sep 2026 during the overnight run. Evidence is from this Mac; items
 marked *unverified* have not been demonstrated. Scanner results and build
@@ -6,10 +16,10 @@ feasibility are technical findings, not copyright or licensing clearance.
 
 ## D1. Command line first; the GUI is a thin layer over the same engine
 
-- **Engine:** the Python CLI (`python3 -m padforge`). Python runs on macOS,
+- **Engine:** the Python CLI (`python3 -m padmint`). Python runs on macOS,
   Windows and Linux, needs no packages, and already implements locking,
   progress relay, cancellation and build records.
-- **First GUI:** `padforge ui`, a local browser page served by Python's standard
+- **First GUI:** `padmint ui`, a local browser page served by Python's standard
   library on `127.0.0.1`, reading the same `progress.jsonl` events. No Electron,
   Tauri or native toolkit, so there is nothing extra to sign or notarize per OS.
 - **Later:** a downloadable one-file bundle (`.dmg`/`.exe`/AppImage) once a
@@ -17,39 +27,39 @@ feasibility are technical findings, not copyright or licensing clearance.
 - **Why:** one engine for all three operating systems; the interface cannot
   drift from what the CLI actually does; the expensive part (tool setup and
   multi-hour builds) is the same either way.
-- **Implemented 29 Sep:** `python3 -m padforge ui` serves the page on
+- **Implemented 29 Sep:** `python3 -m padmint ui` serves the page on
   `127.0.0.1` with a random token and a Host check, runs `doctor`/`plan` in
-  process and starts builds as `python3 -m padforge build` subprocesses (one at
+  process and starts builds as `python3 -m padmint build` subprocesses (one at
   a time, cancellable), showing stages from the same events. Checked in the
   in-app browser against StarshipPad: current commit, doctor Ready, plan steps.
 
 ## D4. Manifests may list existing scripts as ordered steps
 
 A target declares either one `command` (with optional modes/options) or
-`steps` (stage name + argument list). PadForge runs steps in order, emits the
+`steps` (stage name + argument list). PadMint runs steps in order, emits the
 stage events itself, rechecks the checkout before each step and stops at the
 first failure. Most ports already have working scripts, so adding a game is a
 manifest-only change rather than a new wrapper in every repository.
 
 ## D2. Games plug in through a manifest they own
 
-- Each game repository owns `padforge.json` (schema in
-  [`padforge/manifest.py`](../padforge/manifest.py)): identity, kind, accepted
+- Each game repository owns `padmint.json` (schema in
+  [`padmint/manifest.py`](../padmint/manifest.py)): identity, kind, accepted
   inputs, host/target matrix with per-cell status, entry commands, stages,
   output checks and publication policy.
-- PadForge's catalog (`catalog/*.json`) pins each supported game to a
+- PadMint's catalog (`catalog/*.json`) pins each supported game to a
   repository URL and a reviewed commit. Adding a game = manifest in its repo +
   one catalog entry. Game-specific translation, patches and packaging stay in
-  the game repository; PadForge does not copy them.
+  the game repository; PadMint does not copy them.
 - Kinds: `disc-translation` (static recompilation), `emulator-shell`,
   `decomp-patches` (fetch upstream decompilation, apply own patches),
   `upstream-engine` (fetch other projects' engines), `clean-engine`.
 
-## D3. PadForge is the home of the compliance gate
+## D3. PadMint is the home of the compliance gate
 
-- `padforge audit <path>` runs the release gate (copied from the private
+- `padmint audit <path>` runs the release gate (copied from the private
   `~/.codex/release-gate/release_gate.py`, which remains the reference until the
-  owner retires it). Every PadForge package step runs it automatically and
+  owner retires it). Every PadMint package step runs it automatically and
   records the result: personal builds must be labeled *personal, not
   publishable*; source archives must pass.
 - A gate failure on anything intended for publication is a stop.
@@ -65,7 +75,7 @@ Nothing containing game code, disc data or keys is published. Everything else
 is, in the same shape for every repo and every update: one version (the repo's
 `version.json`), assets named `<Game>-vX.Y.Z-...`, and `SHA256SUMS`.
 
-| Kind | Published | Player uses PadForge to |
+| Kind | Published | Player uses PadMint to |
 |---|---|---|
 | No game code (clean engines) | Full APK/IPA | Nothing |
 | Translated code (KartPad, BlueWake, SunPad...) | Empty app + recipe | Build the game pack from their own disc |
@@ -76,7 +86,7 @@ shared; splitting it out keeps everything else a normal download with normal
 in-place updates. On Android the empty app keeps the owner's signing key and
 loads the pack from its own storage, so updates and saves are unaffected.
 Translated ports share three recipes (WiiCompiled, Dolphin/DolRecomp,
-N64Recomp+RT64) instead of one per repo. PadForge is one app for every game,
+N64Recomp+RT64) instead of one per repo. PadMint is one app for every game,
 released on its own schedule.
 
 ## D6. The player's computer builds only the game pack (29 Sep 2026)
@@ -88,7 +98,7 @@ one library against the published app's runtime:
 - Android: the Android NDK's compiler, CMake and Ninja. No Gradle, Java or
   Android SDK. The player copies the pack to the phone and picks it in the app;
   it loads from the app's own storage.
-- iPhone: the pack is a dylib that PadForge puts inside the empty IPA
+- iPhone: the pack is a dylib that PadMint puts inside the empty IPA
   (`Frameworks/`); the player's sideloading tool signs the IPA as usual.
 
 Why: it is the smallest toolset that works on all three systems, and the
@@ -104,12 +114,12 @@ so it is always exported. Check for regressions by listing data symbols that
 both the pack and the app define; the answer must be none (a pure lookup cache
 is the only allowed exception).
 
-## D7. PadForge downloads its own pinned tools (29 Sep 2026)
+## D7. PadMint downloads its own pinned tools (29 Sep 2026)
 
-`padforge tools GAME --target TARGET` installs what that target lists (Git on
-Windows, .NET 8, CMake, Ninja, the Android NDK, nodtool) into PadForge's own
-folder (`~/.padforge/tools`), never system-wide. Every download is pinned in
-`padforge/tools.lock.json` with the publisher's own digest (GitHub release
+`padmint tools GAME --target TARGET` installs what that target lists (Git on
+Windows, .NET 8, CMake, Ninja, the Android NDK, nodtool) into PadMint's own
+folder (`~/.padmint/tools`), never system-wide. Every download is pinned in
+`padmint/tools.lock.json` with the publisher's own digest (GitHub release
 digests, CMake's SHA-256 list, Google's SDK index, Microsoft's release
 metadata); `scripts/update-tools-lock.py` regenerates it. Builds get the tools
 first on PATH plus `ANDROID_NDK_ROOT` and `DOTNET_ROOT`.
@@ -124,11 +134,11 @@ decimals with a comma must not change generated code.
 
 ## D8. Players get a folder with a launcher, not an installer (29 Sep 2026)
 
-PadForge's release is three ZIP files: Windows (with Python's official
+PadMint's release is three ZIP files: Windows (with Python's official
 embeddable package, pinned by python.org's SHA-256, so nothing else to
-install), macOS and Linux (the system Python). Each holds the same `padforge`
-package plus a launcher: `PadForge.cmd`, `PadForge.command`, `padforge.sh`.
-Starting PadForge with no command asks only what it cannot know: the game (and
+install), macOS and Linux (the system Python). Each holds the same `padmint`
+package plus a launcher: `PadMint.cmd`, `PadMint.command`, `padmint.sh`.
+Starting PadMint with no command asks only what it cannot know: the game (and
 the phone type when there is a choice), the player's game file (drag it into
 the window) and the folder to save in. `player_targets` in a catalog entry is
 what makes a game appear there.
@@ -141,14 +151,14 @@ signed desktop app is a later step if players need it.
 
 ## D9. iPhone builds target iOS 15 or later (29 Sep 2026)
 
-Xcode 27, the Xcode PadForge's iPhone builds use, supports iOS 15.0 to 27.0
+Xcode 27, the Xcode PadMint's iPhone builds use, supports iOS 15.0 to 27.0
 only; a project that asks for 14.0 fails at CMake configure (HarkinianPad and
 MaskPad showed it, from their upstreams' cached 10.15 macOS target). Ports that
 defaulted to 14.0 move to 15.0, still overridable. iOS 15 runs on the same
 iPhones and iPads as iOS 14 (iPhone 6s and SE, iPad Air 2, iPad mini 4 and
 later), so no device loses support; a device still on 14 needs a system update.
 
-Why: a player's PadForge build must succeed with the current Xcode. Recorded
+Why: a player's PadMint build must succeed with the current Xcode. Recorded
 as a loop decision (not in the owner's stop list); reversible per port with its
 `DEPLOYMENT_TARGET` override.
 
@@ -157,7 +167,7 @@ as a loop decision (not in the owner's stop list); reversible per port with its
 The N64 ports (GoldenPad, BananaPad, BearBirdPad, SnapPad, DinoPad and the
 like) compile the code translated from the ROM straight into the app binary
 through CMake; they have no separate game module. They therefore follow the
-decompilation row of D5: the release publishes the recipe, and PadForge builds
+decompilation row of D5: the release publishes the recipe, and PadMint builds
 the whole app from the player's own ROM.
 
 Why: splitting each N64 port into an empty app plus a loadable module (the
@@ -172,9 +182,9 @@ port gains Android or a Windows-built iPhone path later, revisit this for it.
 Dolphin sets built-in Wii keys (retail, Korean and dev common keys, SD key) as
 IOS defaults, so any empty app linking the Dolphin core fails the content check.
 The Dolphin-based ports SunPad and MeleePad (BlueWake's published app already
-passes) build their iOS core with `PADFORGE_PUBLIC_APP`, which leaves those keys zeroed
+passes) build their iOS core with `PADMINT_PUBLIC_APP`, which leaves those keys zeroed
 in `IOSC.cpp` on each port's RecompCore branch. The published app is also the
-one PadForge completes for players, so there is one build, not two.
+one PadMint completes for players, so there is one build, not two.
 
 Why: GameCube games never use these keys, and a Wii title would read the
 player's own `keys.bin`, the same pattern as KartPad's Android disc import
@@ -269,7 +279,7 @@ cross-platform). Requires the same module split as S1.
 
 ## Resulting direction
 
-1. Now: Mac builds everything (iPhone/iPad, Mac, Android) through PadForge.
+1. Now: Mac builds everything (iPhone/iPad, Mac, Android) through PadMint.
 2. Next: host-neutral Android builds (Linux, then Windows via WSL2).
 3. Then, owner decision: runtime-only public apps plus player-built modules,
    starting with BlueWake (already split), then KartPad after a module refactor.

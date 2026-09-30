@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 from http.server import ThreadingHTTPServer
 
-from padforge.ui import PAGE, Builds, make_handler
+from padmint.ui import PAGE, Builds, make_handler
 
 
 class UITests(unittest.TestCase):
@@ -26,13 +26,13 @@ class UITests(unittest.TestCase):
         with self.assertRaises(urllib.error.HTTPError) as context:
             self.get("/api/games")
         self.assertEqual(context.exception.code, 403)
-        status, body = self.get("/api/games", {"X-PadForge-Token": "secret-token"})
+        status, body = self.get("/api/games", {"X-PadMint-Token": "secret-token"})
         self.assertEqual(status, 200)
         self.assertIn("kartpad", [game["id"] for game in json.loads(body)])
 
     def test_foreign_host_header_is_rejected(self):
         with self.assertRaises(urllib.error.HTTPError) as context:
-            self.get("/api/games", {"X-PadForge-Token": "secret-token", "Host": "attacker.example"})
+            self.get("/api/games", {"X-PadMint-Token": "secret-token", "Host": "attacker.example"})
         self.assertEqual(context.exception.code, 403)
 
     def test_page_embeds_token_and_valid_script_strings(self):
@@ -44,7 +44,7 @@ class UITests(unittest.TestCase):
     def test_doctor_runs_through_the_cli(self):
         request = urllib.request.Request(self.base + "/api/doctor", method="POST",
                                          data=json.dumps({"game": "kartpad", "target": "android"}).encode(),
-                                         headers={"X-PadForge-Token": "secret-token"})
+                                         headers={"X-PadMint-Token": "secret-token"})
         with urllib.request.urlopen(request, timeout=60) as response:
             result = json.loads(response.read())
         self.assertEqual(result["exit_code"], 1)

@@ -8,7 +8,7 @@ import zipfile
 from pathlib import Path
 from unittest import mock
 
-from padforge import tools
+from padmint import tools
 
 
 class ToolsTests(unittest.TestCase):
@@ -25,7 +25,7 @@ class ToolsTests(unittest.TestCase):
             "test-host": {"url": archive.as_uri(), "sha256": digest, "archive": "zip",
                           "bin": ["tool-1/bin"]}}}}
         self.patches = [mock.patch.object(tools, "lock", return_value=self.lock),
-                        mock.patch.dict(os.environ, {"PADFORGE_HOME": str(self.root / "home")})]
+                        mock.patch.dict(os.environ, {"PADMINT_HOME": str(self.root / "home")})]
         for patch in self.patches:
             patch.start()
 
@@ -57,7 +57,7 @@ class ToolsTests(unittest.TestCase):
         self.lock["tool"]["hosts"]["test-host"]["sha256"] = "0" * 64
         with self.assertRaisesRegex(RuntimeError, "mismatch"):
             tools.install(["tool"], "test-host", io.StringIO())
-        self.assertFalse((tools.tools_root() / "tool-1/.padforge-installed").exists())
+        self.assertFalse((tools.tools_root() / "tool-1/.padmint-installed").exists())
 
     def test_links_in_zip_archives_become_links(self):
         archive = self.root / "linked.zip"

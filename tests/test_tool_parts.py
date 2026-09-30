@@ -8,7 +8,7 @@ import zipfile
 from pathlib import Path
 from unittest import mock
 
-from padforge import tools
+from padmint import tools
 
 
 def digest(path):
@@ -40,11 +40,11 @@ class ToolPartsTests(unittest.TestCase):
                 "arm-host": {"url": ndk.as_uri(), "sha256": digest(ndk), "archive": "zip",
                              "members": ["ndk/source.properties", "ndk/build/"], "with": ["llvm"]},
                 "other-host": {"url": ndk.as_uri(), "sha256": digest(ndk), "archive": "zip"}}},
-            "llvm": {"version": "21", "only_where_listed": True, "env": {"PADFORGE_LLVM_ROOT": "llvm"},
+            "llvm": {"version": "21", "only_where_listed": True, "env": {"PADMINT_LLVM_ROOT": "llvm"},
                      "hosts": {"arm-host": {"url": llvm.as_uri(), "sha256": digest(llvm), "archive": "tar.xz",
                                             "members": ["llvm/bin/clang", "llvm/bin/clang-21"]}}}}
         for patch in (mock.patch.object(tools, "lock", return_value=self.lock),
-                      mock.patch.dict(os.environ, {"PADFORGE_HOME": str(self.root / "home")})):
+                      mock.patch.dict(os.environ, {"PADMINT_HOME": str(self.root / "home")})):
             patch.start()
             self.addCleanup(patch.stop)
 
@@ -57,7 +57,7 @@ class ToolPartsTests(unittest.TestCase):
         self.assertEqual((llvm / "clang").read_bytes(), b"compiler")  # the link resolves
         self.assertFalse((llvm / "clang-tidy").exists())
         env = tools.environment(["android-ndk"], "arm-host", {"PATH": ""})
-        self.assertEqual(env["PADFORGE_LLVM_ROOT"], str(self.root / "home/tools/llvm-21/llvm"))
+        self.assertEqual(env["PADMINT_LLVM_ROOT"], str(self.root / "home/tools/llvm-21/llvm"))
 
     def test_host_only_tool_is_skipped_elsewhere(self):
         tools.install(["android-ndk", "llvm"], "other-host", io.StringIO())

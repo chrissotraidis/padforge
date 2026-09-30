@@ -11,13 +11,13 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from padforge.cli import command, digest, execute, run_process, validate, workspace_lock
+from padmint.cli import command, digest, execute, run_process, validate, workspace_lock
 from fixtures import entries, write_ipa
 
 
 class RunnerTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix="padforge test ")
+        self.temp = tempfile.TemporaryDirectory(prefix="padmint test ")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve()
         self.repo = self.root / "backend"
@@ -89,7 +89,7 @@ exit 2
     def test_execute_records_hash_and_reuses_configuration(self):
         for _ in range(2):
             self.assertEqual(execute(self.args, self.repo, self.disc), 0)
-        root = self.repo / "build/padforge"
+        root = self.repo / "build/padmint"
         self.assertEqual(len(list(root.glob("*/backend"))), 0)  # fake backend needs no cache
         records = list(root.glob("*/runs/*/record.json"))
         self.assertEqual(len(records), 2)
@@ -105,14 +105,14 @@ exit 2
         self.git("commit", "-qam", "Backend returns no output")
         self.args.revision = self.git("rev-parse", "HEAD")
         self.assertEqual(execute(self.args, self.repo, self.disc), 1)
-        record = next((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        record = next((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         self.assertEqual(json.loads(record.read_text())["status"], "failed")
 
     def test_changed_jobs_reuses_workspace_but_preserves_attempt_options(self):
         for jobs in (2, 8):
             self.args.jobs = jobs
             self.assertEqual(execute(self.args, self.repo, self.disc), 0)
-        records = list((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        records = list((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         data = [json.loads(path.read_text()) for path in records]
         self.assertEqual({item["jobs"] for item in data}, {2, 8})
         self.assertEqual(len({item["workspace_key"] for item in data}), 1)
@@ -148,7 +148,7 @@ fi
         for source_only in (True, False):
             self.args.source_only = source_only
             self.assertEqual(execute(self.args, self.repo, self.disc), 0)
-        records = list((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        records = list((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         data = [json.loads(path.read_text()) for path in records]
         self.assertEqual({item["source_only"] for item in data}, {True, False})
         self.assertEqual(len({item["workspace_key"] for item in data}), 1)
@@ -162,14 +162,14 @@ fi
         self.git("commit", "-qm", "Docs update")
         self.args.revision = self.git("rev-parse", "HEAD")
         self.assertEqual(execute(self.args, self.repo, self.disc), 0)
-        records = list((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        records = list((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         self.assertEqual(len({path.parents[2] for path in records}), 2)
 
     def test_custom_workspace_stays_ignored_and_uses_shared_lock(self):
         self.args.workspace_root = self.repo / "build/separate-check"
         self.assertEqual(execute(self.args, self.repo, self.disc), 0)
         self.assertEqual(len(list(self.args.workspace_root.glob("*/runs/*/record.json"))), 1)
-        with workspace_lock(self.repo / "build/padforge/runner.lock"):
+        with workspace_lock(self.repo / "build/padmint/runner.lock"):
             with self.assertRaisesRegex(ValueError, "Another"):
                 execute(self.args, self.repo, self.disc)
         self.args.workspace_root = self.root / "outside"
@@ -182,9 +182,9 @@ fi
             value = digest(path)
             original.write_text(original.read_text() + "\n# unreviewed edit\n")
             return value
-        with patch("padforge.cli.digest", side_effect=mutate):
+        with patch("padmint.cli.digest", side_effect=mutate):
             self.assertEqual(execute(self.args, self.repo, self.disc), 1)
-        record_path = next((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        record_path = next((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         record = json.loads(record_path.read_text())
         self.assertEqual(record["checkout_check"], "before-launch-failed")
         self.assertFalse((record_path.parent / "personal.ipa").exists())
@@ -195,7 +195,7 @@ fi
         self.git("commit", "-qam", "Self-mutating synthetic backend")
         self.args.revision = self.git("rev-parse", "HEAD")
         self.assertEqual(execute(self.args, self.repo, self.disc), 1)
-        record_path = next((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        record_path = next((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         record = json.loads(record_path.read_text())
         self.assertEqual(record["checkout_check"], "after-exit-failed")
         self.assertEqual(record["status"], "failed")
@@ -205,7 +205,7 @@ fi
     def test_plain_text_ipa_is_rejected(self):
         self.ipa.write_text("not a ZIP package")
         self.assertEqual(execute(self.args, self.repo, self.disc), 1)
-        record = next((self.repo / "build/padforge").glob("*/runs/*/record.json"))
+        record = next((self.repo / "build/padmint").glob("*/runs/*/record.json"))
         self.assertEqual(json.loads(record.read_text())["status"], "failed")
 
     def test_events_skip_old_and_survive_partial_lines(self):

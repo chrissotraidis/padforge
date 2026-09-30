@@ -1,15 +1,15 @@
 # Backend integration, 28 September 2026
 
-PadForge owns a small CLI, subprocess execution, checkout locking, local attempt
+PadMint owns a small CLI, subprocess execution, checkout locking, local attempt
 records and progress display. BlueWake and KartPad retain their existing build
 implementations. No backend source has been copied, and no license has been
 inferred for upstream code. There is no plugin loading or arbitrary command option.
 
-**29 Sep update:** backend commands now come from each game's `padforge.json`
+**29 Sep update:** backend commands now come from each game's `padmint.json`
 (or the interim manifest in `catalog/`), not from code. A manifest can only
 fill the fixed placeholders `{repo}`, `{disc}`, `{work}`, `{output}` and
 `{jobs}` inside an argument list; values never become shell text. Personal
-outputs are run through `padforge audit` automatically and the result is
+outputs are run through `padmint audit` automatically and the result is
 stored in the attempt record. The table below still describes the backends.
 
 ## Current interface
@@ -22,16 +22,16 @@ hashing), after backend exit and before saving the final result. Changes reject
 the attempt and are recorded. This catches persistent concurrent changes, not
 edits restored between checks; it is not an immutable checkout or a sandbox.
 The caller must trust that checkout and the tools it executes. Ignored dependency
-trees are still the backend's responsibility. PadForge never fetches a backend.
+trees are still the backend's responsibility. PadMint never fetches a backend.
 
 An attempt gets a private output directory under the backend's ignored
-`build/padforge/`. The reusable workspace key includes a workspace-schema version,
+`build/padmint/`. The reusable workspace key includes a workspace-schema version,
 game, complete disc hash, backend commit, target and mod selection. Job count and
 source-only/full mode are attempt controls: changing them reuses the same backend
-work directory. The complete options, PadForge version and workspace identity/key
+work directory. The complete options, PadMint version and workspace identity/key
 remain recorded in every attempt. A new attempt log and output path prevent stale output
 from being mistaken for a new successful build. The backend validates its cache.
-PadForge does not certify those validations or skip stages itself.
+PadMint does not certify those validations or skip stages itself.
 
 Revision policy is deliberately conservative: a new backend commit selects a new
 workspace, including documentation-only commits. Cross-revision reuse requires
@@ -39,7 +39,7 @@ adapter-specific proof that all affected outputs are invalidated correctly; the
 wrapper does not guess which files are build inputs or use a docs-path exclusion
 list. This remains a performance limitation for ordinary app updates. Changes to
 disc, target or mods also select separate workspaces. Workspace schema changes
-can intentionally invalidate reuse without coupling it to every PadForge version.
+can intentionally invalidate reuse without coupling it to every PadMint version.
 
 The revised key does not automatically migrate or delete workspaces made with the
 old all-options key (including the recorded source-only integration below). Their
@@ -48,7 +48,7 @@ and the same workspace root. No live BlueWake build was started for this change.
 Synthetic tests prove source-preflight/full reuse, changed-jobs reuse with separate
 records, and revision isolation; real-game timing savings have not been measured.
 
-The checkout-wide advisory lock coordinates PadForge processes, including
+The checkout-wide advisory lock coordinates PadMint processes, including
 shared dependency caches. It cannot stop builds started directly or by another
 tool. Do not run those concurrently in the same checkout. Use a separate clean
 checkout when another agent is editing or building there.
@@ -64,7 +64,7 @@ Cancellation sends TERM to the process group, allowing 20 seconds for cleanup.
 BlueWake's nested stage/training sessions must forward cancellation correctly;
 arbitrary detached descendants cannot be guaranteed terminated by this wrapper.
 
-Before recording a packaged result, PadForge checks ZIP integrity, unambiguous
+Before recording a packaged result, PadMint checks ZIP integrity, unambiguous
 app metadata, the declared executable's presence/Mach-O magic and backend
 provenance. BlueWake additionally requires its fixed module and matching hash,
 clean source revision and local-training marker. KartPad provenance must match
@@ -89,7 +89,7 @@ Neither dirty primary checkout was executed or modified for this work.
 BlueWake's owner subsequently reported focused SIGINT/SIGTERM tests proving
 child cleanup and cancellation events, and a real CMake/Ninja test proving
 profile changes trigger rebuilds under paths with spaces. Those are backend
-owner results, not an end-to-end PadForge build. The owner also reports the iPad
+owner results, not an end-to-end PadMint build. The owner also reports the iPad
 is unavailable: current work is Mac-only and synthetic tests must not launch a
 concurrent BlueWake build. Hardware acceptance remains deferred.
 
@@ -97,9 +97,9 @@ concurrent BlueWake build. Hardware acceptance remains deferred.
 
 ### Completed source-only integration
 
-On 28 September, one real run through PadForge used clean BlueWake revision
+On 28 September, one real run through PadMint used clean BlueWake revision
 `36b8488e7887e4f3ea4600c7d09790a24c241021`, the owner's archived disc and a
-separate ignored `build/padforge-source-check` workspace. It exited 0 with
+separate ignored `build/padmint-source-check` workspace. It exited 0 with
 `source_only: true`, `status: completed` and `checkout_check: before-record-passed`.
 The checkout remained clean at the same revision. All seven backend stage
 start/completion pairs were relayed. Elapsed time was 11.87 seconds after disc
@@ -118,7 +118,7 @@ training, installation or device operation was performed by this integration.
 
 1. BlueWake owner finishes local training and hardware acceptance, stabilizes a
    clean revision and reviews nested-process cancellation and cache reuse.
-2. Exercise that revision through PadForge with an unsupported disc, interrupted
+2. Exercise that revision through PadMint with an unsupported disc, interrupted
    translation/compile, then a complete fresh local build; verify IPA contents,
    embedded provenance, mod invalidation and local profile generation.
 3. Add stage/result events to KartPad in a separate scoped change after its

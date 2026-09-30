@@ -8,7 +8,7 @@
   ],
   "free_space_gb": 16,
   "reviewed_revision": null,
-  "notes": "Players: padforge make kartpad android|ios (the manifest in KartPad's repository is used). This embedded manifest is the fallback for older checkouts.",
+  "notes": "Players: padmint make kartpad android|ios (the manifest in KartPad's repository is used). This embedded manifest is the fallback for older checkouts.",
   "manifest": {
     "schema_version": 1,
     "id": "kartpad",

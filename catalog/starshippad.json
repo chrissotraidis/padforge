@@ -9,6 +9,6 @@
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/starshippad#get-started",
   "reviewed_revision": null,
-  "notes": "StarshipPad owns padforge.json (steps around its existing scripts; ROM chosen in the app).",
+  "notes": "StarshipPad owns padmint.json (steps around its existing scripts; ROM chosen in the app).",
   "manifest": null
 }

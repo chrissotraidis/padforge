@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from padforge import cli
+from padmint import cli
 
 
 @unittest.skipIf(os.name == "nt", "symbolic links need extra rights on Windows")
@@ -17,7 +17,7 @@ class LinkedHomeTests(unittest.TestCase):
             link.symlink_to(real, target_is_directory=True)
             repo = link / "games/game"
             root = cli.workspace_root(argparse.Namespace(workspace_root=None), repo)
-            self.assertEqual(root, real / "games/game/build/padforge")
+            self.assertEqual(root, real / "games/game/build/padmint")
             with self.assertRaisesRegex(ValueError, "below the backend"):
                 cli.workspace_root(argparse.Namespace(workspace_root=link / "elsewhere"), repo)
 

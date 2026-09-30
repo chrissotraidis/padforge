@@ -9,6 +9,6 @@
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/maskpad#get-started",
   "reviewed_revision": null,
-  "notes": "MaskPad owns padforge.json in its repository. The build needs no ROM; players import theirs in the app.",
+  "notes": "MaskPad owns padmint.json in its repository. The build needs no ROM; players import theirs in the app.",
   "manifest": null
 }

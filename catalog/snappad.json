@@ -3,6 +3,6 @@
   "id": "snappad",
   "repo_url": "https://github.com/chrissotraidis/snappad",
   "reviewed_revision": null,
-  "notes": "padforge.json is on an open PR branch until merged. Manifest owned by the game repository (steps around its existing scripts).",
+  "notes": "padmint.json is on an open PR branch until merged. Manifest owned by the game repository (steps around its existing scripts).",
   "manifest": null
 }

@@ -1,7 +1,7 @@
 import io
 import unittest
 
-from padforge import cli
+from padmint import cli
 
 
 class ListGamesTests(unittest.TestCase):

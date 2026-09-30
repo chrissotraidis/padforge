@@ -224,7 +224,7 @@
       "only_where_listed": true,
       "note": "Linux arm64 only: compiles Android game packs with the NDK's portable parts.",
       "env": {
-        "PADFORGE_LLVM_ROOT": "LLVM-21.1.8-Linux-ARM64"
+        "PADMINT_LLVM_ROOT": "LLVM-21.1.8-Linux-ARM64"
       },
       "hosts": {
         "linux-arm64": {

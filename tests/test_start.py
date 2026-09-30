@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from padforge import cli
+from padmint import cli
 
 CATALOG = {
     "kartpad": {"id": "kartpad", "repo_url": "https://github.com/example/kartpad",

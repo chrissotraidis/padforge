@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Regenerate padforge/tools.lock.json from the publishers' own checksums.
+"""Regenerate padmint/tools.lock.json from the publishers' own checksums.
 
-Every download PadForge installs is pinned here: URL, size where published and
+Every download PadMint installs is pinned here: URL, size where published and
 the publisher's digest (GitHub release digests, CMake's SHA-256 list, Google's
 SDK repository index, Microsoft's .NET release metadata). Nothing is hashed by
 hand. Run it, review the diff, commit.
@@ -114,7 +114,7 @@ def main():
     top = f"LLVM-{LLVM}-Linux-ARM64"
     tools["llvm"] = {"version": LLVM, "only_where_listed": True,
                      "note": "Linux arm64 only: compiles Android game packs with the NDK's portable parts.",
-                     "env": {"PADFORGE_LLVM_ROOT": top}, "hosts": {
+                     "env": {"PADMINT_LLVM_ROOT": top}, "hosts": {
         "linux-arm64": github_file(llvm, f"{top}.tar.xz", archive="tar.xz", members=[
             *(f"{top}/bin/{tool}" for tool in LLVM_TOOLS), f"{top}/lib/clang/21/include/"])}}
 
@@ -128,7 +128,7 @@ def main():
         for host, name in nod_names.items()}}
 
     lock = {"schema_version": 1, "tools": tools}
-    path = Path(__file__).resolve().parents[1] / "padforge/tools.lock.json"
+    path = Path(__file__).resolve().parents[1] / "padmint/tools.lock.json"
     path.write_text(json.dumps(lock, indent=2) + "\n")
     print(f"wrote {path}")
 
