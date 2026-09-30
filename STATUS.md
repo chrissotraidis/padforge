@@ -262,6 +262,11 @@ renamed to *-padmint.json with SHA256SUMS updated and verified; release notes
 say PadMint. MeleePad #36 and SunPad #51 merged; MaskPad #12 waits on a UI test
 that also fails on MaskPad's main (testControlPressReleaseToggleAndLifecycleCancellation).
 
+**Update 18:45:** MaskPad #12 merged after that UI test passed on re-run
+(flaky), so all 20 game repos use padmint.json. Player replies posted on
+kartpad #104, #316, #327, #329, #330 and #357. iPhone players without a Mac
+(#327) cannot build today; that is the most requested gap.
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadMint 0.1.3.
