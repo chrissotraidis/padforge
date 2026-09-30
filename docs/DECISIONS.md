@@ -215,7 +215,8 @@ PadMint ships this before the game does.
 
 Why: Apple's SDK may only be used on Apple computers; these parts are
 redistributable and are downloaded from their publishers, never re-hosted.
-Checked with KartPad 0.7.2 on Linux arm64 through to a race on an iPhone 14.
+Checked with KartPad 0.7.2 on Linux arm64 and Windows 11 ARM64 (arm64 Python)
+through to a race on an iPhone 14.
 Also: a changed lock entry now installs again, a download missing a listed
 file installs nothing, and tar downloads unpack on Windows.
 
