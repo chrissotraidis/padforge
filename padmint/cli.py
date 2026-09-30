@@ -1106,13 +1106,15 @@ def git_program():
 def finish_submodules(repo, stream=None):
     """A download that stops partway can leave a submodule half cloned. Git reports it as
     changed (" M lib/rt64"), so PadMint's clean-checkout check refused every later run.
-    Only for PadMint's own game folders, and only when every reported difference is a
-    submodule: update exactly those once. Anything else keeps the refusal (execute re-checks)."""
+    Only for PadMint's own game folders. A changed gitlink is not proof of an interrupted
+    download: refuse file edits anywhere inside it before updating without force.
+    Anything else keeps the refusal (execute re-checks)."""
     games = (tools.tools_root().parent / "games").resolve()
     if games not in Path(repo).resolve().parents or not (Path(repo) / ".git").exists():
         return []
     command = [git_program(), "-C", str(repo)]
-    status = subprocess.run(command + ["status", "--porcelain=v1", "-z", "--untracked-files=normal"],
+    status = subprocess.run(command + ["status", "--porcelain=v1", "-z", "--untracked-files=normal",
+                                       "--ignore-submodules=none"],
                             capture_output=True, text=True)
     stage = subprocess.run(command + ["ls-files", "--stage", "-z"], capture_output=True, text=True)
     if status.returncode or stage.returncode or not status.stdout:
@@ -1123,9 +1125,48 @@ def finish_submodules(repo, stream=None):
     if not all(entry[0] == " " and entry[3:] in gitlinks for entry in entries):
         return []
     paths = [entry[3:] for entry in entries]
+    empty_clones = []
+
+    def safe_to_update(folder):
+        # An uninitialized submodule must be empty. Otherwise Git could inspect its
+        # parent instead, or its initial checkout could overwrite existing files.
+        if folder.is_symlink():
+            return False
+        if not (folder / ".git").exists():
+            return not folder.exists() or (folder.is_dir() and not any(folder.iterdir()))
+        nested = [command[0], "-C", str(folder)]
+        # Clone can stop before the initial checkout. No files AND no index is
+        # distinct from tracked deletions, which must keep the normal refusal.
+        if all(path.name == ".git" for path in folder.iterdir()):
+            index = subprocess.run(nested + ["rev-parse", "--git-path", "index"],
+                                   capture_output=True, text=True)
+            if index.returncode:
+                return False
+            if not (folder / index.stdout.strip()).exists():
+                empty_clones.append(nested)
+                return True
+        status = subprocess.run(nested + ["status", "--porcelain=v1", "-z", "--untracked-files=all",
+                                         "--ignore-submodules=none", "--ignored"],
+                                capture_output=True, text=True)
+        stage = subprocess.run(nested + ["ls-files", "--stage", "-z"], capture_output=True, text=True)
+        if status.returncode or stage.returncode:
+            return False
+        links = {entry.split("\t", 1)[1] for entry in stage.stdout.split("\0")
+                 if entry.startswith("160000 ")}
+        entries = [entry for entry in status.stdout.split("\0") if entry]
+        if not all(entry[0] == " " and entry[3:] in links for entry in entries):
+            return False
+        return all(safe_to_update(folder / path) for path in links)
+
+    if not all(safe_to_update(Path(repo) / path) for path in paths):
+        return []
     print(f"PadMint is finishing {', '.join(paths)} in {Path(repo).name}: an earlier download "
           "stopped partway.", file=stream or sys.stdout, flush=True)
-    subprocess.run(command + ["submodule", "update", "--init", "--recursive", "--force", "--", *paths])
+    for nested in empty_clones:
+        # update skips checkout when HEAD already matches the parent's gitlink.
+        subprocess.run(nested + ["checkout", "--detach", "HEAD"], check=True)
+    subprocess.run(command + ["submodule", "update", "--init", "--recursive", "--checkout", "--", *paths],
+                   check=True)
     return paths
 
 
