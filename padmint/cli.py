@@ -231,13 +231,14 @@ def run_process(argv, cwd, log_path, event_path, emit, before_spawn=None, append
         signal.signal(signal.SIGTERM, previous)
 
 
-def run_steps(steps, argvs, cwd, log_path, event_path, emit, before_each, values=None, tool_names=()):
+def run_steps(steps, argvs, cwd, log_path, event_path, emit, before_each, values=None, tool_names=(),
+              target_name=None):
     """Run a manifest's ordered steps; PadMint emits the stage events itself."""
     event_path.parent.mkdir(parents=True, exist_ok=True)
     code, cancelled = 0, False
     for step, argv in zip(steps, argvs):
         stage = step["stage"]
-        env = backend_env((values or {}).get("jobs"), tool_names)
+        env = backend_env((values or {}).get("jobs"), tool_names, target_name)
         if step.get("env"):
             env.update({key: expand([value], values or {})[0] for key, value in step["env"].items()})
         argv = with_python_path(argv, env)
@@ -276,12 +277,31 @@ def app_path(args):
     return str(app.expanduser().resolve()) if app else ""
 
 
-def backend_env(jobs, tool_names=()):
+# Apple's /usr/bin/python3, which PadMint.command runs, is an xcrun shim: it exports the Mac
+# SDK as SDKROOT, and /usr/local as CPATH and LIBRARY_PATH, to everything PadMint starts.
+# A device build must pick its own SDK and libraries. With the Mac's, CMake links iPhone code
+# against macOS libraries (MaskPad: "building for 'iOS', but linking in dylib ... built for macOS").
+DEVICE_TARGETS = {"ios": "iPhone", "tvos": "Apple TV"}
+HOST_BUILD_VARIABLES = ("SDKROOT", "CPATH", "LIBRARY_PATH")
+
+
+def inherited_env(target_name=None):
+    """(this process's environment without host build variables for a device target, their names)."""
+    env = dict(os.environ)
+    removed = [key for key in HOST_BUILD_VARIABLES if key in env] if target_name in DEVICE_TARGETS else []
+    for key in removed:
+        del env[key]
+    return env, removed
+
+
+def backend_env(jobs, tool_names=(), target_name=None):
     """Environment for backend processes: PadMint's tools first on PATH, and the
     job cap for `cmake --build`. PADMINT_CACHE is a folder shared by every
     checkout of every game version, for downloads a backend can reuse after an
-    update (it must still check them, as for any cache)."""
-    env = tools.environment(tool_names, host_id()) if tool_names else dict(os.environ)
+    update (it must still check them, as for any cache). For iPhone and Apple TV
+    targets the inherited SDKROOT, CPATH and LIBRARY_PATH are left out."""
+    base, _removed = inherited_env(target_name)
+    env = tools.environment(tool_names, host_id(), base) if tool_names else base
     if jobs:
         env.setdefault("CMAKE_BUILD_PARALLEL_LEVEL", str(jobs))
     env.setdefault("PADMINT_CACHE", str(tools.tools_root().parent / "cache"))
@@ -426,6 +446,13 @@ def execute(args, repo, disc):
         atomic_json(attempt / "record.json", record)
         emit("build_started")
         print(f"Local log: {attempt / 'backend.log'}", flush=True)
+        _env, removed = inherited_env(target_name)
+        if removed:
+            note = (f"PadMint ignores {', '.join(removed)} for {DEVICE_TARGETS[target_name]} builds: "
+                    "they point at this Mac's own SDK or libraries.")
+            print(note, flush=True)
+            with (attempt / "backend.log").open("a") as log:
+                log.write(note + "\n")
 
         def recheck(phase):
             record["checkout_check"] = phase + "-failed"
@@ -439,11 +466,12 @@ def execute(args, repo, disc):
                 code, cancelled = run_steps(target["steps"], argv, repo, attempt / "backend.log",
                                             events, emit, lambda: recheck("before-launch"),
                                             values=placeholder_values(args, repo, disc, work, output),
-                                            tool_names=target.get("tools", []))
+                                            tool_names=target.get("tools", []), target_name=target_name)
             else:
                 code, cancelled = run_process(argv, repo, attempt / "backend.log", events, emit,
                                               before_spawn=lambda: recheck("before-launch"),
-                                              env=backend_env(args.jobs, target.get("tools", [])))
+                                              append=True,  # after PadMint's own notes
+                                              env=backend_env(args.jobs, target.get("tools", []), target_name))
             recheck("after-exit")
             if code == 0 and not args.source_only:
                 if not output.is_file() or output.stat().st_size == 0:
