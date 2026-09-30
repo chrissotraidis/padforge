@@ -201,6 +201,13 @@ end-of-build message and safe output names. VaultPad #6 merged after a
 fresh-home build. KartPad #343 (game_ids for #14's check) waits for the next
 KartPad release.
 
+**Re-audit 10:30:** all 41 public release downloads account-wide pass the
+content check; every tracker release link resolves. Fixed: PaperPad 0.2.0's
+recipe built PaperPad Original, not the PaperBoat app its README describes, so
+PaperPad 0.2.1 builds PaperBoat (played on the iPhone); six READMEs still said
+"a new version is in progress" (fixed or merging); GalaxyPad #15 merged.
+`catalog/paperpad.json`'s note still names build-ios-device.sh (cosmetic).
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
