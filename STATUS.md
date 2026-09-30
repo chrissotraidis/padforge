@@ -193,6 +193,14 @@ the iPhone 14 and released: SunPad, MeleePad, PaperPad, DinoPad (0.2.0 each);
 DevilTouch's published app reached Tristram (L5). PadForge 0.1.4 offers all 18
 games. VaultPad (iPad-only) and the owner decisions below remain.
 
+**Update 09:20:** player path verified end to end: the published PadForge 0.1.4
+from an empty home downloaded the published SunPad 0.2.0 app and recipe and
+built a personal IPA in 47.6 min; it boots on the iPhone with the save kept.
+PadForge 0.1.5 published with the PadForge-experience chat's #13-#16, a quieter
+end-of-build message and safe output names. VaultPad #6 merged after a
+fresh-home build. KartPad #343 (game_ids for #14's check) waits for the next
+KartPad release.
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
