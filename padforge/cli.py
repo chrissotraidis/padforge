@@ -274,10 +274,13 @@ def app_path(args):
 
 def backend_env(jobs, tool_names=()):
     """Environment for backend processes: PadForge's tools first on PATH, and the
-    job cap for `cmake --build`."""
+    job cap for `cmake --build`. PADFORGE_CACHE is a folder shared by every
+    checkout of every game version, for downloads a backend can reuse after an
+    update (it must still check them, as for any cache)."""
     env = tools.environment(tool_names, host_id()) if tool_names else dict(os.environ)
     if jobs:
         env.setdefault("CMAKE_BUILD_PARALLEL_LEVEL", str(jobs))
+    env.setdefault("PADFORGE_CACHE", str(tools.tools_root().parent / "cache"))
     return env
 
 
