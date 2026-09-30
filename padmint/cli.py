@@ -360,6 +360,10 @@ def execute(args, repo, disc):
         attempt.mkdir(parents=True, mode=0o700)
         output = attempt / f"personal.{target.get('output', 'ipa')}"
         started = time.monotonic()
+        # Other versions of the same game count too, so an update still gets an estimate.
+        siblings = sorted(repo.parent.glob(f"{args.game}-*/build/padmint")) if repo.parent.name == "games" else []
+        left = previous_timings([root, *siblings], args.game, target_name)
+        announced = set()
 
         def emit(event, **fields):
             record = dict(schema_version=1, event=event,
@@ -372,6 +376,10 @@ def execute(args, repo, disc):
                 counts = f" {backend['completed']}/{backend['total']} {backend.get('unit', '')}"
             print(f"[{record['build_elapsed_seconds']}s] {event}: "
                   f"{backend.get('stage', '')} {backend.get('event', '')}{counts}".strip(), flush=True)
+            stage = backend.get("stage")
+            if backend.get("event") == "stage_started" and stage in left and stage not in announced:
+                announced.add(stage)
+                print(f"  {time_left(left[stage])} (from your last build)", flush=True)
 
         record = dict(identity, workspace_key=key, workspace_identity=workspace_identity,
                       manifest_sha256=manifest_sha256(manifest),
@@ -426,6 +434,50 @@ def execute(args, repo, disc):
             print_log_tail(attempt / "backend.log", needed_gb=space)
         print(f"Build record: {attempt / 'record.json'}")
         return code if code >= 0 else 128 - code
+
+
+def previous_timings(roots, game, target):
+    """Seconds that were left when each stage started, in the newest completed build of this
+    game and target under roots. Empty on a first build: then no estimate is shown."""
+    newest = None
+    for root in roots:
+        for path in Path(root).glob("*/runs/*/record.json"):
+            try:
+                record = json.loads(path.read_text())
+                changed = path.stat().st_mtime
+            except (OSError, ValueError):
+                continue
+            if (record.get("status"), record.get("game"), record.get("target")) != ("completed", game, target):
+                continue
+            if newest is None or changed > newest[0]:
+                newest = (changed, path.parent / "progress.jsonl")
+    if newest is None:
+        return {}
+    starts, end = {}, None
+    try:
+        lines = newest[1].read_text().splitlines()
+    except OSError:
+        return {}
+    for line in lines:
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        backend = event.get("backend") or {}
+        if backend.get("event") == "stage_started" and backend.get("stage"):
+            starts.setdefault(backend["stage"], event.get("build_elapsed_seconds", 0))
+        if event.get("event") == "build_completed":
+            end = event.get("build_elapsed_seconds")
+    if not end:
+        return {}
+    return {stage: end - seconds for stage, seconds in starts.items() if end - seconds > 0}
+
+
+def time_left(seconds):
+    minutes = round(seconds / 60)
+    if minutes < 1:
+        return "less than a minute left"
+    return f"about {minutes} minute{'s' if minutes != 1 else ''} left"
 
 
 def print_log_tail(log, lines=15, needed_gb=None):

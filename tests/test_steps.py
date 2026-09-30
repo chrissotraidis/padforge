@@ -1,5 +1,7 @@
 """Manifests that list a game's existing scripts as ordered steps."""
 import argparse
+import io
+from contextlib import redirect_stdout
 import copy
 import json
 from pathlib import Path
@@ -58,6 +60,17 @@ class StepsTests(unittest.TestCase):
         events = [json.loads(line) for line in (path.parent / "progress.jsonl").read_text().splitlines()]
         return json.loads(path.read_text()), [(e["backend"]["event"], e["backend"]["stage"])
                                                for e in events if e["event"] == "backend_event"]
+
+    def test_a_second_build_shows_time_left_from_the_first(self):
+        repo, disc = validate(self.args)
+        first, second = io.StringIO(), io.StringIO()
+        with redirect_stdout(first):
+            self.assertEqual(execute(self.args, repo, disc), 0)
+        with redirect_stdout(second):
+            self.assertEqual(execute(self.args, repo, disc), 0)
+        self.assertNotIn("from your last build", first.getvalue())
+        self.assertIn("less than a minute left (from your last build)", second.getvalue())
+        self.assertEqual(second.getvalue().count("from your last build"), 2)  # once per stage
 
     def test_steps_run_in_order_with_stage_events(self):
         repo, disc = validate(self.args)
