@@ -21,6 +21,31 @@ def minimal():
     return copy.deepcopy(catalog()["kartpad"]["manifest"])
 
 
+def doctor_output(recipe_available):
+    """Run doctor for KartPad Android as a linux-arm64 player, with no network and no real disk."""
+    from padmint import cli
+    from padmint.manifest import catalog as real_catalog
+    recipe = real_catalog()["kartpad"]["manifest"]
+    stream = io.StringIO()
+    with tempfile.TemporaryDirectory() as folder:
+        path = Path(folder) / "KartPad-v0.7.2-padmint.json"
+        path.write_text(json.dumps(recipe))
+        release = (patch.object(cli, "latest_release", return_value=("v0.7.2", {path.name: "u", "SHA256SUMS": "s"}))
+                   if recipe_available else patch.object(cli, "latest_release", side_effect=RuntimeError("offline")))
+        with release, patch.object(cli, "published_app", return_value=path), \
+                patch.object(cli, "host_id", return_value="linux-arm64"), \
+                patch.object(cli.tools, "missing_system_library", return_value=None), \
+                patch.object(cli.tools, "installed", return_value=False), \
+                patch.object(cli.shutil, "disk_usage", return_value=mock_usage(100)):
+            code = doctor("kartpad", "android", stream=stream)
+    return stream.getvalue(), code
+
+
+def mock_usage(free_gb):
+    import collections
+    return collections.namedtuple("Usage", "total used free")(0, 0, free_gb << 30)
+
+
 class ManifestTests(unittest.TestCase):
     def test_catalog_entries_validate(self):
         entries = catalog()
@@ -73,11 +98,19 @@ class ManifestTests(unittest.TestCase):
             self.assertTrue(err.getvalue())
 
     def test_doctor_reports_without_installing(self):
-        stream = io.StringIO()
-        code = doctor("kartpad", "android", stream=stream)
-        self.assertEqual(code, 1)
-        self.assertIn("planned", stream.getvalue())
-        self.assertIn("free disk space", stream.getvalue())
+        # The player's path on any host: the published recipe, PadMint's tools, catalog free space.
+        text, code = doctor_output(recipe_available=True)
+        self.assertEqual(code, 0)
+        self.assertIn("recipe: kartpad v0.7.2 release", text)
+        self.assertIn("android builds on linux-arm64: experimental", text)
+        self.assertIn("free disk space: 100 GB free, 16 GB needed", text)
+        self.assertNotIn("xcodebuild", text)  # checkout requirements are for --repo only
+
+    def test_doctor_says_when_it_falls_back_to_the_built_in_recipe(self):
+        text, _code = doctor_output(recipe_available=False)
+        self.assertIn("recipe: PadMint's built-in copy; could not reach the release", text)
+        self.assertIn("android builds on linux-arm64: experimental", text)
+        self.assertNotIn("xcodebuild", text)
 
 
 class GateTests(unittest.TestCase):

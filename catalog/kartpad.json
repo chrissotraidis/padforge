@@ -11,7 +11,7 @@
   ],
   "free_space_gb": 16,
   "reviewed_revision": null,
-  "notes": "Players: padmint make kartpad android|ios (the manifest in KartPad's repository is used). This embedded manifest is the fallback for older checkouts.",
+  "notes": "Players: padmint make kartpad android|ios (the manifest in KartPad's repository is used). This embedded manifest is the fallback when the release or an older checkout has none; its android target is KartPad v0.7.2's.",
   "player_next": {
     "android": {
       "steps": [
@@ -134,10 +134,64 @@
       },
       "android": {
         "hosts": {
-          "macos-arm64": "planned",
-          "linux-x86_64": "planned",
-          "windows-x86_64": "planned"
-        }
+          "macos-arm64": "experimental",
+          "macos-x86_64": "experimental",
+          "windows-arm64": "experimental",
+          "windows-x86_64": "experimental",
+          "linux-x86_64": "experimental",
+          "linux-arm64": "experimental"
+        },
+        "tools": [
+          "git",
+          "dotnet",
+          "cmake",
+          "ninja",
+          "android-ndk",
+          "nodtool"
+        ],
+        "published_app": "KartPad-v{version}-android.apk",
+        "output": "so",
+        "check": "none",
+        "steps": [
+          {
+            "stage": "preflight",
+            "command": [
+              "{python}",
+              "-m",
+              "kartpad_builder.cli",
+              "bootstrap",
+              "--target",
+              "android-pack"
+            ],
+            "env": {
+              "PYTHONPATH": "{repo}/builder"
+            }
+          },
+          {
+            "stage": "build",
+            "command": [
+              "{python}",
+              "-m",
+              "kartpad_builder.cli",
+              "build-pack",
+              "android",
+              "{disc}",
+              "--app",
+              "{app}",
+              "--work-root",
+              "{work}",
+              "--output",
+              "{output}",
+              "--jobs",
+              "{jobs}",
+              "--game-data",
+              "{output}.data"
+            ],
+            "env": {
+              "PYTHONPATH": "{repo}/builder"
+            }
+          }
+        ]
       }
     },
     "requirements": {
