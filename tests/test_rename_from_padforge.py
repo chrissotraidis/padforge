@@ -42,6 +42,29 @@ class RenameFromPadForgeTests(unittest.TestCase):
         self.assertEqual(tools.tools_root(), self.root / ".padmint/tools")
         self.assertFalse((self.root / ".padforge").exists())
 
+    def test_build_settings_made_before_the_move_are_set_up_again(self):
+        # padmint#7: CMake refused ~/.padmint/games/.../build-recomp-tools because its
+        # CMakeCache.txt was written in ~/.padforge before PadMint moved the folder.
+        game = self.root / ".padforge/games/goldenpad-v0.2.0"
+        for name in ("build-recomp-tools", "build-current", ".git/modules/x"):
+            folder = game / name
+            folder.mkdir(parents=True)
+        for name in ("build-recomp-tools", ".git/modules/x"):
+            (game / name / "CMakeCache.txt").write_text(
+                "CMAKE_CACHEFILE_DIR:INTERNAL=" + str(game / name) + "\n")
+        tools.home()
+        game = self.root / ".padmint/games/goldenpad-v0.2.0"
+        (game / "build-current/CMakeCache.txt").write_text(
+            "CMAKE_CACHEFILE_DIR:INTERNAL=" + str(game / "build-current") + "\n")
+        output = io.StringIO()
+        moved = cli.forget_moved_build_settings(game, stream=output)
+        self.assertEqual(moved, [game / "build-recomp-tools/CMakeCache.txt"])
+        self.assertFalse((game / "build-recomp-tools/CMakeCache.txt").exists())
+        self.assertTrue((game / "build-current/CMakeCache.txt").exists())
+        self.assertTrue((game / ".git/modules/x/CMakeCache.txt").exists())
+        self.assertIn("Setting up 1 build folder(s) again", output.getvalue())
+        self.assertEqual(cli.forget_moved_build_settings(game, stream=output), [])
+
     def test_game_repositories_still_get_padforge_variable_names(self):
         env = cli.backend_env(None)
         self.assertEqual(env["PADMINT_CACHE"], str(self.root / ".padmint/cache"))

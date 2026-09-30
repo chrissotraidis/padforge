@@ -314,6 +314,39 @@ def workspace_root(args, repo):
     return root
 
 
+def forget_moved_build_settings(*folders, stream=None):
+    """CMake refuses a build folder whose CMakeCache.txt was written somewhere else.
+    That happens after a move: PadForge's ~/.padforge became ~/.padmint (padmint#7),
+    or a player moved the folder. Those settings are only a cache, so remove them
+    and CMake sets the folder up again on the next build."""
+    moved = []
+    for folder in folders:
+        for parent, names, files in os.walk(folder):
+            names[:] = [name for name in names if name not in (".git", "CMakeFiles")]
+            if "CMakeCache.txt" not in files:
+                continue
+            cache = Path(parent) / "CMakeCache.txt"
+            try:
+                text = cache.read_text(errors="replace")
+            except OSError:
+                continue
+            found = re.search(r"^CMAKE_CACHEFILE_DIR:INTERNAL=(.*)$", text, re.MULTILINE)
+            if not found:
+                continue
+            try:
+                same = os.path.samefile(found.group(1).strip(), parent)
+            except OSError:  # The folder it was written in is gone: it moved.
+                same = False
+            if not same:
+                with contextlib.suppress(OSError):
+                    cache.unlink()
+                    moved.append(cache)
+    if moved:
+        print(f"Setting up {len(moved)} build folder(s) again: they were made before PadMint's "
+              "folder moved.", file=stream or sys.stdout, flush=True)
+    return moved
+
+
 def check_output(check, output, game_revision, disc_sha256):
     if check == "none":
         return {"check": "none"}
@@ -341,6 +374,7 @@ def execute(args, repo, disc):
         raise ValueError("Backend must ignore build/padmint before running")
     lock_root.mkdir(parents=True, exist_ok=True, mode=0o700)
     with workspace_lock(lock_root / "runner.lock"):
+        forget_moved_build_settings(repo, tools.tools_root().parent / "cache")
         if disc:
             print("Hashing the disc for the build record…", flush=True)
         mods = (not args.no_mods) if "no-mods" in target.get("options", {}) else "backend-default"
