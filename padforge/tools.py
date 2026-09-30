@@ -79,11 +79,21 @@ def _download(entry, destination, stream):
     partial.replace(destination)
 
 
-def _extract_zip(archive, folder):
+def _wanted(name, members):
+    """members (from the lock) lists the only paths to unpack: exact names, or
+    folders ending in "/". None unpacks everything."""
+    if members is None:
+        return True
+    return any(name == item or (item.endswith("/") and name.startswith(item)) for item in members)
+
+
+def _extract_zip(archive, folder, members=None):
     links = []
     base = Path(_long(folder))
     with zipfile.ZipFile(archive) as bundle:
         for info in bundle.infolist():
+            if not _wanted(info.filename, members):
+                continue
             mode = info.external_attr >> 16
             if stat.S_ISLNK(mode):
                 # zipfile would write the link as a small text file (the NDK's
@@ -109,12 +119,13 @@ def _extract_zip(archive, folder):
                 shutil.copy2(source, link)
 
 
-def _extract_tar(archive, folder):
+def _extract_tar(archive, folder, members=None):
     with tarfile.open(archive) as bundle:
+        chosen = None if members is None else [item for item in bundle.getmembers() if _wanted(item.name, members)]
         if sys.version_info >= (3, 12):
-            bundle.extractall(_long(folder), filter="data")
+            bundle.extractall(_long(folder), members=chosen, filter="data")
         else:
-            bundle.extractall(_long(folder))
+            bundle.extractall(_long(folder), members=chosen)
 
 
 def _long(path):
@@ -135,14 +146,27 @@ def _long(path):
     return "\\\\?\\" + full
 
 
+def _with_companions(names, host, table):
+    """names plus the tools a host's download declares it comes "with" (the
+    Linux arm64 NDK comes with LLVM), so game manifests need not name them."""
+    result = []
+    for name in names:
+        for item in [name, *table[name]["hosts"].get(host, {}).get("with", [])]:
+            if item not in result:
+                result.append(item)
+    return result
+
+
 def install(names, host, stream=None):
     """Install the named tools for this host; already-installed tools are kept."""
     stream = stream or sys.stdout
     table = lock()
-    for name in names:
+    for name in _with_companions(names, host, table):
         tool = table[name]
         entry = tool["hosts"].get(host)
         if entry is None:
+            if tool.get("only_where_listed"):
+                continue  # this host does not need it
             if name == "git" and shutil.which("git"):
                 print(f"ok   git (system {shutil.which('git')})", file=stream)
                 continue
@@ -164,10 +188,10 @@ def install(names, host, stream=None):
         _download(entry, archive, stream)
         kind = entry["archive"]
         if kind == "zip":
-            _extract_zip(archive, staging)
+            _extract_zip(archive, staging, entry.get("members"))
             archive.unlink()
-        elif kind == "tar.gz":
-            _extract_tar(archive, staging)
+        elif kind in ("tar.gz", "tar.xz"):
+            _extract_tar(archive, staging, entry.get("members"))
             archive.unlink()
         else:
             target = staging / entry["rename"]
@@ -185,7 +209,7 @@ def environment(names, host, base=None):
     env = dict(os.environ if base is None else base)
     paths = []
     table = lock()
-    for name in names:
+    for name in _with_companions(names, host, table):
         tool = table[name]
         entry = tool["hosts"].get(host)
         folder = _folder(name, tool)
