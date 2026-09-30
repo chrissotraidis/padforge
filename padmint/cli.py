@@ -698,7 +698,9 @@ def copy_files(source, target):
     reads links: on an Android phone (Ubuntu in Termux) the backend's hard links
     are listed as links but cannot be read as links ("Invalid argument")."""
     for folder, _folders, files in os.walk(source):
-        destination = os.path.join(target, os.path.relpath(folder, source))
+        # No "." parts: Windows' extended-length paths (\\?\) take them literally.
+        relative = os.path.relpath(folder, source)
+        destination = target if relative == os.curdir else os.path.join(target, relative)
         os.makedirs(destination, exist_ok=True)
         for name in files:
             shutil.copyfile(os.path.join(folder, name), os.path.join(destination, name))
