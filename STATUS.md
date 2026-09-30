@@ -208,6 +208,18 @@ PaperPad 0.2.1 builds PaperBoat (played on the iPhone); six READMEs still said
 "a new version is in progress" (fixed or merging); GalaxyPad #15 merged.
 `catalog/paperpad.json`'s note still names build-ios-device.sh (cosmetic).
 
+**Update 12:30:** PadForge 0.1.6 (Windows long paths), 0.1.7 (Android packs on
+ARM Linux, raced in the emulator) and 0.1.8 published. 0.1.8 carries the
+PadForge-experience chat's #22 (`PADFORGE_CACHE`, one download cache for
+every game version) and #23 (a backend's game data folder saved once for the
+player), and `padforge list` now shows player targets instead of the
+built-in fallback manifests. Each checked on Mac, Linux (Docker) and the
+Windows 11 VM; anonymous downloads match SHA256SUMS. KartPad #343-#348 merged;
+KartPad 0.6.1 (kartpad#349) is being built and gated. kartpad#347 (packs that
+survive app updates) approved with notes for 0.7.0. OpenMobileTTS
+v3.1.0-preview.2 published. The PaperPad catalog note now names PaperBoat's
+scripts.
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadForge 0.1.3.
