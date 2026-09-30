@@ -39,7 +39,7 @@ class GameFromFileTests(unittest.TestCase):
             code, make, text = self.run_start([str(disc), "2"], lambda *_: ("MARIO KART Wii", "RMCP01", 0))
         self.assertEqual(code, 0)
         self.assertEqual(make.call_args.args[:3], ("kartpad", "ios", disc.resolve()))
-        self.assertIn("Game: KartPad (from your file, RMCP01)", text)
+        self.assertIn("Reading your file…\nGame: KartPad (from your file, RMCP01)", text)
         self.assertNotIn("1. KartPad", text)
 
     def test_another_disc_shows_the_menu_but_keeps_the_file(self):

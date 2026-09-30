@@ -945,6 +945,8 @@ def game_from_file(disc, games, stream):
     Reading the ID needs only nodtool (a few MB); anything unexpected falls back to asking."""
     if game_file.cloud_only(disc):
         return None
+    # nodtool may download first, with its output hidden: say something so it doesn't look stuck.
+    print("Reading your file…", file=stream, flush=True)
     try:
         tools.install(["nodtool"], host_id(), stream=io.StringIO())
         _title, game_id, _revision = game_file.read_disc(disc, tools.executable("nodtool", host_id()))

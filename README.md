@@ -45,8 +45,10 @@ Download the ZIP for your computer from the
 [latest PadMint](https://github.com/chrissotraidis/padmint/releases/latest)
 and unzip it.
 
-- **Windows:** double-click `PadMint.cmd`. If Windows says it protected your
-  PC, choose **More info**, then **Run anyway**.
+- **Windows:** right-click the ZIP and choose **Extract All**. In the folder
+  it makes, open the `PadMint-v…` folder and double-click the **PadMint**
+  file (`PadMint.cmd`), not the `padmint` folder. If Windows says it
+  protected your PC, choose **More info**, then **Run anyway**.
 - **Mac:** once, run `xcode-select --install` in Terminal. Then double-click
   `PadMint.command`. The first time, macOS says Apple could not verify it:
   choose **Done**, then **System Settings → Privacy & Security → Open Anyway**.
