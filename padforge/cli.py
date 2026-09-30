@@ -401,8 +401,7 @@ def execute(args, repo, disc):
                 record["output"] = output.name
                 args.output_path = output
                 record["publication_gate"] = publication_gate(output)
-                print(f"Release gate on personal output: {record['publication_gate']['result']} "
-                      "(personal build, not publishable)", flush=True)
+                # Kept in the build record only; the final message already tells the player the copy is theirs alone.
             recheck("before-record")
             status = "cancelled" if cancelled else "completed" if code == 0 else "failed"
         except (OSError, ValueError, subprocess.CalledProcessError) as error:

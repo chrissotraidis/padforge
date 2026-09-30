@@ -1,3 +1,3 @@
 """Local orchestration for explicitly selected game builders."""
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
