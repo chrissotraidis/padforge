@@ -524,7 +524,7 @@ def check_free_space(folder, needed_gb):
                          f"{folder} has {free_gb:.1f} GB free. Free up space and run PadMint again.")
 
 
-def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
+def make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=None):
     """The player's command: from their own game file to their own copy, in one step."""
     entry = catalog().get(game)
     if entry is None:
@@ -563,7 +563,9 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
     safe_version = re.sub(r"[^A-Za-z0-9._-]", "_", version)  # a branch name such as codex/x has a slash
     result = out / f"{manifest['name']}-v{safe_version}-{platform_name}-personal{args.output_path.suffix}"
     shutil.copyfile(args.output_path, result)
-    print(f"Your {manifest['name']} for {platform_name}: {result}")
+    print(f"Your {manifest['name']} for {PLATFORM_NAMES.get(platform_name, platform_name)}: {result}")
+    if results is not None:
+        results.append(result)
     save_game_data(args.output_path, out, manifest["name"])
     print("It contains game code made from your own copy: keep it to yourself.")
     return 0
@@ -662,6 +664,36 @@ def doctor(game, target_name, repo=None, stream=None):
 
 PLATFORM_LABELS = {"android": "Android phone or tablet",
                    "ios": "iPhone or iPad (needs this Mac)"}
+PLATFORM_NAMES = {"android": "Android", "ios": "iPhone and iPad", "macos": "Mac"}
+
+
+def next_steps(entry, platform_name, result, stream):
+    """After a build: the few steps that get this file into the game, in the player's words."""
+    guide = entry.get("player_help") or f"{entry['repo_url']}#get-{entry['id']}"
+    steps = (entry.get("player_next") or {}).get(platform_name)
+    if not steps or result is None:
+        print(f"Next: {guide}", file=stream)
+        return
+    print("\nWhat to do next:", file=stream)
+    for number, step in enumerate(steps["steps"], 1):
+        print(f"  {number}. {step.format(file=result.name)}", file=stream)
+    if steps.get("note"):
+        print(steps["note"], file=stream)
+    print(f"Full guide: {guide}", file=stream)
+
+
+def reveal(path):
+    """Show the finished file in Finder, File Explorer or the file manager. Optional."""
+    try:
+        if sys.platform == "darwin":
+            subprocess.run(["open", "-R", str(path)], check=False)
+        elif os.name == "nt":
+            subprocess.run(["explorer", f"/select,{path}"], check=False)
+        elif shutil.which("xdg-open"):
+            subprocess.Popen(["xdg-open", str(path.parent)], stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+    except OSError:
+        pass
 
 
 def dropped_path(text):
@@ -718,10 +750,13 @@ def start(ask=input, stream=None):
     default = default if default.is_dir() else Path.home()
     answer = ask(f"Save it in which folder? Press Enter for {default}: ").strip()
     out = dropped_path(answer) if answer else default
-    code = make(game, target, disc.resolve() if disc else None, out.resolve())
+    results = []
+    code = make(game, target, disc.resolve() if disc else None, out.resolve(), results=results)
     if code == 0:
-        entry = catalog()[game]
-        print(f"Next: {entry.get('player_help') or entry['repo_url'] + '#get-' + game}", file=stream)
+        result = results[-1] if results else None
+        next_steps(catalog()[game], target, result, stream)
+        if result is not None:
+            reveal(result)
     return code
 
 
