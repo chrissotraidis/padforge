@@ -41,6 +41,35 @@ def require_local(path):
         raise ValueError(CLOUD_ONLY.format(name=path.name))
 
 
+# An N64 ROM's first word in each byte order: .z64 as is, .v64 swaps each 2 bytes,
+# .n64 reverses each 4. Raw GameCube and Wii disc images carry a magic word.
+N64_ORDERS = {b"\x80\x37\x12\x40": 1, b"\x37\x80\x40\x12": 2, b"\x40\x12\x37\x80": 4}
+GAMECUBE_MAGIC, WII_MAGIC = b"\xc2\x33\x9f\x3d", b"\x5d\x1c\x9e\xa3"
+
+
+def header_id(path):
+    """The game ID in a file's first 64 bytes, with no tools: an N64 ROM's four-character
+    game code (such as NGEE) or a raw GameCube or Wii disc image's six-character disc ID.
+    None for anything else; WBFS, RVZ and other packed images need nodtool."""
+    try:
+        with open(path, "rb") as handle:
+            head = handle.read(0x40)
+    except OSError:
+        return None
+    if len(head) < 0x40:
+        return None
+    if head[:4] in N64_ORDERS:
+        size = N64_ORDERS[head[:4]]
+        head = b"".join(head[at:at + size][::-1] for at in range(0, 0x40, size)) if size > 1 else head
+        code = head[0x3B:0x3F]
+    elif head[0x1C:0x20] == GAMECUBE_MAGIC or head[0x18:0x1C] == WII_MAGIC:
+        code = head[:6]
+    else:
+        return None
+    code = code.decode("ascii", "replace")
+    return code if re.fullmatch(r"[0-9A-Z]{4}|[0-9A-Z]{6}", code) else None
+
+
 def expected_input(manifest):
     """The disc input that names the IDs its builder supports, if any."""
     return next((item for item in manifest["inputs"]

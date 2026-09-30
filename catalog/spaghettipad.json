@@ -6,6 +6,9 @@
   "player_targets": [
     "ios"
   ],
+  "game_ids": [
+    "NKTE"
+  ],
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/spaghettipad#get-started",
   "reviewed_revision": null,

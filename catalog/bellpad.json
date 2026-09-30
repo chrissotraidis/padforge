@@ -6,6 +6,9 @@
   "player_targets": [
     "ios"
   ],
+  "game_ids": [
+    "GAFE01"
+  ],
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/bellpad#get-bellpad",
   "reviewed_revision": null,

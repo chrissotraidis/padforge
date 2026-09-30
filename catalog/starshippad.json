@@ -6,6 +6,9 @@
   "player_targets": [
     "ios"
   ],
+  "game_ids": [
+    "NFXE"
+  ],
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/starshippad#get-started",
   "reviewed_revision": null,

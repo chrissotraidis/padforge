@@ -184,8 +184,9 @@ def catalog():
                 raise ValueError(f"catalog/{path.name}: player_next.{platform} needs a player target "
                                  "and a list of steps")
         ids = entry.get("game_ids", [])
-        if not isinstance(ids, list) or not all(re.fullmatch(r"[0-9A-Z]{6}", str(i)) for i in ids):
-            raise ValueError(f"catalog/{path.name}: game_ids lists six-character disc IDs")
+        if not isinstance(ids, list) or not all(re.fullmatch(r"[0-9A-Z]{4}|[0-9A-Z]{6}", str(i)) for i in ids):
+            raise ValueError(f"catalog/{path.name}: game_ids lists six-character disc IDs "
+                             "or four-character N64 game codes")
         labels = entry.get("game_data_import") or {}
         if not isinstance(labels, dict) or not all(platform in targets and isinstance(label, str)
                                                    for platform, label in labels.items()):

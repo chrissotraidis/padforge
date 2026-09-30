@@ -6,6 +6,9 @@
   "player_targets": [
     "ios"
   ],
+  "game_ids": [
+    "NZSE"
+  ],
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/maskpad#get-started",
   "reviewed_revision": null,

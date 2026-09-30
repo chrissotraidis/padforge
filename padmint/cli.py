@@ -948,22 +948,23 @@ def file_problem(disc):
 
 
 def game_from_file(disc, games, stream):
-    """The one offered game whose catalog entry lists the file's disc ID, else None.
-    Reading the ID needs only nodtool (a few MB); anything unexpected falls back to asking."""
+    """The offered games whose catalog entry lists the file's game ID ([] if none or unreadable).
+    ROMs and raw disc images are read directly; packed discs (WBFS, RVZ) need nodtool (a few MB)."""
     if game_file.cloud_only(disc):
-        return None
-    # nodtool may download first, with its output hidden: say something so it doesn't look stuck.
-    print("Reading your file…", file=stream, flush=True)
-    try:
-        tools.install(["nodtool"], host_id(), stream=io.StringIO())
-        _title, game_id, _revision = game_file.read_disc(disc, tools.executable("nodtool", host_id()))
-    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
-        return None
+        return []
+    game_id = game_file.header_id(disc)
+    if game_id is None:
+        # nodtool may download first, with its output hidden: say something so it doesn't look stuck.
+        print("Reading your file…", file=stream, flush=True)
+        try:
+            tools.install(["nodtool"], host_id(), stream=io.StringIO())
+            _title, game_id, _revision = game_file.read_disc(disc, tools.executable("nodtool", host_id()))
+        except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
+            return []
     matches = [(id_, name) for id_, name, _ in games if game_id in (catalog()[id_].get("game_ids") or [])]
-    if len(matches) != 1:
-        return None
-    print(f"Game: {matches[0][1]} (from your file, {game_id})", file=stream)
-    return matches[0][0]
+    if len(matches) == 1:
+        print(f"Game: {matches[0][1]} (from your file, {game_id})", file=stream)
+    return [id_ for id_, _ in matches]
 
 
 def start(ask=input, stream=None):
@@ -987,6 +988,7 @@ def start(ask=input, stream=None):
     if not games:
         raise ValueError("no game can be made on this computer yet")
     disc = game = None
+    offered = games
     if len(games) > 1 and any(catalog()[id_].get("game_ids") for id_, _, _ in games):
         answer = ask("Drag your game file into this window, then press Enter "
                      "(no file? just press Enter to choose a game): ").strip()
@@ -999,9 +1001,13 @@ def start(ask=input, stream=None):
             answer = ask("Drag the file again, or press Enter to choose a game: ").strip()
             disc = None
         if disc is not None:
-            game = game_from_file(disc, games, stream)
+            found = game_from_file(disc, games, stream)
+            # Two games may share a code: then ask, offering only those.
+            if len(found) > 1:
+                offered = [entry for entry in games if entry[0] in found]
+            game = found[0] if len(found) == 1 else None
     if game is None:
-        game = choose("Game", [(game, name) for game, name, _ in games], ask, stream)
+        game = choose("Game", [(game, name) for game, name, _ in offered], ask, stream)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
     labels = dict(PLATFORM_LABELS, **({} if apple_silicon else {"ios": OFF_MAC_IOS_LABEL}))
     target = choose("Make it for", [(p, labels.get(p, p)) for p in platforms], ask, stream)
