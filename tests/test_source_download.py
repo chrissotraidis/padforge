@@ -72,7 +72,16 @@ class SourceDownloadTests(unittest.TestCase):
                 cli.fetch_source("game", source, "v1")
         self.assertFalse(source.exists())
 
-    def test_read_only_files_are_removed(self):
+    def test_a_computer_without_git_gets_padmints_copy_before_the_check(self):
+        source = self.root / "games/game-v1"
+        (source / ".git").mkdir(parents=True)
+        with mock.patch.object(cli.shutil, "which", return_value=None), \
+                mock.patch.object(cli.tools, "install") as install, \
+                mock.patch.object(cli.tools, "executable", return_value="git"):
+            self.assertFalse(cli.source_complete(source))
+        install.assert_called_once_with(["git"], cli.host_id())
+
+    def test_read_only_files_are_removed_for_real(self):
         folder = self.root / "ro"
         folder.mkdir()
         (folder / "object").write_text("x")

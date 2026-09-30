@@ -731,13 +731,20 @@ def start(ask=input, stream=None):
     return code
 
 
+def git_program():
+    """Git: the system's, or the copy PadMint installs (Windows usually has none)."""
+    if shutil.which("git") is None:
+        tools.install(["git"], host_id())
+    return tools.executable("git", host_id())
+
+
 def source_complete(source):
     """A finished download of a game's source: every tracked file is present.
     An attempt that was interrupted (closed window, lost connection) must not be
     reused, or later runs fail with misleading errors (padmint#8)."""
     if not (source / ".git").exists():
         return False
-    git = [tools.executable("git", host_id()), "-C", str(source)]
+    git = [git_program(), "-C", str(source)]
     head = subprocess.run(git + ["rev-parse", "--verify", "-q", "HEAD"], capture_output=True)
     if head.returncode:
         return False
@@ -774,9 +781,7 @@ def get_game(game, dest, ref=None, announce=True):
         raise ValueError(f"unknown game {game}; see padmint list")
     if dest.exists() and any(dest.iterdir()):
         raise ValueError(f"{dest} is not empty")
-    if shutil.which("git") is None:
-        tools.install(["git"], host_id())
-    argv = [tools.executable("git", host_id()), "-c", "advice.detachedHead=false", "clone"] \
+    argv = [git_program(), "-c", "advice.detachedHead=false", "clone"] \
         + (["--branch", ref] if ref else []) \
         + [entry["repo_url"], str(dest)]
     subprocess.run(argv, check=True)
