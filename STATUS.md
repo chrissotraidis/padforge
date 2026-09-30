@@ -289,6 +289,16 @@ and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
 0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
 without a Mac (Hubble).
 
+**Update 06:05, 1 Oct (0.2.6):** rerun census across every game (player path):
+AnnePad 0.2.1 failed on every second run, BallPad on any rerun after
+packaging, MeleePad on reruns and after another folder's build (/tmp module
+folder), BananaPad after an interrupted download; fixed and released as
+AnnePad (0.2.2 pending disk), BallPad 1.1.1, MeleePad 0.2.1, BananaPad 0.2.1.
+#59: PadMint finishes a half-downloaded submodule in its own game folders
+(only when every difference is a submodule), which covers SunPad and
+SpaghettiPad. James's sweep with 0.2.2: 14 of 17 built; BlueWake unproven
+(disk watchdog).
+
 **Update 01:45, 1 Oct (0.2.5):** the full build sweep with 0.2.2 (James) found
 MaskPad failing from a clean folder: "building for 'iOS', but linking in dylib
 ... MacOSX.sdk/usr/lib/libz.1.tbd". Cause: PadMint.command runs Apple's
