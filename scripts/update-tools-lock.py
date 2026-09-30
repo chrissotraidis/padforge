@@ -22,8 +22,12 @@ NODTOOL = "v2.0.0-alpha.9"
 # arm64 build (the NDK's clang major version) with the host-independent parts
 # of the Linux NDK: its build scripts, sysroot and Android runtime libraries.
 # On macOS, LLVM compiles N64 patch code (GoldenPad): Apple's clang cannot target
-# MIPS. LLVM publishes no 21.x build for Intel Macs; 20.1.7 is its newest.
+# MIPS. Apple Silicon Macs get 22.1.8, the version Homebrew's llvm has: GoldenPad
+# checks its generated patch code against that compiler's output, and 21.1.8
+# allocates a different register in one patch. LLVM publishes no build newer
+# than 20.1.7 for Intel Macs.
 LLVM = "21.1.8"
+LLVM_MAC = "22.1.8"
 LLVM_INTEL_MAC = "20.1.7"
 NDK_PORTABLE = [f"android-ndk-{NDK[1]}/{path}" for path in (
     "source.properties", "build/", "meta/",
@@ -123,14 +127,15 @@ def main():
         "size": int(size), "archive": "zip", "members": NDK_PORTABLE, "with": ["llvm"]}
 
     top = f"LLVM-{LLVM}-Linux-ARM64"
-    mac, intel_mac = f"LLVM-{LLVM}-macOS-ARM64", f"LLVM-{LLVM_INTEL_MAC}-macOS-X64"
+    mac, intel_mac = f"LLVM-{LLVM_MAC}-macOS-ARM64", f"LLVM-{LLVM_INTEL_MAC}-macOS-X64"
     tools["llvm"] = {"version": LLVM, "only_where_listed": True,
                      "note": "Linux arm64: compiles Android game packs with the NDK's portable parts. "
                              "macOS: compiles N64 patch code (GoldenPad); Apple's clang cannot target MIPS. "
-                             f"LLVM publishes no 21.x build for Intel Macs, so they get {LLVM_INTEL_MAC}.",
+                             f"Apple Silicon Macs get {LLVM_MAC} (Homebrew's version, whose output GoldenPad "
+                             f"checks); Intel Macs get {LLVM_INTEL_MAC}, LLVM's newest build for them.",
                      "env": {"PADMINT_LLVM_ROOT": top}, "hosts": {
         "linux-arm64": llvm_download(LLVM, top),
-        "macos-arm64": llvm_download(LLVM, mac, env={"PADMINT_LLVM_ROOT": mac}),
+        "macos-arm64": llvm_download(LLVM_MAC, mac, version=LLVM_MAC, env={"PADMINT_LLVM_ROOT": mac}),
         "macos-x86_64": llvm_download(LLVM_INTEL_MAC, intel_mac, version=LLVM_INTEL_MAC,
                                       env={"PADMINT_LLVM_ROOT": intel_mac})}}
 
