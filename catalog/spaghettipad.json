@@ -9,6 +9,7 @@
   "game_ids": [
     "NKTE"
   ],
+  "free_space_gb": 6,
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/spaghettipad#get-started",
   "reviewed_revision": null,

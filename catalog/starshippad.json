@@ -9,6 +9,7 @@
   "game_ids": [
     "NFXE"
   ],
+  "free_space_gb": 4,
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/starshippad#get-started",
   "reviewed_revision": null,

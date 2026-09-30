@@ -9,6 +9,7 @@
   "game_ids": [
     "GZLE01"
   ],
+  "free_space_gb": 19,
   "player_help": "https://github.com/chrissotraidis/bluewake#getting-started",
   "reviewed_revision": null,
   "notes": "Interim manifest until BlueWake carries padmint.json. No revision is marked reviewed for players yet; pass --revision explicitly.",

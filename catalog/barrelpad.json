@@ -9,6 +9,7 @@
   "game_ids": [
     "NDYE"
   ],
+  "free_space_gb": 3,
   "player_game_file": "in-app",
   "player_help": "https://github.com/chrissotraidis/barrelpad#get-started",
   "reviewed_revision": null,
