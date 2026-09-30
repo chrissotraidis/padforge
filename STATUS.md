@@ -252,6 +252,16 @@ PadForge releases are drafts now (tags kept). Game repos: 17 rename PRs
 merged, MaskPad, MeleePad and SunPad wait on CI; KartPad 0.7.1 carries the
 in-app wording and the runtime's pack messages (fingerprints unchanged).
 
+**Update 18:10:** KartPad 0.7.1 and 0.7.2 published; both keep players' game
+packs (fingerprints unchanged; in 0.7.2 the new app-only vi_pacing.h lives in
+runtime/app_only/ so it is not a pack-interface input). 0.7.2 carries the fixes
+promised on 27 Sep (#330 measured on the emulator, #327, #329/#316 Automatic on
+Adreno 8xx, #104 with the S24 option). PadMint 0.2.0 reused packs for both
+iPhone builds (compile 2-3 s). All published *-padforge.json recipe assets
+renamed to *-padmint.json with SHA256SUMS updated and verified; release notes
+say PadMint. MeleePad #36 and SunPad #51 merged; MaskPad #12 waits on a UI test
+that also fails on MaskPad's main (testControlPressReleaseToggleAndLifecycleCancellation).
+
 - **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
   HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
   BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadMint 0.1.3.
