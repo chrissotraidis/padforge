@@ -323,7 +323,7 @@ def install(names, host, stream=None):
 
 def _report_link(link, stream):
     if link is not None:
-        print(f"ok   {link.name} (uses this computer's {Path(os.path.realpath(link)).name})", file=stream)
+        print(f"ok   {link.name} (uses this computer's {Path(os.readlink(link)).name})", file=stream)
 
 
 def environment(names, host, base=None):
