@@ -6,6 +6,9 @@
   "player_targets": [
     "ios"
   ],
+  "game_ids": [
+    "GALE01"
+  ],
   "player_help": "https://github.com/chrissotraidis/meleepad#get-meleepad",
   "reviewed_revision": null,
   "notes": "Empty app plus a game module made from the player's own disc (D11: no Nintendo keys in the published app).",
