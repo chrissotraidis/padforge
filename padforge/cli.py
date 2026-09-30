@@ -401,8 +401,7 @@ def execute(args, repo, disc):
                 record["output"] = output.name
                 args.output_path = output
                 record["publication_gate"] = publication_gate(output)
-                print(f"Release gate on personal output: {record['publication_gate']['result']} "
-                      "(personal build, not publishable)", flush=True)
+                # Kept in the build record only; the final message already tells the player the copy is theirs alone.
             recheck("before-record")
             status = "cancelled" if cancelled else "completed" if code == 0 else "failed"
         except (OSError, ValueError, subprocess.CalledProcessError) as error:
@@ -559,7 +558,8 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
                   f"type (Windows, Mac or Linux) at {entry['repo_url']}/issues", file=sys.stderr)
         return code
     out.mkdir(parents=True, exist_ok=True)
-    result = out / f"{manifest['name']}-v{version}-{platform_name}-personal{args.output_path.suffix}"
+    safe_version = re.sub(r"[^A-Za-z0-9._-]", "_", version)  # a branch name such as codex/x has a slash
+    result = out / f"{manifest['name']}-v{safe_version}-{platform_name}-personal{args.output_path.suffix}"
     shutil.copyfile(args.output_path, result)
     print(f"Your {manifest['name']} for {platform_name}: {result}")
     print("It contains game code made from your own copy: keep it to yourself.")
