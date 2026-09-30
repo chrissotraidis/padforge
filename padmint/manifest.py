@@ -27,6 +27,10 @@ CATALOG = Path(__file__).resolve().parent.parent / "catalog"
 _ID = re.compile(r"[a-z0-9][a-z0-9-]{0,39}")
 
 
+class NeedsNewerPadMint(ValueError):
+    """A game's recipe uses a tool this PadMint does not know: the player needs a newer PadMint."""
+
+
 def _require(condition, message):
     if not condition:
         raise ValueError(f"padmint.json: {message}")
@@ -103,9 +107,14 @@ def validate_manifest(data):
         if "tools" in target:
             from .tools import lock
             known = lock()
-            _require(isinstance(target["tools"], list)
-                     and all(isinstance(item, str) and item in known for item in target["tools"]),
-                     f"{where}.tools must name tools from PadMint's tool lock: {sorted(known)}")
+            _require(isinstance(target["tools"], list) and all(isinstance(item, str) for item in target["tools"]),
+                     f"{where}.tools must be a list of tool names")
+            unknown = [item for item in target["tools"] if item not in known]
+            if unknown:
+                raise NeedsNewerPadMint(
+                    f"This version of {data.get('name') or 'this game'} needs a newer PadMint (it uses "
+                    f"{unknown[0]}). Download the latest PadMint from "
+                    "https://github.com/chrissotraidis/padmint/releases/latest and run it again.")
         if "published_app" in target:
             _require(isinstance(target["published_app"], str) and "{version}" in target["published_app"],
                      f"{where}.published_app must name the release asset, with {{version}}")

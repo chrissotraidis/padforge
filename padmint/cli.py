@@ -24,7 +24,7 @@ import urllib.parse
 import uuid
 
 from . import __version__, game_file, gate, tools
-from .manifest import (RUNNABLE_STATES, catalog, expand, host_id, load_manifest,
+from .manifest import (RUNNABLE_STATES, NeedsNewerPadMint, catalog, expand, host_id, load_manifest,
                        manifest_for, manifest_sha256, needs_build_input, on_android,
                        repository_manifest)
 from .package import validate_ipa
@@ -727,6 +727,8 @@ def published_recipe(game):
             try:
                 with tempfile.TemporaryDirectory() as folder:
                     return load_manifest(published_app(name, assets, Path(folder))), f"{game} {tag} release"
+            except NeedsNewerPadMint:
+                raise  # the release is fine; this PadMint is too old for it
             except (RuntimeError, ValueError, OSError):
                 why = "could not reach the release"
     manifest, _source = manifest_for(game)
@@ -1228,7 +1230,8 @@ def main(argv=None):
         return execute(args, repo, disc)
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
         message = str(error)
-        print(message if message.startswith("PadMint ") else f"PadMint: {message}", file=sys.stderr)
+        plain = message.startswith("PadMint ") or isinstance(error, NeedsNewerPadMint)
+        print(message if plain else f"PadMint: {message}", file=sys.stderr)
         return 1
     except (KeyboardInterrupt, EOFError):
         return 130
