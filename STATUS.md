@@ -252,6 +252,19 @@ PadForge releases are drafts now (tags kept). Game repos: 17 rename PRs
 merged, MaskPad, MeleePad and SunPad wait on CI; KartPad 0.7.1 carries the
 in-app wording and the runtime's pack messages (fingerprints unchanged).
 
+**Android phone, no computer (30 Sep, 21:00; draft, codex/pm-android-phone):**
+`launchers/padmint-android.sh` sets up Ubuntu 24.04 in Termux (proot-distro)
+and runs PadMint there (host linux-arm64). Experimental, one recorded run: an
+API 36 arm64 emulator (8 GB, 8 cores, 32 GB) typed the one line into Termux
+0.118.3, built KartPad 0.7.2's pack from mkw.rvz (pack SHA-256
+`a30d62ea...f839`) and the published 0.7.2 APK raced with it (Luigi Circuit,
+lap 1/3, 59 FPS). Paste to pack: 58 min (setup 4, tools 15, build 37:
+compile 25 at 5 jobs). Peak: 4.1 GB in Termux, 2.4 GB still free, no
+process kills; about 22 GB of storage including the disc. Fixes found: .NET
+needs a heap limit under Android's address space; proot's emulated hard links
+break copytree (PadMint's game data copy here; KartPad's export on reruns,
+kartpad `codex/android-phone-build`). Not tried on a real phone.
+
 **Update 18:10:** KartPad 0.7.1 and 0.7.2 published; both keep players' game
 packs (fingerprints unchanged; in 0.7.2 the new app-only vi_pacing.h lives in
 runtime/app_only/ so it is not a pack-interface input). 0.7.2 carries the fixes
