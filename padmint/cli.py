@@ -626,6 +626,11 @@ def doctor(game, target_name, repo=None, stream=None):
     else:
         state = target["hosts"].get(host, "unsupported")
         report(state in RUNNABLE_STATES, f"{target_name} builds on {host}", state)
+        for name in target.get("tools", []):  # tools PadMint itself supplies (install nothing here)
+            tool = tools.lock()[name]
+            if host in tool["hosts"]:
+                report(True, f"{name} {tools.version(tool, host)}",
+                       "PadMint's copy" if tools.installed(name, host) else "PadMint downloads it for the first build")
     for tool in manifest.get("requirements", {}).get("tools", []):
         path = shutil.which(tool["name"])
         if path is None:

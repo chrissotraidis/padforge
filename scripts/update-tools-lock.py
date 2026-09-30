@@ -21,12 +21,15 @@ NODTOOL = "v2.0.0-alpha.9"
 # Google publishes no Linux arm64 NDK. There, Android game packs use LLVM's own
 # arm64 build (the NDK's clang major version) with the host-independent parts
 # of the Linux NDK: its build scripts, sysroot and Android runtime libraries.
+# On macOS, LLVM compiles N64 patch code (GoldenPad): Apple's clang cannot target
+# MIPS. LLVM publishes no 21.x build for Intel Macs; 20.1.7 is its newest.
 LLVM = "21.1.8"
+LLVM_INTEL_MAC = "20.1.7"
 NDK_PORTABLE = [f"android-ndk-{NDK[1]}/{path}" for path in (
     "source.properties", "build/", "meta/",
     "toolchains/llvm/prebuilt/linux-x86_64/sysroot/",
     "toolchains/llvm/prebuilt/linux-x86_64/lib/clang/21/lib/linux/")]
-LLVM_TOOLS = ["clang", "clang++", "clang-21", "lld", "ld.lld", "llvm-ar", "llvm-ranlib", "llvm-nm",
+LLVM_TOOLS = ["clang", "clang++", "clang-{major}", "lld", "ld.lld", "llvm-ar", "llvm-ranlib", "llvm-nm",
               "llvm-strip", "llvm-objcopy", "llvm-readelf", "llvm-readobj", "llvm-cxxfilt"]
 
 
@@ -44,6 +47,15 @@ def github_file(assets, name, **extra):
     asset = assets[name]
     algo, digest = asset["digest"].split(":", 1)
     return {"url": asset["browser_download_url"], algo: digest, "size": asset["size"], **extra}
+
+
+def llvm_download(release, top, **extra):
+    """LLVM's release tarball, unpacking only the compilers, linkers and headers."""
+    major = release.split(".")[0]
+    return github_file(github_assets("llvm/llvm-project", f"llvmorg-{release}"), f"{top}.tar.xz",
+                       archive="tar.xz", **extra, members=[
+                           *(f"{top}/bin/{tool.format(major=major)}" for tool in LLVM_TOOLS),
+                           f"{top}/lib/clang/{major}/include/"])
 
 
 def main():
@@ -110,13 +122,17 @@ def main():
         "url": f"https://dl.google.com/android/repository/android-ndk-{NDK[1]}-linux.zip", algo: digest,
         "size": int(size), "archive": "zip", "members": NDK_PORTABLE, "with": ["llvm"]}
 
-    llvm = github_assets("llvm/llvm-project", f"llvmorg-{LLVM}")
     top = f"LLVM-{LLVM}-Linux-ARM64"
+    mac, intel_mac = f"LLVM-{LLVM}-macOS-ARM64", f"LLVM-{LLVM_INTEL_MAC}-macOS-X64"
     tools["llvm"] = {"version": LLVM, "only_where_listed": True,
-                     "note": "Linux arm64 only: compiles Android game packs with the NDK's portable parts.",
+                     "note": "Linux arm64: compiles Android game packs with the NDK's portable parts. "
+                             "macOS: compiles N64 patch code (GoldenPad); Apple's clang cannot target MIPS. "
+                             f"LLVM publishes no 21.x build for Intel Macs, so they get {LLVM_INTEL_MAC}.",
                      "env": {"PADMINT_LLVM_ROOT": top}, "hosts": {
-        "linux-arm64": github_file(llvm, f"{top}.tar.xz", archive="tar.xz", members=[
-            *(f"{top}/bin/{tool}" for tool in LLVM_TOOLS), f"{top}/lib/clang/21/include/"])}}
+        "linux-arm64": llvm_download(LLVM, top),
+        "macos-arm64": llvm_download(LLVM, mac, env={"PADMINT_LLVM_ROOT": mac}),
+        "macos-x86_64": llvm_download(LLVM_INTEL_MAC, intel_mac, version=LLVM_INTEL_MAC,
+                                      env={"PADMINT_LLVM_ROOT": intel_mac})}}
 
     nod = github_assets("encounter/nod", NODTOOL)
     nod_names = {"windows-arm64": "nodtool-windows-arm64.exe", "windows-x86_64": "nodtool-windows-x86_64.exe",
