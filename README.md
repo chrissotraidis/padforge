@@ -166,6 +166,11 @@ for **AnnePad**, **BallPad**, **BananaPad**, **BarrelPad**, **BearBirdPad**,
 games that ask for it inside the app) and pick the game. Each game's README
 says which file it needs and how to install the result.
 
+**AgePad** (iPad with 8 GB or more) works differently: on a Mac with Age of
+Empires II: DE installed through Steam, PadMint adds your own Steam copy to
+the AgePad release in seconds, without Xcode. You then copy the game data to
+the iPad; see [Get AgePad](https://github.com/chrissotraidis/agepad#get-agepad).
+
 ## Questions
 
 **I used to import my disc image straight into KartPad. Why PadMint now?**

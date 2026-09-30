@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "agepad",
+  "repo_url": "https://github.com/chrissotraidis/agepad",
+  "name": "AgePad",
+  "player_targets": [
+    "ios"
+  ],
+  "player_game_file": "in-app",
+  "free_space_gb": 3,
+  "player_help": "https://github.com/chrissotraidis/agepad#get-agepad",
+  "reviewed_revision": null,
+  "notes": "Manifest owned by the game repository. The published base app is AgePad's own code; the inject step adds the player's own Mac game program and Steam files, found in Steam's folders on this Mac (no file to choose, no Xcode). The 20 GB game data folder is copied to the iPad afterwards. iPad with 8 GB or more only.",
+  "manifest": null
+}
