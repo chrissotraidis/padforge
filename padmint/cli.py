@@ -427,7 +427,10 @@ def execute(args, repo, disc):
 def print_log_tail(log, lines=15):
     """Show the end of the backend log, where the reason for a failure is."""
     try:
-        tail = log.read_text(errors="replace").splitlines()[-lines:]
+        # LLVM on a system with only the newer libxml2 (see tools.link_system_library)
+        # warns on every run; the warning is harmless and would push the real error out.
+        tail = [line for line in log.read_text(errors="replace").splitlines()
+                if "no version information available" not in line][-lines:]
     except OSError:
         return
     if tail:
