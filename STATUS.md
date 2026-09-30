@@ -9,19 +9,19 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
-- PadMint 0.2.8 is being verified: #63 preserves tracked, staged, untracked and
+- PadMint 0.2.8 is published (Latest, #65): #63 preserves tracked, staged, untracked and
   ignored dependency edits during interrupted-download recovery; #64 clarifies
   phone file selection, rejects disc IDs with an actionable menu message and
-  confirms the chosen filename. Both fixes merged; packages are not published yet.
+  confirms the chosen filename. Both fixes are included in the public packages.
   All 190 source tests pass on Apple's Python 3.9. Packaged Mac and Linux checks
   pass the 14 guided-start and 14 recovery tests; all downloads pass both content
   checks. The Windows VM was suspended after discovering Chris's request in the
   BlueWake chat to keep Parallels off for Mac responsiveness. Draft #65 adds a
   hosted Windows check using the included Python and actual public packages;
-  this avoids the local VM. The first hosted run passed all 28 player-flow tests;
-  its archive differed only by Windows checkout line endings. CI now preserves
-  source bytes so its checked packages can be matched to the staged downloads.
-  Do not publish 0.2.8 before that exact-package comparison passes.
+  this avoids the local VM. Final hosted run 36789511048 passed all 28 player-flow
+  tests using the included Python. Its Windows/Mac/Linux ZIPs are byte-identical
+  to the staged packages after preserving checkout line endings. Anonymous public
+  downloads match SHA256SUMS; tag points to f0efbb738cac934559e986143343dc8720a6fb1d.
 - KartPad #371 merged: device choice means where the player will play; phone-only
   setup needs about 25 GB free. The guide explains file-menu numbers versus RMCP01.
 - AnnePad 0.2.2 build 7 rebuilt after two interruptions. Draft #14, recipe/checksums
@@ -29,9 +29,11 @@ tracker; this file mirrors progress so work can resume after interruption.
   file; attract sequence runs. Interactive battle check remains open because
   XCTest could not start, including after restarting the developer test service.
 - Published PadMint 0.2.7 made AgePad 0.1.0's personal IPA in 45 seconds. HarkinianPad,
-  BarrelPad and BellPad are running through that same package. BlueWake's interrupted
-  build resumed with more disk space and is compiling. The full current-version
-  build sweep remains incomplete.
+  BarrelPad and BellPad also built through that package. HarkinianPad took 2519 s,
+  including a stalled Xcode child cleared without restarting shared services;
+  BarrelPad took 15 s and BellPad 20 s with warm caches. These are build checks,
+  not new device-play acceptance. Six further games are running through 0.2.8.
+  BlueWake's resumed build continues; the full current-version sweep is incomplete.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
 - GitHub triage is reviewing older open build reports as well as recent comments.
