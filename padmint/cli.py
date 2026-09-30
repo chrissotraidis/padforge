@@ -14,6 +14,7 @@ from pathlib import Path
 import re
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -533,9 +534,9 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
     if ref is None:
         ref, assets = latest_release(entry["repo_url"])
     source = home / "games" / f"{game}-{re.sub(r'[^A-Za-z0-9._-]', '_', ref)}"
-    if not source.exists():
+    if not source_complete(source):
         check_free_space(home, entry.get("free_space_gb", 0))
-        get_game(game, source, ref)
+        fetch_source(game, source, ref)
     manifest, _source = manifest_for(game, source)
     target = manifest["targets"].get(platform_name)
     if target is None or ("command" not in target and "steps" not in target):
@@ -730,7 +731,43 @@ def start(ask=input, stream=None):
     return code
 
 
-def get_game(game, dest, ref=None):
+def source_complete(source):
+    """A finished download of a game's source: every tracked file is present.
+    An attempt that was interrupted (closed window, lost connection) must not be
+    reused, or later runs fail with misleading errors (padmint#8)."""
+    if not (source / ".git").exists():
+        return False
+    git = [tools.executable("git", host_id()), "-C", str(source)]
+    head = subprocess.run(git + ["rev-parse", "--verify", "-q", "HEAD"], capture_output=True)
+    if head.returncode:
+        return False
+    missing = subprocess.run(git + ["ls-files", "--deleted"], capture_output=True, text=True)
+    return missing.returncode == 0 and not missing.stdout.strip()
+
+
+def _remove_tree(path):
+    """Remove one of PadMint's own download folders, including Git's read-only files on Windows."""
+    def writable_then_retry(function, name, _info):
+        os.chmod(name, stat.S_IWRITE)
+        function(name)
+    if path.exists():
+        shutil.rmtree(path, onerror=writable_then_retry)
+
+
+def fetch_source(game, source, ref):
+    """Download into a side folder and move it into place only once complete."""
+    if source.exists():
+        print(f"The earlier download in {source} is unfinished; downloading it again.", flush=True)
+        _remove_tree(source)
+    partial = source.with_name(source.name + ".partial")
+    _remove_tree(partial)
+    partial.parent.mkdir(parents=True, exist_ok=True)
+    get_game(game, partial, ref, announce=False)
+    os.replace(partial, source)
+    print(f"{game} source in {source}", flush=True)
+
+
+def get_game(game, dest, ref=None, announce=True):
     """Clone a catalogued game's source; its build bootstrap fetches the rest."""
     entry = catalog().get(game)
     if entry is None:
@@ -739,10 +776,12 @@ def get_game(game, dest, ref=None):
         raise ValueError(f"{dest} is not empty")
     if shutil.which("git") is None:
         tools.install(["git"], host_id())
-    argv = [tools.executable("git", host_id()), "clone"] + (["--branch", ref] if ref else []) \
+    argv = [tools.executable("git", host_id()), "-c", "advice.detachedHead=false", "clone"] \
+        + (["--branch", ref] if ref else []) \
         + [entry["repo_url"], str(dest)]
     subprocess.run(argv, check=True)
-    print(f"{game} source in {dest}")
+    if announce:
+        print(f"{game} source in {dest}")
     return 0
 
 

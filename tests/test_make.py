@@ -47,6 +47,7 @@ class MakeTests(unittest.TestCase):
                     mock.patch.object(cli.tools, "tools_root", return_value=root / "home/tools"), \
                     mock.patch.object(cli.tools, "install"), \
                     mock.patch.object(cli, "latest_release", return_value=("v1.2.3", {})), \
+                    mock.patch.object(cli, "source_complete", return_value=True), \
                     mock.patch.object(cli, "manifest_for", return_value=(manifest, "repository")), \
                     mock.patch.object(cli, "git", return_value="0" * 40), \
                     mock.patch.object(cli, "published_app", return_value=root / "app.apk") as fetch, \
@@ -60,6 +61,7 @@ class MakeTests(unittest.TestCase):
                     mock.patch.object(cli.tools, "tools_root", return_value=root / "home/tools"), \
                     mock.patch.object(cli.tools, "install"), \
                     mock.patch.object(cli, "latest_release", return_value=("v1.2.3", {})), \
+                    mock.patch.object(cli, "source_complete", return_value=True), \
                     mock.patch.object(cli, "manifest_for", return_value=(manifest, "repository")), \
                     mock.patch.object(cli, "git", return_value="0" * 40), \
                     mock.patch.object(cli, "published_app", return_value=root / "app.apk"), \
