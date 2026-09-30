@@ -565,8 +565,36 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None):
     result = out / f"{manifest['name']}-v{safe_version}-{platform_name}-personal{args.output_path.suffix}"
     shutil.copyfile(args.output_path, result)
     print(f"Your {manifest['name']} for {platform_name}: {result}")
+    save_game_data(args.output_path, out, manifest["name"])
     print("It contains game code made from your own copy: keep it to yourself.")
     return 0
+
+
+def save_game_data(built, out, name, stream=None):
+    """A backend may leave the game data folder the player imports into the app
+    (files/ and sys/, as Dolphin's Extract Entire Disc makes) beside its output,
+    as "<output>.data". Copy it once into the player's folder: a real copy, so
+    it never shares files with PadForge's build cache."""
+    stream = stream or sys.stdout
+    data = Path(str(built) + ".data")
+    if not data.is_dir():
+        return None
+    target = out / f"{name} game data"
+    if target.exists():
+        print(f"Your {name} game data folder is already at {target}", file=stream)
+        return target
+    partial = target.with_name(target.name + ".partial")
+    if partial.exists():
+        shutil.rmtree(tools._long(partial))
+    print(f"Saving your {name} game data folder (about "
+          f"{sum(p.stat().st_size for p in data.rglob('*') if p.is_file()) / (1 << 30):.1f} GB)…",
+          file=stream, flush=True)
+    shutil.copytree(tools._long(data), tools._long(partial))
+    partial.replace(target)
+    print(f"Your {name} game data folder: {target}\n"
+          f"  New to {name}? Copy it to your device and choose it with Import from Extracted Folder. "
+          "It needs no key.", file=stream)
+    return target
 
 
 def version_tuple(text):
