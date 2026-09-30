@@ -25,7 +25,7 @@ it.
 | **Android** | a Windows, Mac or Linux computer | [Android, with a computer](#android-with-a-computer) |
 | **Android** | only the phone | [Android, phone only](#android-phone-only-experimental) (experimental) |
 | **iPhone or iPad** | a Mac with Apple Silicon (M1 or newer) | [iPhone or iPad](#iphone-or-ipad) |
-| **iPhone or iPad** | a Windows or Linux computer | [iPhone or iPad](#iphone-or-ipad) (experimental, from PadMint 0.2.2) |
+| **iPhone or iPad** | a Windows or Linux computer | [iPhone or iPad](#iphone-or-ipad) (experimental) |
 
 Other Pad games: see [Other Pad games](#other-pad-games).
 
@@ -102,8 +102,8 @@ new game pack**: run PadMint again and choose the new `.so`.
 
 ## Android, phone only (experimental)
 
-A 64-bit Android phone or tablet can make its own game pack, from PadMint
-0.2.2. It has only been tried on a phone-sized emulator so far. It needs about
+A 64-bit Android phone or tablet can make its own game pack. It has only been
+tried on a phone-sized emulator so far. It needs about
 8 GB of memory, 25 GB free, Wi-Fi for about 6 GB of downloads, and an hour or
 more.
 
@@ -133,7 +133,9 @@ stays).
 
 - **On a Mac** with Apple Silicon and
   [Xcode](https://apps.apple.com/app/xcode/id497799835) installed.
-- **On Windows or Linux** (experimental, from PadMint 0.2.2): no Xcode needed.
+- **On Windows or Linux** (experimental): no Xcode needed. Tried so far on
+  Windows 11 on ARM and on Ubuntu, each with an iPhone 14; ordinary Intel and
+  AMD Windows PCs haven't been tried yet.
 
 1. Start PadMint as in [step 1](#1-start-padmint), drag in your disc image and,
    on a Mac, choose **iPhone/iPad**.
@@ -141,8 +143,11 @@ stays).
    folder in Downloads.
 3. Install the `.ipa` with Sideloadly, AltStore or SideStore. Updating? Install
    it over your KartPad with the same tool and Apple ID to keep your saves.
-4. First time only: copy the `KartPad game data` folder to the device (AirDrop
-   or Files) and choose it in KartPad with **Import from Extracted Folder**.
+4. First time only: get the `KartPad game data` folder onto the device.
+   AirDrop it from a Mac, or put it in iCloud Drive, on a USB drive or in a
+   cloud drive app. In KartPad, tap **Import Game** on the Mario Kart Wii card,
+   then **Import from Extracted Folder…**, and pick the folder in the Files
+   window that opens.
 
 **Updates:** run PadMint again for each new KartPad; it reuses your earlier
 work, so it takes a few minutes.
@@ -244,8 +249,8 @@ Use `--target` to choose a platform the game declares (default `ios`),
 Builds run on the platforms each game marks *verified* or *experimental*;
 `list` shows the rest as *planned*. KartPad's Android game pack builds on
 Windows, Linux and macOS (x64 and ARM64) and, experimentally, on an Android
-phone; iPhone/iPad builds need an Apple Silicon Mac, or Windows or Linux from
-PadMint 0.2.2 (experimental). See [STATUS.md](STATUS.md) for what has been
+phone; iPhone/iPad builds need an Apple Silicon Mac, or, experimentally,
+Windows or Linux. See [STATUS.md](STATUS.md) for what has been
 verified on each.
 
 The catalog covers the Pad ports whose repositories declare a build. Only
