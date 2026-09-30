@@ -439,6 +439,37 @@ def print_log_tail(log, lines=15):
         print(f"Last lines of {log}:", file=sys.stderr)
         for line in tail:
             print("  " + line[-300:], file=sys.stderr)
+        cause = likely_cause(tail)
+        if cause:
+            print(f"\nLikely cause: {cause}", file=sys.stderr)
+
+
+NETWORK_ERRORS = re.compile(
+    r"Temporary failure in name resolution|Name or service not known|nodename nor servname|"
+    r"getaddrinfo failed|Could not resolve host|Connection refused|Connection reset|timed out|"
+    r"Network is unreachable|No route to host|Failed to connect|URLError|HTTP Error (403|5\d\d)", re.I)
+DISK_FULL = re.compile(r"No space left on device|Errno 28|ENOSPC|not enough space on the disk", re.I)
+CERTIFICATES = re.compile(r"CERTIFICATE_VERIFY_FAILED|certificate verify failed|SSL certificate problem", re.I)
+
+
+def likely_cause(lines):
+    """A plain reading of a failed build's last lines, for the three failures players hit most
+    that have a fix outside PadMint. None when nothing matches: no guessing."""
+    text = "\n".join(lines)
+    if DISK_FULL.search(text):
+        return ("the disk filled up. Free up space (a KartPad build needs about 16 GB) and run "
+                "PadMint again; finished steps are kept.")
+    if CERTIFICATES.search(text):
+        return ("a secure download failed its certificate check. Antivirus HTTPS scanning or a "
+                "company network usually causes this: turn the scanning off or use another network, "
+                "then run PadMint again.")
+    if NETWORK_ERRORS.search(text):
+        hosts = re.findall(r"https?://([A-Za-z0-9.-]+)", text)
+        where = hosts[-1] if hosts else "a download server"
+        return (f"a download from {where} was blocked or failed. Check your internet connection, and "
+                f"whether a VPN, a firewall or an antivirus web filter blocks {where}. Then run PadMint "
+                "again; finished downloads are kept.")
+    return None
 
 
 def latest_release(repo_url):
@@ -892,7 +923,14 @@ def get_game(game, dest, ref=None, announce=True):
     argv = [git_program(), "-c", "advice.detachedHead=false", "clone"] \
         + (["--branch", ref] if ref else []) \
         + [entry["repo_url"], str(dest)]
-    subprocess.run(argv, check=True)
+    try:
+        subprocess.run(argv, check=True)
+    except subprocess.CalledProcessError as error:
+        raise ValueError(
+            f"PadMint could not download {game}'s source from github.com (Git stopped with code "
+            f"{error.returncode}; the lines above say why). Check your internet connection, and whether "
+            "a VPN, a firewall or an antivirus web filter blocks github.com. Then run PadMint again."
+        ) from error
     if announce:
         print(f"{game} source in {dest}")
     return 0
@@ -1058,7 +1096,8 @@ def main(argv=None):
             raise ValueError(f"{manifest['name']} {target_name} builds are {state} on {host_id()}")
         return execute(args, repo, disc)
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
-        print(f"PadMint: {error}", file=sys.stderr)
+        message = str(error)
+        print(message if message.startswith("PadMint ") else f"PadMint: {message}", file=sys.stderr)
         return 1
     except (KeyboardInterrupt, EOFError):
         return 130
