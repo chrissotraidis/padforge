@@ -289,6 +289,18 @@ and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
 0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
 without a Mac (Hubble).
 
+**Update 00:10, 1 Oct (0.2.3):** PadMint 0.2.2 and KartPad 0.7.3 published
+30 Sep (both Latest, anonymous downloads verified; KartPad fingerprints
+unchanged, emulator and iPhone 14 in-place updates raced). GoldenPad and
+BearBirdPad 0.2.1 published (recipes use PadMint's LLVM). 0.2.3: #50 README
+after the release; #51 N64 ROMs and GameCube/Wii discs recognized from their
+header (town3r's GoldenEye .z64 on padmint#7 had to be picked from a list of
+18); #52 recipes mark programs the player installs ("player": true), checked
+before any download (GoldenPad needs Homebrew SDL2 for its shader step; our
+Macs had it, town3r's didn't; goldenpad#46 marks cmake, ninja, xdelta3 and
+sdl2-config). Open: Pixel 9 Pro XL Termux run (phone locked), full 0.2.2
+build sweep of every game (James).
+
 **Update 22:55 (0.2.2):** merged #36 (import button named per platform), #37
 (Android phone via Termux, experimental), #38 (failure messages with the fix),
 #39 (iPhone packs on Windows and Linux: LLVM, libc++ and Apple open-source
