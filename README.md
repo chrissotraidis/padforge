@@ -68,7 +68,8 @@ Your copy will be saved in C:\Users\you\Downloads
 On a Mac with Apple Silicon, PadMint asks for the file first, then asks
 **Android** or **iPhone/iPad**: choose Android.
 
-Keep the window open. The first build takes about 15 minutes to an hour, while
+Keep the window open. Keep the computer plugged in; PadMint keeps it awake while
+it builds. The first build takes about 15 minutes to an hour, while
 PadMint downloads about 4 GB of tools; later builds take a few minutes. If it
 stops, it says why and what to do.
 

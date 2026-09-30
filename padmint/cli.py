@@ -23,7 +23,7 @@ import time
 import urllib.parse
 import uuid
 
-from . import __version__, game_file, gate, tools
+from . import __version__, awake, game_file, gate, tools
 from .manifest import (RUNNABLE_STATES, NeedsNewerPadMint, catalog, expand, host_id, load_manifest,
                        manifest_for, manifest_sha256, needs_build_input, on_android,
                        repository_manifest)
@@ -650,6 +650,11 @@ def check_free_space(folder, needed_gb):
 
 def make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=None):
     """The player's command: from their own game file to their own copy, in one step."""
+    with awake.while_building():
+        return _make(game, platform_name, disc, out, ref, app, jobs, results)
+
+
+def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=None):
     entry = catalog().get(game)
     if entry is None:
         raise ValueError(f"unknown game {game}; see padmint list")
