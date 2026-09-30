@@ -1,0 +1,46 @@
+name: Windows package check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  packaged-player-flow:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Package and audit public downloads
+        run: python scripts/package-release.py release-check
+      - name: Check the included Python and player flows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = (Get-ChildItem release-check/*-windows.zip).FullName
+          Expand-Archive $zip "$env:RUNNER_TEMP/package-check"
+          $package = (Get-ChildItem "$env:RUNNER_TEMP/package-check" -Directory).FullName
+          $tests = "$env:RUNNER_TEMP/player-checks"
+          New-Item -ItemType Directory $tests | Out-Null
+          Copy-Item tests/test_start.py, tests/test_finish_submodules.py $tests
+          Push-Location $package
+          try {
+            & ./python/python.exe -m padmint --version
+            if ($LASTEXITCODE -ne 0) { throw 'Included Python cannot start PadMint' }
+            & ./python/python.exe -m unittest discover -s $tests -v
+            if ($LASTEXITCODE -ne 0) { throw 'Guided setup or safe recovery failed' }
+            & ./python/python.exe -m padmint audit $zip
+            if ($LASTEXITCODE -ne 0) { throw 'Packaged content audit failed' }
+          } finally {
+            Pop-Location
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checked-public-packages
+          path: release-check/
+          retention-days: 7
