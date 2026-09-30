@@ -421,12 +421,13 @@ def execute(args, repo, disc):
         atomic_json(attempt / "record.json", record)
         emit("build_" + status, exit_code=code)
         if status == "failed":
-            print_log_tail(attempt / "backend.log")
+            space = (catalog().get(getattr(args, "game", None)) or {}).get("free_space_gb")
+            print_log_tail(attempt / "backend.log", needed_gb=space)
         print(f"Build record: {attempt / 'record.json'}")
         return code if code >= 0 else 128 - code
 
 
-def print_log_tail(log, lines=15):
+def print_log_tail(log, lines=15, needed_gb=None):
     """Show the end of the backend log, where the reason for a failure is."""
     try:
         # LLVM on a system with only the newer libxml2 (see tools.link_system_library)
@@ -439,7 +440,7 @@ def print_log_tail(log, lines=15):
         print(f"Last lines of {log}:", file=sys.stderr)
         for line in tail:
             print("  " + line[-300:], file=sys.stderr)
-        cause = likely_cause(tail)
+        cause = likely_cause(tail, needed_gb)
         if cause:
             print(f"\nLikely cause: {cause}", file=sys.stderr)
 
@@ -452,13 +453,13 @@ DISK_FULL = re.compile(r"No space left on device|Errno 28|ENOSPC|not enough spac
 CERTIFICATES = re.compile(r"CERTIFICATE_VERIFY_FAILED|certificate verify failed|SSL certificate problem", re.I)
 
 
-def likely_cause(lines):
+def likely_cause(lines, needed_gb=None):
     """A plain reading of a failed build's last lines, for the three failures players hit most
     that have a fix outside PadMint. None when nothing matches: no guessing."""
     text = "\n".join(lines)
     if DISK_FULL.search(text):
-        return ("the disk filled up. Free up space (a KartPad build needs about 16 GB) and run "
-                "PadMint again; finished steps are kept.")
+        space = f" (this build needs about {needed_gb} GB)" if needed_gb else ""
+        return f"the disk filled up. Free up space{space} and run PadMint again; finished steps are kept."
     if CERTIFICATES.search(text):
         return ("a secure download failed its certificate check. Antivirus HTTPS scanning or a "
                 "company network usually causes this: turn the scanning off or use another network, "

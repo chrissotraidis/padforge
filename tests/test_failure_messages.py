@@ -41,6 +41,12 @@ class FailureMessageTests(unittest.TestCase):
             self.assertIn(expected, cli.likely_cause(log.splitlines()), log)
         self.assertIsNone(cli.likely_cause(["error: undefined symbol: foo"]))
 
+    def test_the_full_disk_advice_uses_the_games_own_size_when_known(self):
+        full = ["OSError: [Errno 28] No space left on device"]
+        self.assertIn("Free up space (this build needs about 16 GB) and run", cli.likely_cause(full, 16))
+        self.assertIn("Free up space and run", cli.likely_cause(full))
+        self.assertNotIn("KartPad", cli.likely_cause(full, 40))
+
     def test_the_failure_summary_ends_with_the_likely_cause(self):
         with tempfile.TemporaryDirectory() as folder:
             log = Path(folder) / "backend.log"
