@@ -65,13 +65,29 @@ BlueWake's nested stage/training sessions must forward cancellation correctly;
 arbitrary detached descendants cannot be guaranteed terminated by this wrapper.
 
 Before recording a packaged result, PadMint checks ZIP integrity, unambiguous
-app metadata, the declared executable's presence/Mach-O magic and backend
+app metadata, the declared executable's Mach-O load commands and backend
 provenance. BlueWake additionally requires its fixed module and matching hash,
 clean source revision and local-training marker. KartPad provenance must match
 the disc hash and known profile; its translated code is linked into the app
 executable rather than a separately declared BlueWake-style module. These are
 minimal structural checks, not signing, loadability, training-quality or runtime
 validation. Synthetic executable fixtures intentionally are not runnable apps.
+
+Every IPA, including recipes with `check: none`, also records the actual linked
+platform, minimum OS and SDK for every executable slice. Simulator and non-device
+platforms are rejected. For SDK 27+ builds, declared application scenes or a
+defined instance method implementing UIKit's scene configuration callback provide
+static startup evidence. Dynamic configurations (including SDL3) do not need a
+scene manifest. Raw selector strings, imported symbols and protocol metadata do
+not establish an implementation.
+Without positive evidence, scene startup is recorded as `unverified` and SDK 27+
+builds show a warning. A launch-method symbol alone cannot prove legacy startup:
+frameworks may provide inherited callbacks, and symbols may be stripped. This
+includes SwiftUI-managed startup, without assuming a framework import proves
+which delegate owns startup. Confirmed startup failures need game integration
+fixes and runtime checks, not rejection based solely on a missing plist or symbol.
+Changing the minimum OS does not remove the linked-SDK requirement. Every result
+leaves runtime launch `not-tested`; signing, launch and gameplay need actual tests.
 
 ## Concrete gaps
 

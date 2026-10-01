@@ -1,5 +1,7 @@
 """Games whose player input is imported in the app (no --disc at build time)."""
 import argparse
+from contextlib import redirect_stdout
+import io
 import json
 from pathlib import Path
 import shlex
@@ -8,7 +10,7 @@ import tempfile
 import unittest
 
 from padmint.cli import execute, validate
-from fixtures import entries, write_ipa
+from fixtures import entries, macho, write_ipa
 
 MANIFEST = {
     "schema_version": 1, "id": "maskpad", "name": "Synthetic", "game": "Synthetic",
@@ -61,7 +63,32 @@ class InAppInputTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "import them in the app"):
             validate(self.args)
 
+    def test_successful_backend_with_simulator_ipa_fails_attempt(self):
+        members = entries()
+        members["Payload/Synthetic.app/Synthetic"] = macho(27, platform=7)
+        write_ipa(self.repo.parent / "synthetic.ipa", members)
+        repo, disc = validate(self.args)
+        self.assertEqual(execute(self.args, repo, disc), 1)
+        record = json.loads(next((self.repo / "build/padmint").glob("*/runs/*/record.json")).read_text())
+        self.assertEqual(record["status"], "failed")
+        self.assertIn("simulator", record["failure_message"])
+        self.assertNotIn("output", record)
+        self.assertFalse(hasattr(self.args, "output_path"))
+
+    def test_unverified_startup_is_recorded_and_shown_without_claiming_launch(self):
+        members = entries()
+        members["Payload/Synthetic.app/Synthetic"] = macho(27, swiftui=True)
+        write_ipa(self.repo.parent / "synthetic.ipa", members)
+        repo, disc = validate(self.args)
+        printed = io.StringIO()
+        with redirect_stdout(printed):
+            self.assertEqual(execute(self.args, repo, disc), 0)
+        self.assertIn("startup could not be verified", printed.getvalue())
+        record = json.loads(next((self.repo / "build/padmint").glob("*/runs/*/record.json")).read_text())
+        self.assertEqual(record["status"], "completed")
+        self.assertEqual(record["package_validation"]["apple_compatibility"]["scene_startup"], "unverified")
+        self.assertEqual(record["package_validation"]["apple_compatibility"]["runtime_launch"], "not-tested")
+
 
 if __name__ == "__main__":
     unittest.main()
-

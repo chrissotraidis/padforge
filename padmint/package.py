@@ -6,6 +6,7 @@ import plistlib
 import stat
 import zipfile
 from xml.parsers.expat import ExpatError
+from .apple import linked_sdks, validate_scene_startup
 
 
 def validate_ipa(path, game, revision, disc_sha256):
@@ -59,8 +60,12 @@ def validate_ipa(path, game, revision, disc_sha256):
             if not isinstance(info.get("CFBundleIdentifier"), str) or not info["CFBundleIdentifier"]:
                 raise ValueError("IPA has no bundle identifier")
             binary_hash = executable_hash(app + "/" + executable)
+            with archive.open(app + "/" + executable) as stream:
+                slices = linked_sdks(stream, archive.getinfo(app + "/" + executable).file_size)
+            apple = validate_scene_startup(info, slices)
             if game is None:
-                return {"check": "minimal-ipa-structure", "executable_sha256": binary_hash}
+                return {"check": "minimal-ipa-structure", "executable_sha256": binary_hash,
+                        "apple_compatibility": apple}
             provenance_name = (app + "/BuilderProvenance.json" if game == "bluewake"
                                else "KartPadBuilderProvenance.json")
             provenance = json.loads(metadata(provenance_name))
@@ -84,6 +89,7 @@ def validate_ipa(path, game, revision, disc_sha256):
                   or provenance.get("containsUserSuppliedTranslatedCode") is not True):
                 raise ValueError("KartPad provenance does not match the requested disc/profile")
             return {"check": "minimal-ipa-structure-and-provenance", "executable_sha256": binary_hash,
+                    "apple_compatibility": apple,
                     "provenance_sha256": hashlib.sha256(archive.read(provenance_name)).hexdigest()}
     except (zipfile.BadZipFile, KeyError, plistlib.InvalidFileException,
             json.JSONDecodeError, UnicodeError, RuntimeError, ExpatError) as error:

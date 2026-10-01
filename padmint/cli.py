@@ -368,6 +368,8 @@ def forget_moved_build_settings(*folders, stream=None):
 
 
 def check_output(check, output, game_revision, disc_sha256):
+    if check == "none" and output.suffix.lower() == ".ipa":
+        return validate_ipa(output, None, game_revision, disc_sha256)
     if check == "none":
         return {"check": "none"}
     if check == "ipa":
@@ -478,6 +480,11 @@ def execute(args, repo, disc):
                     raise ValueError("Backend exited successfully but produced no output")
                 record["package_validation"] = check_output(target.get("check", "none"), output,
                                                             args.revision, identity["disc_sha256"])
+                apple = record["package_validation"].get("apple_compatibility", {})
+                if apple.get("scene_startup") == "unverified" and any(
+                        int(item["sdk"].split(".")[0]) >= 27 for item in apple["linked_slices"]):
+                    print("Apple scene startup could not be verified from this package. "
+                          "The build is complete, but launch on your device still needs testing.", flush=True)
                 record["output_sha256"] = digest(output)
                 record["output"] = output.name
                 args.output_path = output
@@ -488,6 +495,7 @@ def execute(args, repo, disc):
         except (OSError, ValueError, subprocess.CalledProcessError) as error:
             code, status = 1, "failed"
             record["failure_type"] = type(error).__name__
+            record["failure_message"] = str(error)
             print(f"Build failed: {error}", file=sys.stderr)
         record.update(status=status, exit_code=code)
         atomic_json(attempt / "record.json", record)
