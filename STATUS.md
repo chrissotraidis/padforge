@@ -19,7 +19,13 @@ tracker; this file mirrors progress so work can resume after interruption.
   notice and names the existing unsigned preview's canonical tag. Source build
   is optional, recipient signing still required. Six tests PASS both interpreters
   and independent review; production build/recipe/workflow unchanged from2c44fd1,
-  both changed-file/tracked-source scans PASS. New full hosted checks pending;
+  both changed-file/tracked-source scans PASS. Exact full hosted36824160065
+  SUCCESS: six regressions, fresh engine-resource/Simulator/device builds and
+  unsigned package. Earlier2c44 hosted36822580772 also SUCCESS. Both real CI
+  artifacts downloaded once and independently verified: GitHub outer digests,
+  exact IPA checksums, actual0.1.0/build1/minOS15/iPad-only/arm64/unsigned,
+  minimal structure and both content scans PASS. Xcode16.4/SDK18.5 evidence,
+  not PadMint guided fresh-host/Xcode27 cold-resource/device/gameplay/rights proof;
   previous warm app-build evidence belongs to2c44fd1, not this docs head.
   All existing signing/private-input/save/device-acceptance limits retained.
 - Three see-repo backend rechecks through actual public PadMint0.2.8 completed:
@@ -37,7 +43,8 @@ tracker; this file mirrors progress so work can resume after interruption.
   Apple3.9/Python3.11, independently repeated; repository verification,
   unchanged-tail review and both changed-file/tracked-source scans PASS.
   Previous fixed IPA/checksum/app copied and verified before replacement.
-  Hosted focused test passes; full Simulator/package CI still running.
+  Hosted full Simulator/package run36822580772 now passes at2c44fd1;
+  separate doc-follow-up full run36824160065 also passes atf6c7a3f.
   Existing warm ce.dat bypasses the host configure branch. No aggregate worker
   cap, cold-resource, device or publication claim. Primary/signing untouched.
 - Fresh issue sweep: PadMint has no open issues. New KartPad#376 is graphics,
