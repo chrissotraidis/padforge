@@ -9,6 +9,32 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- BallPad#14 now ac90603 honors PadMint's existing parallel-build limit in
+  engine CMake and FFmpeg make, which previously overrode it with hw.ncpu.
+  Manual unset/empty retains its prior CPU default; invalid limits fail before
+  tools, output setup, downloads or engine operations. Eight command-fixture
+  tests PASS Apple3.9/Python3.11; independent review PASS plus26 supplemental
+  full-entry/guard cases. Source-validator failure remains fail-closed. Main
+  actual maintained-source identity/cleanliness/commit/tree/ancestry check PASS.
+  Exact rewrite proof preserves all other production bytes, pins, recipe,
+  version and packaging; both changed-file/tracked-source scans PASS. No
+  hosted workflow or new app/device/fresh-host/gameplay/rights/publication proof.
+  Developer-only probe and recipient relink scripts are outside this job fix.
+- Required-shell follow-up covers Bell/Dino16 frozen route files and10 required
+  Python snippets, all parse/compile on Apple3.9. Main Ball/Barrel12 frozen
+  shell-file check additionally parses two required Barrel JSON readers and
+  its previously unscanned viewport test; Ball's optional JSON-reader definition
+  also parses. Not runtime/transitive/native/app acceptance. Found Dino's
+  versioned-name-only Python selector rejects Apple-only PATH despite3.9.6;
+  main lookup independently confirms it and current helper bytes equal public.
+  Next small fix: version-checked generic Python fallback. Barrel's required
+  engine/SDL explicit job flags also ignore PadMint's standard limit; next
+  check/fix must retain its existing manual override/default behavior.
+- Melee36833475426 is now SUCCESS for a9da335: source suite and full iOS app
+  compile without private game inputs; final dependency cleanliness PASS.
+  Actual PR merge333d6b0 into publicmain8bf86d7, Xcode16.4; no independent
+  artifact/fresh-player-host/device/gameplay/rights acceptance. Earlier pending
+  statements below are historical checkpoints, not current live jobs.
 - MeleePad#39 now a9da335 fixes the required Slippi helper's Python3.9 hashing
   failure with equivalent bounded streaming SHA256. Eight focused tests PASS
   on Apple3.9 and Python3.11, including the five unchanged real Git source
