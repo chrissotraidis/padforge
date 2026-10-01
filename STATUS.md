@@ -20,7 +20,7 @@ tracker; this file mirrors progress so work can resume after interruption.
   All 190 source tests pass on Apple's Python 3.9. Packaged Mac and Linux checks
   pass the 14 guided-start and 14 recovery tests; all downloads pass both content
   checks. The Windows VM was suspended after discovering Chris's request in the
-  BlueWake chat to keep Parallels off for Mac responsiveness. Draft #65 adds a
+  BlueWake chat to keep Parallels off for Mac responsiveness. Merged #65 adds a
   hosted Windows check using the included Python and actual public packages;
   this avoids the local VM. Final hosted run 36789511048 passed all 28 player-flow
   tests using the included Python. Its Windows/Mac/Linux ZIPs are byte-identical
@@ -47,11 +47,15 @@ tracker; this file mirrors progress so work can resume after interruption.
   pass independent IPA-byte/record/version/build/minimal-structure readback.
   BananaPad's previous input path was missing; the owner's existing V64 copy
   matches the supported normalized SHA1, and its serialized retry is running.
-- AgePad's current public 0.1.0 rerun through 0.2.8 stopped after 5 s because
-  five installed Steam files differ from its supported profile. Earlier 0.2.7
-  success is historical, not current readiness. Input drift versus runner behavior
-  is under read-only investigation; fingerprints are not relaxed. No new iPad
-  acceptance claim, personal output upload or installed-Steam downgrade.
+- AgePad's public 0.1.0 rerun through 0.2.8 stopped after 5 s after Steam's beta
+  client updated between the successful and failed runs. Six Steam files differ;
+  the error displays only five. The source, embedded profile and relevant runner/
+  injection functions are unchanged; all 651 guarded game files still match.
+  The changed Steam client contains new executable code, so replacing fingerprints
+  alone is unsafe. A separate exact-version compatibility profile is a proposal
+  for Chris, requiring private boundary/injection and compatible-iPad checks.
+  Earlier 0.2.7 success is historical, not current readiness. No guard relaxation,
+  installed-Steam downgrade, personal output upload or new device acceptance claim.
 - StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
   the iOS compile. Draft starshippad#20 fixes SDK selection/cache invalidation;
   local app and device/simulator SDK probes pass. Exact packaged 0.2.8 generic
@@ -77,7 +81,10 @@ tracker; this file mirrors progress so work can resume after interruption.
 - Draft PadMint #70 fixes direct make bypassing the unsupported-host check before
   source/tools/app downloads, and pins recipe/source/app to one release snapshot.
   Main independently reviewed the change and passed all 202 tests on Apple's
-  Python 3.9; hosted Windows player-flow check passed. It is not in public 0.2.8.
+  Python 3.9. At beb7aed, the hosted Windows package now passes 40 checks, including
+  all twelve new host-preflight/release-snapshot regressions against the included
+  Python. The additive workflow change closes the previous test-selection gap.
+  It is not in public 0.2.8; no new release or supported platform is claimed.
   Explicit-ref candidates retain their selected source, rechecked before tools.
 - Prerequisite inventory matched 17 non-Kart/non-Melee recipes to the published
   hashes. Starship, Mask, Spaghetti and Hark require local CMake, Ninja, pkgconf
@@ -90,11 +97,14 @@ tracker; this file mirrors progress so work can resume after interruption.
   host libraries remain a separate requirement, not satisfied by device-library
   downloads. Melee still requires preinstalled Rust 1.88.0/iOS target through its
   Slippi preparation. A Rust-free offline module path is a proposal for Chris,
-  not implemented. Melee#39 stages SDK/IPA guards, final review still underway.
+  not implemented. Melee#39 stages SDK/IPA guards; main independently passed all
+  fourteen released-checker tests including read-only personal IPA validation.
+  Hosted source checks pass at e1c0e55; full iOS compilation remains in progress.
   Sun#53 enables the existing IPA check (formerly none) and Xcode/SDK preflight:
   complete local source suite, eight focused tests and both source/recipe gates
-  pass; hosted source suite passed, iOS/tvOS jobs pending. These are drafts, not
-  new public downloads. AgePad's injection path does not require Xcode; no blanket
+  pass; hosted source suite and full iOS/tvOS compilation passed at 000ec1e.
+  These are drafts, not new public downloads. AgePad's injection path does not
+  require Xcode; no blanket
   iOS-output prerequisite is added.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
