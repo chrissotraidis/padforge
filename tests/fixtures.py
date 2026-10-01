@@ -2,12 +2,20 @@
 import hashlib
 import json
 import plistlib
+import struct
 import zipfile
+
+
+def macho(sdk=26, platform=2):
+    # Structurally valid metadata only; this fixture is deliberately not runnable.
+    return (struct.pack("<8I", 0xFEEDFACF, 0x100000C, 0, 2, 1, 24, 0, 0)
+            + struct.pack("<6I", 0x32, 24, platform, 15 << 16, sdk << 16, 0)
+            + b"synthetic non-runnable fixture")
 
 
 def entries(game="kartpad", revision="a" * 40, disc=b"synthetic input, not game data"):
     app = "Payload/Synthetic.app/"
-    binary = b"\xcf\xfa\xed\xfe" + b"synthetic non-runnable fixture"
+    binary = macho()
     result = {app + "Info.plist": plistlib.dumps({"CFBundleExecutable": "Synthetic",
                                                "CFBundleIdentifier": "invalid.test.synthetic"}),
               app + "Synthetic": binary}

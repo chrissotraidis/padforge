@@ -65,13 +65,24 @@ BlueWake's nested stage/training sessions must forward cancellation correctly;
 arbitrary detached descendants cannot be guaranteed terminated by this wrapper.
 
 Before recording a packaged result, PadMint checks ZIP integrity, unambiguous
-app metadata, the declared executable's presence/Mach-O magic and backend
+app metadata, the declared executable's Mach-O load commands and backend
 provenance. BlueWake additionally requires its fixed module and matching hash,
 clean source revision and local-training marker. KartPad provenance must match
 the disc hash and known profile; its translated code is linked into the app
 executable rather than a separately declared BlueWake-style module. These are
 minimal structural checks, not signing, loadability, training-quality or runtime
 validation. Synthetic executable fixtures intentionally are not runnable apps.
+
+Every IPA, including recipes with `check: none`, also records the actual linked
+platform, minimum OS and SDK for every executable slice. Simulator and non-device
+platforms are rejected. SDK 27+ builds require an application scene configuration
+in Info.plist, or a scene manifest plus the UIKit scene configuration callback
+in the main executable. A callback string alone can come from an unrelated library
+and does not establish scene adoption.
+Otherwise PadMint fails the attempt before copying a player-facing IPA and
+explains that the game's UIKit/SDL startup must be updated. Changing the minimum
+OS does not remove this linked-SDK requirement. A declaration or callback is only
+static evidence; the record explicitly leaves runtime launch untested.
 
 ## Concrete gaps
 

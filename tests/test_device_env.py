@@ -13,6 +13,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from fixtures import entries, write_ipa
 from padmint.cli import execute, validate
 
 MAC_SDK = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
@@ -28,8 +29,10 @@ class DeviceEnvironmentTests(unittest.TestCase):
         (self.repo / "scripts").mkdir(parents=True)
         self.seen = root / "env.txt"
         (self.repo / ".gitignore").write_text("build/\n")
-        # The fake backend records the environment it was given, then makes an output.
-        (self.repo / "scripts/build.sh").write_text("env > %s\necho built > \"$1\"\n" % shlex.quote(str(self.seen)))
+        # The fake backend records its environment, then copies a synthetic package.
+        fixture = self.repo / "fixture.ipa"
+        write_ipa(fixture, entries())
+        (self.repo / "scripts/build.sh").write_text("env > %s\ncp %s \"$1\"\n" % (shlex.quote(str(self.seen)), shlex.quote(str(fixture))))
         for command in (["init", "-q"], ["config", "user.email", "t@example.invalid"], ["config", "user.name", "T"]):
             subprocess.run(["git", "-C", str(self.repo), *command], check=True)
 

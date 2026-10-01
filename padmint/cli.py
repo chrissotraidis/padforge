@@ -368,6 +368,8 @@ def forget_moved_build_settings(*folders, stream=None):
 
 
 def check_output(check, output, game_revision, disc_sha256):
+    if check == "none" and output.suffix.lower() == ".ipa":
+        return validate_ipa(output, None, game_revision, disc_sha256)
     if check == "none":
         return {"check": "none"}
     if check == "ipa":
@@ -488,6 +490,7 @@ def execute(args, repo, disc):
         except (OSError, ValueError, subprocess.CalledProcessError) as error:
             code, status = 1, "failed"
             record["failure_type"] = type(error).__name__
+            record["failure_message"] = str(error)
             print(f"Build failed: {error}", file=sys.stderr)
         record.update(status=status, exit_code=code)
         atomic_json(attempt / "record.json", record)

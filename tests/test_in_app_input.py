@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 from padmint.cli import execute, validate
-from fixtures import entries, write_ipa
+from fixtures import entries, macho, write_ipa
 
 MANIFEST = {
     "schema_version": 1, "id": "maskpad", "name": "Synthetic", "game": "Synthetic",
@@ -61,7 +61,18 @@ class InAppInputTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "import them in the app"):
             validate(self.args)
 
+    def test_successful_backend_with_sdk27_legacy_ipa_fails_attempt(self):
+        members = entries()
+        members["Payload/Synthetic.app/Synthetic"] = macho(27)
+        write_ipa(self.repo.parent / "synthetic.ipa", members)
+        repo, disc = validate(self.args)
+        self.assertEqual(execute(self.args, repo, disc), 1)
+        record = json.loads(next((self.repo / "build/padmint").glob("*/runs/*/record.json")).read_text())
+        self.assertEqual(record["status"], "failed")
+        self.assertIn("SDK 27", record["failure_message"])
+        self.assertNotIn("output", record)
+        self.assertFalse(hasattr(self.args, "output_path"))
+
 
 if __name__ == "__main__":
     unittest.main()
-
