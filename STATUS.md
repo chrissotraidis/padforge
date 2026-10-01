@@ -127,11 +127,31 @@ tracker; this file mirrors progress so work can resume after interruption.
   in-memory floors, not new declared minimums. Bear's unconditional Cargo check
   can require Rust even when a warm backend cache could skip decompression.
   Bell hosted source CI passes; Bear CI was explicitly skipped; Barrel, Dino and
-  Banana have no hosted workflow. No app/device checks are implied. All eleven
+  Banana have no hosted workflow. No app/device checks are implied. These eleven
   game recipe/SDK/IPA drafts remain unpublished; current player recipes unchanged.
-  BlueWake/Golden SDK requirements are being traced without touching their builds.
-  Brawler's Python resolver and Anne's alternative linker need careful review,
-  not a blanket generic requirement.
+- Four further recipe-only drafts pass independent released-0.2.8 checks:
+  BlueWake#11 (bbea38f) marks full Xcode and adds iPhoneOS SDK; Golden#49
+  (4fb580d) additionally checks the simulator SDK required by its current RT64
+  build while preserving Metal. Their 21/37 mocked checker cases pass. Paper#16
+  (c679944) and Ball#14 (fc94761) mark CMake/Ninja, with actual pinned floors
+  3.24/3.25; 28 doctor and 24 make guards pass. Exact recipe invariants and both
+  tracked-root ZIP gates pass all four. Hosted Blue repository audit and Paper
+  pinned-source/input checks pass; Golden/Ball have no hosted workflow. Paper's
+  isolated dependency verification initially failed on uninitialized submodules;
+  matching warm-source verification passed, and its hosted fresh source check
+  passed separately. No app/compiler/device acceptance is implied. Fifteen game
+  recipe/SDK/IPA drafts are now checked, not new public player recipes.
+  Blue's active primary and prior release checkout remain untouched; its SDK
+  draft uses a retained isolated worktree. Brawler's Python resolver and Anne's
+  alternative linker remain read-only research, not blanket requirements.
+- Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
+  non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
+  filenames and checksum entries present. Published versions/hashes match the
+  earlier snapshot. Current player README/release branding has only deliberate
+  Kart migration wording; historical padforge.json filenames remain supported.
+  This is metadata/recipe proof, not a new app-byte or gameplay acceptance pass.
+  The README draft explicitly names the current Starship SDK and Age Steam-profile
+  blockers; 190 Apple Python source tests and hosted Windows package checks pass.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
 - GitHub triage reviewed older open build reports as well as recent comments.
