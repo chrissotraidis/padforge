@@ -205,8 +205,11 @@ tracker; this file mirrors progress so work can resume after interruption.
   initially340ca03. Their already-correct CMake floors (3.26/3.24) were retained,
   not newly introduced. Main independently passed 224 program/doctor/make cases
   plus earlier 44 doctor/12 make guards, exact source snapshots and both JSON/ZIP
-  gates. All four hosted repository-safety checks pass; app/Simulator jobs were
-  still running at readback, not passing app claims.
+  gates. All four hosted repository-safety checks pass. Exact-head hosted full
+  unsigned iPhoneOS app/package-audit jobs pass for Hark298f3de (36812269945),
+  Mask424b6d9 (36812273544) and Star57ced90 (36812285661). Mask's Simulator UI
+  job remains in progress, not PASS. CI installs host libraries explicitly;
+  this is not generic player-host provisioning or fresh-host PadMint proof.
   Spaghetti#25 now071e091 additionally marks its existing required ripgrep for
   player checks. Main passed 18 released-PadMint-0.2.8 program/doctor/make cases,
   exact one-flag/whole-manifest/committed-root ZIP proof, repository safety and
@@ -216,8 +219,16 @@ tracker; this file mirrors progress so work can resume after interruption.
   proposal for Chris; no library hard gate, automatic installation, schema or
   backend change is implemented. Warm-cache Mac success is not fresh-host proof.
   One private warm HarkinianPad build through the actual staged 0.2.9 Mac package
-  is assigned for real-backend proof. No result, fresh-host, device or rights
-  acceptance is claimed yet; private outputs must remain local.
+  completed once in 313.1 s, four jobs, exit 0. Public v0.2.0/build 7 source
+  89e633a and the original recipe remain unchanged; all 35 package files match
+  the checked Mac ZIP. Main independently replayed actual IPA/record/hash/version/
+  minimal-structure and separate embedded provenance assertions. IPA SHA256
+  9f1b80f71d0aaee064195f9a6e51f86ecd831741ab3a1dbc04a7de1adaa551ba.
+  The unsigned private IPA correctly fails the public gate on 1,821 game-code
+  symbols. Warm imgui/stormlib dependency edits are recorded and preserved.
+  This is public-backend warm compile/package proof, not the #35 source-head
+  build, fresh-host setup, signing, device play or rights acceptance. No output
+  upload; staged 0.2.9 remains unpublished.
 - Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
   non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
   filenames and checksum entries present. Published versions/hashes match the
