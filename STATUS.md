@@ -9,6 +9,19 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- Two contradictory installation docs corrected in drafts, with regression tests:
+  DevilTouch#10 at5106aea accurately separates the public preview's minimum iOS13
+  from current-source default15 and removes stale no-public-IPA wording. Five
+  tests PASS Apple3.9/Python3.11; independent historical-source/actual-public-IPA
+  review PASS; source safety and both changed-file/tracked-source scans PASS.
+  Exact-head hosted source36823793109 SUCCESS. No app/release/support change.
+  VaultPad#10 nowf6c7a3f additionally corrects docs/INSTALL.md's retired-download
+  notice and names the existing unsigned preview's canonical tag. Source build
+  is optional, recipient signing still required. Six tests PASS both interpreters
+  and independent review; production build/recipe/workflow unchanged from2c44fd1,
+  both changed-file/tracked-source scans PASS. New full hosted checks pending;
+  previous warm app-build evidence belongs to2c44fd1, not this docs head.
+  All existing signing/private-input/save/device-acceptance limits retained.
 - Three see-repo backend rechecks through actual public PadMint0.2.8 completed:
   SnapPad retained draft#7 at779583e (71.57s), DevilTouch current main1f50702
   (183.19s), VaultPad new draft#10 at2c44fd1 (11.54s). Actual IPA/record/source/
