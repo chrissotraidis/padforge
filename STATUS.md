@@ -162,8 +162,23 @@ tracker; this file mirrors progress so work can resume after interruption.
   Its old public 0.2.0 backend is Homebrew-only; this current-main draft must not
   be transplanted into that release. Seventeen game recipe/SDK/IPA drafts are
   independently checked, not new player downloads; published recipes unchanged.
-  Local composed verification of PadMint #70 and #72 is assigned; their separate
-  passing checks do not yet establish a combined release candidate.
+- PadMint #70/#72 local composed candidate996a2f3 contains only the exact reviewed
+  host/release-snapshot safeguards and LF checksum fix. Independent patch-ID,
+  seven-file union, overlapping-workflow and unchanged-version/lock proofs pass.
+  Both full suites pass 204 cases on Apple Python 3.9 and Python 3.11; the actual
+  extracted Mac package passes 58 relevant cases on each. Main independently
+  replayed all 58 Mac cases in 16.468 s, verified package imports, all three
+  hashes and source/package reference gates. The Windows runtime is byte-identical
+  to the checked cached CI artifact; no Windows runtime was executed, and the
+  official Python download/checksum path was not rerun in the local cache adapter.
+  These locally generated packages remain unpublished candidates named 0.2.8,
+  not replacements for the public release. Normal fast-forward integration into
+  existing draft #70 is assigned for hosted Windows/Linux checks, conditional on
+  exact tree equality with this tested candidate and unchanged remote heads.
+  No extra PR, merge, supported-host expansion, version or public release.
+  Combined Windows/Linux execution is not yet proved; separate draft runs do not
+  establish that gate. Priority-four host-library readiness is being audited
+  read-only: warm-cache Mac success does not establish fresh-host prerequisites.
 - Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
   non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
   filenames and checksum entries present. Published versions/hashes match the
