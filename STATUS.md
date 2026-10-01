@@ -149,7 +149,10 @@ tracker; this file mirrors progress so work can resume after interruption.
   filenames and checksum entries present. Published versions/hashes match the
   earlier snapshot. Current player README/release branding has only deliberate
   Kart migration wording; historical padforge.json filenames remain supported.
-  This is metadata/recipe proof, not a new app-byte or gameplay acceptance pass.
+  Separately, a fresh anonymous download of all six required public base apps
+  across five recipes matches exact SHA256SUMS and passes both content gates.
+  These are empty/base downloads, not personal game-bearing outputs; the scans
+  remain heuristic checks, not rights or gameplay acceptance.
   The README draft explicitly names the current Starship SDK and Age Steam-profile
   blockers; 190 Apple Python source tests and hosted Windows package checks pass.
 - Notion's overview now distinguishes published releases from outstanding build
