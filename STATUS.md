@@ -150,7 +150,18 @@ tracker; this file mirrors progress so work can resume after interruption.
   exists; the full native source suite and new app/device checks were not run.
   Sixteen game recipe/SDK/IPA drafts are checked, still unpublished. The existing
   alternative-MIPS-linker/default-prefix limitation remains a proposal, not fixed
-  by this jq/rg draft. Brawler's selected-Python preflight is in progress.
+  by this jq/rg draft.
+- Brawler#14 (ecb2da6) marks CMake 3.24/full Xcode and adds the iPhoneOS SDK
+  probe; replaces the redundant PATH-only python3.11 check with the current
+  backend's selected-interpreter/Pillow probe. Main independently passed all
+  78 released-0.2.8 cases, including 13 real shell selection scenarios using only
+  generated executable stubs, checkout-doctor retirement and exact resolver/
+  whole-manifest contracts. Existing repository safety/syntax, exact committed
+  ZIP hash comparison and both JSON/ZIP content gates pass. No hosted workflow,
+  actual SDK/Pillow environment, new app build or device acceptance is claimed.
+  Its old public 0.2.0 backend is Homebrew-only; this current-main draft must not
+  be transplanted into that release. Seventeen game recipe/SDK/IPA drafts are
+  independently checked, not new player downloads; published recipes unchanged.
   Local composed verification of PadMint #70 and #72 is assigned; their separate
   passing checks do not yet establish a combined release candidate.
 - Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
