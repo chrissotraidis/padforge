@@ -690,16 +690,38 @@ def make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=
         return _make(game, platform_name, disc, out, ref, app, jobs, results)
 
 
+def player_target(manifest, platform_name):
+    """Reject unavailable targets/hosts before the player downloads build inputs."""
+    target = manifest["targets"].get(platform_name)
+    if target is None or ("command" not in target and "steps" not in target):
+        raise ValueError(f"{manifest['name']} cannot be built for {platform_name} yet")
+    host = host_id()
+    state = target["hosts"].get(host, "unsupported")
+    if state not in RUNNABLE_STATES:
+        available = ", ".join(f"{name} ({status})" for name, status in target["hosts"].items()
+                              if status in RUNNABLE_STATES) or "none yet"
+        raise ValueError(f"{manifest['name']} {platform_name} builds are {state} on {host}. "
+                         f"Available build hosts: {available}.")
+    return target
+
+
 def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=None):
     entry = catalog().get(game)
     if entry is None:
         raise ValueError(f"unknown game {game}; see padmint list")
+    release = None
+    if ref is None:
+        # Only small release metadata/recipe downloads precede this check. Pin
+        # the source and app assets to that same tag, even if Latest changes.
+        release = latest_release(entry["repo_url"])
+        manifest, _source = published_recipe(game, release=release)
+        player_target(manifest, platform_name)
     home = tools.tools_root().parent
-    source, ref, assets = release_source(game, ref)
+    source, ref, assets = release_source(game, ref, release=release)
     manifest, _source = manifest_for(game, source)
-    target = manifest["targets"].get(platform_name)
-    if target is None or ("command" not in target and "steps" not in target):
-        raise ValueError(f"{manifest['name']} cannot be built for {platform_name} yet")
+    # Explicit refs skip release preflight/network lookup; both paths must
+    # trust the actual selected checkout's recipe before installing tools.
+    target = player_target(manifest, platform_name)
     if not needs_build_input(manifest):
         disc = None  # the game file is added in the app, not read by the build
     elif disc is None:
@@ -827,14 +849,14 @@ def check_program(tool):
             f"{detail} (need {tool['min_version']}+)")
 
 
-def published_recipe(game):
+def published_recipe(game, release=None):
     """(recipe, where it came from): the one the game's latest release publishes, checked
     against the release's SHA256SUMS, or PadMint's built-in copy when that can't be had."""
     entry = catalog().get(game)
     if entry is None:
         raise ValueError(f"unknown game {game}; see padmint list")
     try:
-        tag, assets = latest_release(entry["repo_url"])
+        tag, assets = release if release is not None else latest_release(entry["repo_url"])
     except (RuntimeError, ValueError, OSError):
         why = "could not reach the release"
     else:
@@ -1224,7 +1246,7 @@ def fetch_source(game, source, ref):
     print(f"{game} source in {source}", flush=True)
 
 
-def release_source(game, ref=None):
+def release_source(game, ref=None, release=None):
     """The game's source at ref (default: its latest release), downloaded once and reused:
     (folder, ref, release assets). The recipe players build with lives in it."""
     entry = catalog().get(game)
@@ -1233,7 +1255,7 @@ def release_source(game, ref=None):
     home = tools.tools_root().parent
     assets = {}
     if ref is None:
-        ref, assets = latest_release(entry["repo_url"])
+        ref, assets = release if release is not None else latest_release(entry["repo_url"])
     source = home / "games" / f"{game}-{re.sub(r'[^A-Za-z0-9._-]', '_', ref)}"
     if not source_complete(source):
         check_free_space(home, entry.get("free_space_gb", 0))

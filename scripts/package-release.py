@@ -78,7 +78,7 @@ def main():
     make_zip(made[1], top, launchers / "PadMint.command")
     make_zip(made[2], top, launchers / "padmint.sh")
     sums = "".join(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n" for p in made)
-    (out / "SHA256SUMS").write_text(sums)
+    (out / "SHA256SUMS").write_bytes(sums.encode("utf-8"))
     print(sums, end="")
     return gate.audit(made, None)
 
