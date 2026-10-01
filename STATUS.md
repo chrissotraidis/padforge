@@ -13,6 +13,23 @@ tracker; this file mirrors progress so work can resume after interruption.
   A different agent owns KartPad app bugs. Builder reports in KartPad issues remain
   in scope, but no new rendering/runtime diagnostics or repeated player test asks.
   Small checked fixes can proceed; major process/UX changes need owner discussion.
+- Non-offered catalog follow-up: DevilTouch and VaultPad already have public
+  engine-app previews, so their existing unsigned IPAs do not need a PadMint
+  personal build. One anonymous download each matches its published checksum
+  and GitHub digest; exact package metadata and both released0.2.8/reference
+  content scans PASS. DevilTouch1.5.5/build2 supports iPhone+iPad; VaultPad0.1.0/
+  build1 is iPad-only. Both releases are non-draft prereleases. Their latest API
+  endpoints return404, but canonical preview pages return200; web/latest was
+  not tested. README now points to the explicit existing previews, not a new
+  recipe/platform/release or rights/device acceptance claim.
+- SnapPad#8 stages corrected README download status and bounded IPA audit
+  messages at a44cef86e2a1d4d6073d907ac49429d4156db582. All three old releases
+  are drafts. Existing README/packaging contract tests PASS Apple3.9/Python3.11;
+  executable audit checks/control flow unchanged after excluding comment/result
+  notes. Four changed files pass both scans. Exact tracked ZIP still FAILs on
+  the same unchanged one test stub; owner policy/source clearance remains open.
+  Existing#7 manifest/RT64/install-guide edits untouched. No hosted workflow,
+  new game build, download link, device mutation or publication permission.
 - PadMint 0.2.8 is published (Latest, #65): #63 preserves tracked, staged, untracked and
   ignored dependency edits during interrupted-download recovery; #64 clarifies
   phone file selection, rejects disc IDs with an actionable menu message and

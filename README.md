@@ -170,6 +170,17 @@ work, so it takes a few minutes.
 
 ## Other Pad games
 
+**DevilTouch and VaultPad have a different route:** their existing public
+previews can be downloaded without running PadMint. Use the
+[DevilTouch preview](https://github.com/chrissotraidis/deviltouch/releases/tag/v1.5.5-preview.1)
+or [VaultPad preview](https://github.com/chrissotraidis/vaultpad/releases/tag/v0.1.0-preview.1),
+check the included checksum, then sign and sideload the unsigned IPA. Add your
+own game data inside the app. VaultPad is iPad-only. These are preview releases,
+not App Store builds; use the explicit preview links above.
+
+**SnapPad:** public downloads remain paused. Its `see repo` catalog entry is
+not an available PadMint build recipe or a playable download.
+
 On a Mac with Apple Silicon and Xcode, PadMint also offers iPhone and iPad build
 recipes for **AnnePad**, **BallPad**, **BananaPad**, **BarrelPad**, **BearBirdPad**,
 **BellPad**, **BlueWake**, **BrawlerPad**, **DinoPad**, **GoldenPad**,
