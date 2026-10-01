@@ -41,12 +41,17 @@ tracker; this file mirrors progress so work can resume after interruption.
   not new device-play acceptance. Published 0.2.8 has since built BrawlerPad (60 s),
   BallPad (350 s), MaskPad (50 s), PaperPad (100 s), SpaghettiPad (125 s) and GoldenPad
   (325 s), BearBirdPad (681 s), DinoPad (70 s), AnnePad (2427 s) and SunPad
-  (55 s), with warm caches. BananaPad's previous input path was missing; the
-  owner's existing V64 copy matches the supported normalized SHA1, and a retry
-  is queued after the serialized sweep. MeleePad is running through the public
-  recipe. BlueWake's
-  resumed 0.2.7 personal build completed,
-  including its translated game module. The remaining 0.2.8 sweep is incomplete.
+  (55 s), with warm caches. MeleePad 0.2.1 completed in 2027 s through 0.2.8.
+  Warm 0.2.8 reruns also passed: HarkinianPad (85 s), BarrelPad (15 s), BellPad
+  (15 s), BlueWake (50 s including runner overhead). Fifteen public-recipe builds
+  pass independent IPA-byte/record/version/build/minimal-structure readback.
+  BananaPad's previous input path was missing; the owner's existing V64 copy
+  matches the supported normalized SHA1, and its serialized retry is running.
+- AgePad's current public 0.1.0 rerun through 0.2.8 stopped after 5 s because
+  five installed Steam files differ from its supported profile. Earlier 0.2.7
+  success is historical, not current readiness. Input drift versus runner behavior
+  is under read-only investigation; fingerprints are not relaxed. No new iPad
+  acceptance claim, personal output upload or installed-Steam downgrade.
 - StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
   the iOS compile. Draft starshippad#20 fixes SDK selection/cache invalidation;
   local app and device/simulator SDK probes pass. Exact packaged 0.2.8 generic
@@ -77,10 +82,20 @@ tracker; this file mirrors progress so work can resume after interruption.
 - Prerequisite inventory matched 17 non-Kart/non-Melee recipes to the published
   hashes. Starship, Mask, Spaghetti and Hark require local CMake, Ninja, pkgconf
   and full Xcode but do not mark them for the player checker. Bounded recipe
-  annotation drafts are underway; no new downloader or host support. Backend
+  annotation drafts are staged: Starship#22, Mask#14, Spaghetti#25, Hark#35.
+  Each retains xcodebuild and adds an iPhoneOS SDK probe with xcrun. Main replayed
+  44 player-doctor and 12 make-guard scenarios through the actual 0.2.8 checker,
+  plus exact-source gates. Latest-head hosted checks were skipped, not passed;
+  current published recipes are unchanged. No new downloader or host support. Backend
   host libraries remain a separate requirement, not satisfied by device-library
-  downloads. Melee's exact Rust provisioning is under review. AgePad's injection
-  path does not require Xcode; no blanket iOS-output prerequisite is added.
+  downloads. Melee still requires preinstalled Rust 1.88.0/iOS target through its
+  Slippi preparation. A Rust-free offline module path is a proposal for Chris,
+  not implemented. Melee#39 stages SDK/IPA guards, final review still underway.
+  Sun#53 enables the existing IPA check (formerly none) and Xcode/SDK preflight:
+  complete local source suite, eight focused tests and both source/recipe gates
+  pass; hosted source suite passed, iOS/tvOS jobs pending. These are drafts, not
+  new public downloads. AgePad's injection path does not require Xcode; no blanket
+  iOS-output prerequisite is added.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
 - GitHub triage reviewed older open build reports as well as recent comments.
