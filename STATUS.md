@@ -9,6 +9,23 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- MeleePad#39 now a9da335 fixes the required Slippi helper's Python3.9 hashing
+  failure with equivalent bounded streaming SHA256. Eight focused tests PASS
+  on Apple3.9 and Python3.11, including the five unchanged real Git source
+  identity guards. The complete default repository suite PASSes separately on
+  both interpreters; required dependency pins remain clean. Independent review
+  PASS; all other production AST statements, pins, recipe and version unchanged.
+  Both changed-file/tracked-source scans PASS. Exact hosted36833475426 source
+  checks SUCCESS, full iOS build still running. This is not a new personal app,
+  physical gameplay, fresh-player-host or rights/publication acceptance.
+- Remaining five frozen public releases received a bounded Python3.9 helper
+  scan: AgePad0.1.0 (one required inject entry), BallPad1.1.1 (13 files),
+  BellPad0.2.0 (5), BarrelPad0.2.0 (1), DinoPad0.2.0 (11). All31 files parse
+  under Apple3.9; no targeted newer-API or eager-union-annotation suspects.
+  This is static evidence only: no runtime/transitive/native/app readiness
+  claim. Required shell snippets and optional Age tools are not covered.
+  Age's updated Steam profile and complete host-library preflight/provisioning
+  remain owner discussions; no new platform, release or backend behavior.
 - GoldenPad#49 now90160c5 adds a bounded Python3.9 source-archive compatibility
   fix. Checker/exporter used3.11-only hashlib.file_digest; five fixture tests
   failed onApple3.9 beforefix, passed3.11, and nowPASSboth with streamed1MiB
@@ -34,10 +51,11 @@ tracker; this file mirrors progress so work can resume after interruption.
 - Bounded eight-game Python3.9 helper audit found one additional required-path
   bug in publicMelee0.2.1 and retaineddraft: build-slippi-rust.py digest uses
   hashlib.file_digest through literalpython3. Exactfunction synthetic3.9 failure
-  and3.11 control reproduced, no actualRust/appfailure claimed. Fix next, preserve
-  Rust/provenance/source guards. Otherseven inspectedfirstparty wrappers show no
+  and3.11 control reproduced, no actualRust/appfailure claimed. Fixed in the
+  current Melee draft above, preserving Rust/provenance/source guards.
+  Otherseven inspectedfirstparty wrappers show no
   concrete additional incompatibility; transitiveengine/tool and remaining
-  Age/Ball/Bell/Barrel/Dino coverage stillopen, not exhaustive readiness.
+  Age/Ball/Bell/Barrel/Dino helper scan now recorded above, not exhaustive readiness.
 - Eight-repo linked-install-doc audit found five current-route contradictions;
   small fixes are pushed on existing drafts, with public assets unchanged:
   HarkinianPad#35 at5d2d3f5 now installs the completed personal PadMint IPA,
