@@ -40,18 +40,34 @@ tracker; this file mirrors progress so work can resume after interruption.
   BarrelPad took 15 s and BellPad 20 s with warm caches. These are build checks,
   not new device-play acceptance. Published 0.2.8 has since built BrawlerPad (60 s),
   BallPad (350 s), MaskPad (50 s), PaperPad (100 s), SpaghettiPad (125 s) and GoldenPad
-  (325 s), with warm caches. BlueWake's resumed 0.2.7 personal build completed,
+  (325 s), BearBirdPad (681 s) and DinoPad (70 s), with warm caches. BlueWake's
+  resumed 0.2.7 personal build completed,
   including its translated game module. The remaining 0.2.8 sweep is incomplete.
 - StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
   the iOS compile. Draft starshippad#20 fixes SDK selection/cache invalidation;
-  local app and device/simulator SDK probes pass. Packaged candidate verification
-  and CI remain open. Main alone cannot repair release-pinned player builds;
+  local app and device/simulator SDK probes pass. Exact packaged 0.2.8 generic
+  candidate build passed in 131.88 s at 731adde with one job, and hosted full
+  unsigned iPhoneOS CI passed. Main independently replayed both SDK probes.
+  Draft starshippad#21 stages source-only 0.2.1/build 7; its final metadata build
+  check remains open. Main alone cannot repair release-pinned player builds;
   any successor must retain source-only publication and the private release gates.
 - Public entrypoint audit: all 19 buildable catalog games have current PadMint
   release recipes. Current README/release branding has no obsolete PadForge wording
   except deliberate KartPad migration help. Historical release tags may still use
   padforge.json; PadMint deliberately supports that filename. Checksums/parser/tag
   comparisons are checked separately from actual compilation and device play.
+- All 18 offered non-Kart recipes pass anonymous download, SHA256SUMS, released
+  parser and release-tag recipe comparisons (legacy filename fallback included).
+  Three see-repo catalog entries are not offered as player builds.
+- PadMint #68 merged after hosted checks: remove Play Protect bypass advice,
+  leave Google Play explicitly unvalidated rather than call it too old. Corrected
+  the existing kartpad#366 comment too; no device security settings changed.
+- Sanity review found direct make can bypass build's unsupported-host check;
+  a focused preflight fix/tests are assigned. MeleePad's existing player checker
+  misses Xcode/Rust because its recipe lacks player annotations; exact required
+  Rust/toolchain scope must be confirmed before the recipe changes. These are
+  small fixes, not new host support. Unwritable output-folder early checks are
+  deferred behind these two findings.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
 - GitHub triage reviewed older open build reports as well as recent comments.
