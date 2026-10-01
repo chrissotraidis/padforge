@@ -142,8 +142,17 @@ tracker; this file mirrors progress so work can resume after interruption.
   passed separately. No app/compiler/device acceptance is implied. Fifteen game
   recipe/SDK/IPA drafts are now checked, not new public player recipes.
   Blue's active primary and prior release checkout remain untouched; its SDK
-  draft uses a retained isolated worktree. Brawler's Python resolver and Anne's
-  alternative linker remain read-only research, not blanket requirements.
+  draft uses a retained isolated worktree.
+- Anne#15 (6f98b3e) adds only jq/ripgrep player checks and the README install
+  command. Main independently passed 14 doctor and 12 make guards on released
+  0.2.8, exact manifest/README/file/ZIP invariants, the source-policy subset,
+  patch-stack contract and both JSON/tracked-root ZIP gates. No hosted workflow
+  exists; the full native source suite and new app/device checks were not run.
+  Sixteen game recipe/SDK/IPA drafts are checked, still unpublished. The existing
+  alternative-MIPS-linker/default-prefix limitation remains a proposal, not fixed
+  by this jq/rg draft. Brawler's selected-Python preflight is in progress.
+  Local composed verification of PadMint #70 and #72 is assigned; their separate
+  passing checks do not yet establish a combined release candidate.
 - Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
   non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
   filenames and checksum entries present. Published versions/hashes match the
