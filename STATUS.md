@@ -200,10 +200,24 @@ tracker; this file mirrors progress so work can resume after interruption.
   empty system-library list; main independently reproduced the coverage gap with
   SHA-verified recipes and guarded execution. Their native Mac tool/archive
   phase needs external development libraries; iOS downloads do not satisfy it.
-  Small accurate CMake-floor/setup-note updates are being checked in the existing
-  prerequisite drafts. Complete library discovery or provisioning remains a
+  The existing prerequisite drafts now carry checked library setup notes:
+  Hark#35 at298f3de, Mask#14 at424b6d9, Star#22 at57ced90 and Spaghetti#25
+  initially340ca03. Their already-correct CMake floors (3.26/3.24) were retained,
+  not newly introduced. Main independently passed 224 program/doctor/make cases
+  plus earlier 44 doctor/12 make guards, exact source snapshots and both JSON/ZIP
+  gates. All four hosted repository-safety checks pass; app/Simulator jobs were
+  still running at readback, not passing app claims.
+  Spaghetti#25 now071e091 additionally marks its existing required ripgrep for
+  player checks. Main passed 18 released-PadMint-0.2.8 program/doctor/make cases,
+  exact one-flag/whole-manifest/committed-root ZIP proof, repository safety and
+  both JSON/ZIP gates. Hosted36812944634 passes repository safety; its app job
+  remains in progress. Public recipes/releases and backend code are unchanged.
+  Complete library discovery or provisioning remains a
   proposal for Chris; no library hard gate, automatic installation, schema or
   backend change is implemented. Warm-cache Mac success is not fresh-host proof.
+  One private warm HarkinianPad build through the actual staged 0.2.9 Mac package
+  is assigned for real-backend proof. No result, fresh-host, device or rights
+  acceptance is claimed yet; private outputs must remain local.
 - Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
   non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
   filenames and checksum entries present. Published versions/hashes match the
