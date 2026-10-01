@@ -25,8 +25,9 @@ tracker; this file mirrors progress so work can resume after interruption.
 - BearBirdPad#23 nowb2192f2 honors the standard limit in required host tools,
   otherwise retaining the exact CPU/default4 fallback. Eight focused tests
   (33 fixture cases) PASS both interpreters; main independent replay/byte
-  invariants/source guards PASS. Hosted36842929623 builds pinned host tools;
-  ROM-free Simulator stub/package remains running, not full-game acceptance.
+  invariants/source guards PASS. Exact hosted36842929623 SUCCESS: pinned host
+  tools, ROM-free Simulator stub and package/audit. Artifact not independently
+  downloaded; not a full game or fresh-player-host/device acceptance.
 - DevilTouch#10 nowda768fd passes the standard limit to signed/unsigned Xcode,
   keeping the manual JOBS override/default8. Six focused tests (100 fixture
   cases) and the complete11-test repository suite PASS both interpreters;
@@ -45,6 +46,10 @@ tracker; this file mirrors progress so work can resume after interruption.
   override in the inspected first-party paths; runtime readiness is unproven.
   Larger host-library provisioning/Age-profile choices remain owner discussions.
   KartPad app fixes remain with the other agent; no new issue reply/test ask.
+- Docs head46781e7 exact Windows36843776566 SUCCESS: bundledPadMint0.2.8
+  launches,28 player/recovery tests PASS (67.938s), all3 ZIP scans PASS.
+  Checkout is PR mergea4796c7 into main27dc9ecb, not a release commit or this
+  later terminal-status edit's execution proof; artifacts not downloaded.
 - BallPad#14 now ac90603 honors PadMint's existing parallel-build limit in
   engine CMake and FFmpeg make, which previously overrode it with hw.ncpu.
   Manual unset/empty retains its prior CPU default; invalid limits fail before
