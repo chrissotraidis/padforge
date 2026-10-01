@@ -46,3 +46,31 @@ jobs:
           name: checked-public-packages
           path: release-check/
           retention-days: 7
+
+  packaged-linux-player-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Package and audit public downloads
+        run: python scripts/package-release.py release-check
+      - name: Check the Linux package and player flows
+        shell: bash
+        run: |
+          set -euo pipefail
+          linux_zip="$(realpath release-check/*-linux.zip)"
+          player_tests="$RUNNER_TEMP/linux-player-checks"
+          mkdir -p "$RUNNER_TEMP/linux-package-check" "$player_tests"
+          unzip -q "$linux_zip" -d "$RUNNER_TEMP/linux-package-check"
+          cp tests/test_start.py tests/test_finish_submodules.py tests/test_package.py tests/fixtures.py "$player_tests/"
+          linux_package=("$RUNNER_TEMP/linux-package-check"/PadMint-v*)
+          test "${#linux_package[@]}" -eq 1
+          cd "${linux_package[0]}"
+          unset PYTHONPATH PYTHONHOME
+          python -c 'from pathlib import Path; import padmint; assert Path(padmint.__file__).resolve().parent == Path.cwd() / "padmint", padmint.__file__; print("Packaged import:", padmint.__file__)'
+          python -m padmint --version
+          python -m unittest discover -s "$player_tests" -v
+          python -m padmint audit "$linux_zip"
