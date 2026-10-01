@@ -8,6 +8,15 @@ permissions:
   contents: read
 
 jobs:
+  phone-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -B -m unittest discover -s tests -p test_android_bootstrap.py -v
   packaged-player-flow:
     runs-on: windows-latest
     timeout-minutes: 15

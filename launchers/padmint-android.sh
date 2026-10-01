@@ -43,8 +43,10 @@ main() {
   export DEBIAN_FRONTEND=noninteractive
   # proot-distro 5 (Docker images, --name); older versions are updated first.
   if ! proot-distro install --help 2>&1 | grep -q -- --name; then
-    yes | pkg update -y -o Dpkg::Options::=--force-confnew
-    yes | pkg install -y -o Dpkg::Options::=--force-confnew proot-distro
+    # Parallel mirror probes can exceed Android's child-process limit. Keep
+    # Termux's configured server for these calls; package signatures stay checked.
+    yes | TERMUX_PKG_NO_MIRROR_SELECT=1 pkg update -y -o Dpkg::Options::=--force-confnew
+    yes | TERMUX_PKG_NO_MIRROR_SELECT=1 pkg install -y -o Dpkg::Options::=--force-confnew proot-distro
   fi
   if [ ! -d "$PREFIX/var/lib/proot-distro/containers/$BOX" ]; then
     proot-distro install --name "$BOX" ubuntu:24.04 </dev/null
