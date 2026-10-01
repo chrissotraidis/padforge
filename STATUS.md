@@ -172,13 +172,20 @@ tracker; this file mirrors progress so work can resume after interruption.
   to the checked cached CI artifact; no Windows runtime was executed, and the
   official Python download/checksum path was not rerun in the local cache adapter.
   These locally generated packages remain unpublished candidates named 0.2.8,
-  not replacements for the public release. Normal fast-forward integration into
-  existing draft #70 is assigned for hosted Windows/Linux checks, conditional on
-  exact tree equality with this tested candidate and unchanged remote heads.
-  No extra PR, merge, supported-host expansion, version or public release.
-  Combined Windows/Linux execution is not yet proved; separate draft runs do not
-  establish that gate. Priority-four host-library readiness is being audited
-  read-only: warm-cache Mac success does not establish fresh-host prerequisites.
+  not replacements for the public release. Existing draft #70 now includes #72
+  via normal fast-forward update at bd2c78f; main independently confirms the
+  exact tested tree and preserved #70 ancestry. Hosted run36808902411 passes
+  40 extracted-package cases on Windows (52.606 s, bundled Python) and Linux
+  (4.348 s, asserted extracted-package import). Fresh hosted packaging reruns
+  the official Windows-runtime download/checksum path and raw LF/hash assertions.
+  Main independently downloaded all three Windows-built packages: checksums and
+  both public/reference gates pass, and each ZIP byte-matches the Mac-tested
+  local construction. Draft #72 remains open and unchanged, no extra PR or
+  supported-host expansion. No main merge, version or public release occurred.
+  Next: stage versioned 0.2.9 in that existing draft and repeat exact-package
+  Mac/Windows/Linux checks before owner publication; public 0.2.8 unchanged.
+  Priority-four host-library readiness is being audited read-only: warm-cache
+  Mac success does not establish fresh-host prerequisites or game-device proof.
 - Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
   non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
   filenames and checksum entries present. Published versions/hashes match the
