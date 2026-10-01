@@ -429,8 +429,9 @@ def execute(args, repo, disc):
             counts = ""
             if "completed" in backend and "total" in backend:
                 counts = f" {backend['completed']}/{backend['total']} {backend.get('unit', '')}"
-            print(f"[{record['build_elapsed_seconds']}s] {event}: "
-                  f"{backend.get('stage', '')} {backend.get('event', '')}{counts}".strip(), flush=True)
+            message = (f"{backend.get('stage', '')} {backend.get('event', '')}{counts}".strip()
+                       or fields.get("status") or fields.get("reason") or "")
+            print(f"[{record['build_elapsed_seconds']}s] {event}: {message}".strip(), flush=True)
             stage = backend.get("stage")
             if backend.get("event") == "stage_started" and stage in left and stage not in announced:
                 announced.add(stage)

@@ -9,6 +9,19 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- Blank progress display reproduced: existing heartbeat status and warning
+  reason were recorded but omitted from console output. Three-line fallback
+  now shows those existing fields, preserving backend stage/count display,
+  JSON event schema, runner behavior, timings, private logs and release gates.
+  Portable synthetic regression exercises real execute/record paths, not a
+  game build. Final full191tests PASS separately Apple3.9(37.503s)/Python3.11
+  (38.314s); extracted development Mac ZIP29 player/recovery/display tests
+  PASS(14.268s). Development ZIPs retain0.2.8 label, not published assets.
+  All3ZIPs/both changed-file scans PASS; frozen0.2.9 draft03b untouched.
+  ExistingWindows package job includes new regression; existing stagedLinux
+  package-check pattern reused here. Hosted checks await this draft push;
+  latest terminal status belongs in PR#71/Notion, not a release claim.
+
 - Player-first checkpoint: published PadMint0.2.8 from the verified Mac ZIP
   completed a fresh HarkinianPad0.2.0/build7 source/backend cache with two jobs
   in2134.81s. Already-provisioned Mac, not a fresh host; backend PATH Python3.14.
