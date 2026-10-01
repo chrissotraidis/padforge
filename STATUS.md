@@ -9,6 +9,32 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- Eight-repo linked-install-doc audit found five current-route contradictions;
+  small fixes are pushed on existing drafts, with public assets unchanged:
+  HarkinianPad#35 at5d2d3f5 now installs the completed personal PadMint IPA,
+  distinguishes current source15/identity0.2.0-build7 from old Preview6/CI14,
+  and fixes bundled Mac Python3.9 hashing in the provenance writer. Previously
+  three tests failed on hashlib.file_digest; streaming SHA256 passes empty,
+  small and multi-chunk parity. All18 tests PASS on Apple3.9/Python3.11;
+  report/check logic unchanged by AST comparison. BlueWake#11 ate47cd95
+  requires25GBfree, matching the unchanged recipe, not a measured peak guarantee.
+  GoldenPad#49 at65c14bd identifies0.2.2/build15 recipe-only release and completed
+  personal IPA, scoping old packaging/private Mac downloads to history.
+  Main's five cross-guide/link/recipe/guard/hash-invariant checks PASS on both
+  interpreters; repository/diff/both exact tracked-source scans PASS.
+  PaperPad#16 at9e852fd routes current PaperBoat/iOS16.3 personal IPA rather
+  than Original's retired Preview2; separate bundle IDs/saves remain explicit.
+  SunPad#53 at4639580 distinguishes the public shell from the complete private
+  module-bearing IPA, preserving nested signing/import/save warnings; tvOS stays
+  private source-development, no public download or PadMint tvOS recipe invented.
+  Main independently reviewed four docs and replayed12 portable checks on both
+  interpreters plus both tracked-source scans PASS. All recipe/backend/host/
+  version/signing/device and historical acceptance boundaries preserved except
+  Hark's equivalent hash operation. Exact Blue36828211079 repository audit and
+  Paper36828287576 source-integrity SUCCESS. Hark36828210095 source/controller
+  checks and Sun36828287631 safety/source suite PASS, full app jobs pending.
+  No new app/device/fresh-host/rights/publication acceptance. Other Kart agent
+  owns recent app reports; PadMint open issues remain empty, no duplicate reply.
 - Two contradictory installation docs corrected in drafts, with regression tests:
   DevilTouch#10 at5106aea accurately separates the public preview's minimum iOS13
   from current-source default15 and removes stale no-public-IPA wording. Five
