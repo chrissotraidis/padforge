@@ -9,6 +9,27 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- Three see-repo backend rechecks through actual public PadMint0.2.8 completed:
+  SnapPad retained draft#7 at779583e (71.57s), DevilTouch current main1f50702
+  (183.19s), VaultPad new draft#10 at2c44fd1 (11.54s). Actual IPA/record/source/
+  recipe/version/unsigned/minimal-structure readbacks pass. Snap's full personal
+  IPA correctly fails both content scans with4880 address-named functions and
+  remains private; Devil/Vault scans pass but outputs remain personal-only.
+  This is warm-cache build evidence, not public guided-recipe availability,
+  fresh-host readiness, new device/gameplay or rights acceptance. Snap remains
+  formally L0 pending source-stub policy. Devil's current personal minimum iOS15
+  differs from the existing published preview's minimum13; public assets unchanged.
+- VaultPad#10 forwards PadMint's existing parallel limit to raw xcodebuild;
+  actual build log confirms -jobs2. Five synthetic regression tests PASS on
+  Apple3.9/Python3.11, independently repeated; repository verification,
+  unchanged-tail review and both changed-file/tracked-source scans PASS.
+  Previous fixed IPA/checksum/app copied and verified before replacement.
+  Hosted focused test passes; full Simulator/package CI still running.
+  Existing warm ce.dat bypasses the host configure branch. No aggregate worker
+  cap, cold-resource, device or publication claim. Primary/signing untouched.
+- Fresh issue sweep: PadMint has no open issues. New KartPad#376 is graphics,
+  outside this loop's app-fix ownership; no duplicate reply/test request sent.
+  Known phone-only storage and fresh-host tool setup remain larger owner choices.
 - Owner scope update: this loop now owns PadMint and non-KartPad build compatibility.
   A different agent owns KartPad app bugs. Builder reports in KartPad issues remain
   in scope, but no new rendering/runtime diagnostics or repeated player test asks.
