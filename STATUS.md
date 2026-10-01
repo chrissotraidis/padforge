@@ -24,12 +24,27 @@ tracker; this file mirrors progress so work can resume after interruption.
   Python snippets, all parse/compile on Apple3.9. Main Ball/Barrel12 frozen
   shell-file check additionally parses two required Barrel JSON readers and
   its previously unscanned viewport test; Ball's optional JSON-reader definition
-  also parses. Not runtime/transitive/native/app acceptance. Found Dino's
-  versioned-name-only Python selector rejects Apple-only PATH despite3.9.6;
-  main lookup independently confirms it and current helper bytes equal public.
-  Next small fix: version-checked generic Python fallback. Barrel's required
-  engine/SDL explicit job flags also ignore PadMint's standard limit; next
-  check/fix must retain its existing manual override/default behavior.
+  also parses. Not runtime/transitive/native/app acceptance.
+- DinoPad#12 now c04ebba accepts generic Python only after an actual>=3.9
+  version check, keeping existing versioned preference. Seven real-entrypoint
+  fixtures PASS separately Apple3.9/Python3.11; independent review PASS,
+  including Apple-only PATH reaching the missing-MIPS gate with no output.
+  All production bytes outside selection and pins/recipe/version unchanged.
+  Complete safety/patch/reference checks and both changed-file/committed-source
+  scans PASS. Tracked ZIP a2ec63095e4adf0a99f4a069e0c7f5a2099466d9f428120e7bf822355e86b191.
+- BarrelPad#18 now07a5023 honors the standard PadMint limit for engine/SDL.
+  Existing nonempty manual override precedes CMake limit then CPU default;
+  invalid selected values stop before unit/source/download/output work.
+  Ten actual-entrypoint fixture tests PASS bothApple3.9/Python3.11, main
+  independently reviewed/replayed; real input/PAL viewport/presentation suite
+  PASS. Exact permitted-rewrite invariants preserve all other entrypoint bytes.
+  Repository safety/syntax/diff and both tracked-source scans PASS; ZIP
+  2b5d10ed64568420b99907ab071d143b588158ab9c175d796f628997ca809da4.
+  No clone behavior, recipe, pin, version, SDK, packaging or data-guard change.
+- Both fixes are pushed on existing OPEN/DRAFTs with body/head readback;
+  published0.2.0 recipes/assets remain unchanged. No hosted workflows, new
+  game/dependency/app builds, fresh-player-host, device/gameplay/rights or
+  publication acceptance. KartPad app work stays with the other agent.
 - Melee36833475426 is now SUCCESS for a9da335: source suite and full iOS app
   compile without private game inputs; final dependency cleanliness PASS.
   Actual PR merge333d6b0 into publicmain8bf86d7, Xcode16.4; no independent
