@@ -207,14 +207,22 @@ tracker; this file mirrors progress so work can resume after interruption.
   plus earlier 44 doctor/12 make guards, exact source snapshots and both JSON/ZIP
   gates. All four hosted repository-safety checks pass. Exact-head hosted full
   unsigned iPhoneOS app/package-audit jobs pass for Hark298f3de (36812269945),
-  Mask424b6d9 (36812273544) and Star57ced90 (36812285661). Mask's Simulator UI
-  job remains in progress, not PASS. CI installs host libraries explicitly;
+  Mask424b6d9 (36812273544) and Star57ced90 (36812285661). Mask's ROM-free
+  Simulator UI job also completed successfully; its overall workflow now passes.
+  This is not physical-device/gameplay proof. CI installs host libraries explicitly;
   this is not generic player-host provisioning or fresh-host PadMint proof.
   Spaghetti#25 now071e091 additionally marks its existing required ripgrep for
   player checks. Main passed 18 released-PadMint-0.2.8 program/doctor/make cases,
   exact one-flag/whole-manifest/committed-root ZIP proof, repository safety and
-  both JSON/ZIP gates. Hosted36812944634 passes repository safety; its app job
-  remains in progress. Public recipes/releases and backend code are unchanged.
+  both JSON/ZIP gates. Exact-head hosted36812944634 passes repository safety and
+  its full unsigned iPhoneOS app job, including palm-tree identity, mod selection/
+  catalog and package/signing rejection checks. Its existing CI artifact digest,
+  IPA checksum, actual 0.2.0/build 7/arm64 metadata, unsigned audit and signed-only
+  rejection pass independent verification and main's full scratch replay.
+  IPA SHA256 fa31ee216f54c2c21517d171a34bd4a265a37044f1f95233b3062b3412406e9f.
+  The public-content gate correctly fails 778 game-code symbols; keep it private.
+  No embedded build-provenance record exists; CI checkout/pin evidence is separate.
+  Public recipes/releases and backend code are unchanged.
   Complete library discovery or provisioning remains a
   proposal for Chris; no library hard gate, automatic installation, schema or
   backend change is implemented. Warm-cache Mac success is not fresh-host proof.
