@@ -57,6 +57,17 @@ tracker; this file mirrors progress so work can resume after interruption.
   for Chris, requiring private boundary/injection and compatible-iPad checks.
   Earlier 0.2.7 success is historical, not current readiness. No guard relaxation,
   installed-Steam downgrade, personal output upload or new device acceptance claim.
+- AgePad#10 stages a small diagnostic/docs fix atdb3061a: missing-file/version
+  errors report how many distinct names were omitted after the first five, and
+  the README warns that the updated Steam beta client was rejected. Main17
+  portable tests PASS; independent8 synthetic cases PASS on Apple3.9/Python3.11.
+  AST/exact-source reconstruction confirms unchanged guards/packaging logic;
+  source safety and both exact tracked-root ZIP scans PASS. The full headless
+  native/compile/parser suite passes with Simulator execution and real release
+  round trip explicitly skipped. Exact-head hosted36817610293 passes safety,
+  repository/manifest checks and the same headless game-side suite.
+  Public0.1.0 profile/assets and primary checkout unchanged; this is not a new
+  compatible profile, device result, account-safety assurance or release.
 - StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
   the iOS compile. Draft starshippad#20 fixes SDK selection/cache invalidation;
   local app and device/simulator SDK probes pass. Exact packaged 0.2.8 generic
@@ -266,6 +277,10 @@ tracker; this file mirrors progress so work can resume after interruption.
   game startup; ongoing play is reported flawless. That report, #301's failed
   model-fix reply and #370's iPadOS 18.7.8 black-screen detail belong to the KartPad
   app agent. No new PadMint failure appeared in those comments; no repeated asks.
+- Latest #304 response separates a new Termux missing-header build report from
+  PowerVR startup. The KartPad agent merged source repair#374 at4c67f07 and owns
+  its tests/future recipe integration; public0.7.3 remains pinned to older source.
+  No duplicate implementation or reporter request from this loop.
 
 Local continuation handles and evidence: `.codex/scratch/pm028/current-builds-results.jsonl`,
 `.codex/scratch/pm028/player-entrypoints.json`,
