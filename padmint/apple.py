@@ -35,7 +35,7 @@ def linked_sdks(stream, size):
         commands_end = start + 32 + command_bytes
         if commands_end > end:
             raise ValueError("Mach-O load command table is truncated")
-        offset, found = start + 32, []
+        offset, found, symtab, sections = start + 32, [], None, []
         for _ in range(count):
             command, length = struct.unpack(endian + "2I", read(offset, 8, commands_end))
             if length < 8 or offset + length > commands_end:
@@ -50,13 +50,53 @@ def linked_sdks(stream, size):
                 # Legacy commands distinguish simulator by CPU architecture.
                 simulator = header[1] in (7, 0x1000007)
                 found.append((7 if simulator else 2 if command == 0x25 else 3, minimum, sdk))
+            elif command == 0x2:  # LC_SYMTAB, offsets are relative to this slice.
+                if symtab is not None:
+                    raise ValueError("Mach-O contains duplicate symbol tables")
+                symtab = struct.unpack(endian + "4I", read(offset + 8, 16, offset + length))
+            elif command == 0x19:  # LC_SEGMENT_64; symbol section indexes are 1-based.
+                section_count = struct.unpack(endian + "I", read(offset + 64, 4, offset + length))[0]
+                if 72 + section_count * 80 > length:
+                    raise ValueError("Mach-O section table is truncated")
+                for index in range(section_count):
+                    sections.append(struct.unpack(endian + "2Q", read(offset + 72 + index * 80 + 32, 16, offset + length)))
+            elif command in (0xC, 0x80000018, 0x8000001F):  # loaded/weak/reexported dylib
+                name_offset = struct.unpack(endian + "I", read(offset + 8, 4, offset + length))[0]
+                if not 24 <= name_offset < length:
+                    raise ValueError("Mach-O linked framework name is invalid")
+                name = read(offset + name_offset, length - name_offset, offset + length)
+                if b"\0" not in name:
+                    raise ValueError("Mach-O linked framework name is unterminated")
             offset += length
         if offset != commands_end or len(found) != 1 or not found[0][2]:
             raise ValueError("Mach-O must declare exactly one linked platform and SDK per slice")
         platform, minimum, sdk = found[0]
         if platform not in PLATFORMS:
             raise ValueError("IPA executable targets a simulator or unsupported Apple platform; build for a physical device")
-        return {"platform": PLATFORMS[platform], "minimum_os": version(minimum), "sdk": version(sdk)}
+        scene_method = False
+        if symtab is not None:
+            symbol_offset, symbol_count, string_offset, string_size = symtab
+            symbols = read(start + symbol_offset, symbol_count * 16, end)
+            strings = read(start + string_offset, string_size, end)
+            for index in range(symbol_count):
+                name_offset, kind, section, _, address = struct.unpack_from(endian + "IBBHQ", symbols, index * 16)
+                if kind & 0xE0 or (kind & 0x0E) != 0x0E:
+                    continue  # Only defined section symbols, never imports/debug records.
+                if name_offset >= len(strings):
+                    raise ValueError("Mach-O symbol name exceeds the string table")
+                name_end = strings.find(b"\0", name_offset)
+                if name_end < 0:
+                    raise ValueError("Mach-O symbol name is unterminated")
+                name = strings[name_offset:name_end]
+                if name.startswith(b"-[") and name.endswith(b" " + SCENE_CALLBACK + b"]"):
+                    if not 1 <= section <= len(sections):
+                        raise ValueError("Mach-O scene callback refers to an invalid section")
+                    section_address, section_size = sections[section - 1]
+                    if not section_address <= address < section_address + section_size:
+                        raise ValueError("Mach-O scene callback address exceeds its section")
+                    scene_method = True
+        return {"platform": PLATFORMS[platform], "minimum_os": version(minimum), "sdk": version(sdk),
+                "defined_scene_callback": scene_method}
 
     magic = read(0, 4, size)
     fats = {b"\xca\xfe\xba\xbe": (">", False), b"\xbe\xba\xfe\xca": ("<", False),
@@ -82,18 +122,18 @@ def linked_sdks(stream, size):
     return slices
 
 
-def validate_scene_startup(info, slices, has_callback):
+def validate_scene_startup(info, slices):
     manifest = info.get("UIApplicationSceneManifest")
     configs = manifest.get("UISceneConfigurations", {}) if isinstance(manifest, dict) else {}
     application = configs.get("UIWindowSceneSessionRoleApplication", []) if isinstance(configs, dict) else []
     declared = isinstance(application, list) and any(
-        isinstance(config, dict) and (config.get("UISceneDelegateClassName") or config.get("UISceneStoryboardFile"))
+        isinstance(config, dict) and any(isinstance(config.get(key), str) and config[key].strip()
+                                        for key in ("UISceneDelegateClassName", "UISceneStoryboardFile"))
         for config in application)
-    programmatic = isinstance(manifest, dict) and has_callback
-    if any(int(item["sdk"].split(".")[0]) >= 27 for item in slices) and not (declared or programmatic):
-        raise ValueError("Apple SDK 27+ requires UIKit scene startup. This IPA has no application scene "
-                         "configuration or scene manifest with a configuration callback; it can terminate at launch "
-                         "on OS 27. Update the game's UIKit/SDL integration and rebuild. "
-                         "Changing the minimum OS or installing a different PadMint version does not fix this IPA.")
-    return {"linked_slices": slices, "scene_startup": "declared" if declared else
-            "manifest-and-configuration-callback-present" if programmatic else "legacy", "runtime_launch": "not-tested"}
+    # Dynamic configurations need not have a plist manifest (for example SDL3).
+    # Framework-provided/inherited/stripped methods cannot be ruled out from the
+    # main binary alone. Lack of positive evidence is not proof of legacy startup.
+    states = ["declared" if declared else "defined-configuration-callback" if item["defined_scene_callback"]
+              else "unverified" for item in slices]
+    return {"linked_slices": slices, "scene_startup": states[0] if len(set(states)) == 1 else "unverified",
+            "runtime_launch": "not-tested"}

@@ -75,14 +75,19 @@ validation. Synthetic executable fixtures intentionally are not runnable apps.
 
 Every IPA, including recipes with `check: none`, also records the actual linked
 platform, minimum OS and SDK for every executable slice. Simulator and non-device
-platforms are rejected. SDK 27+ builds require an application scene configuration
-in Info.plist, or a scene manifest plus the UIKit scene configuration callback
-in the main executable. A callback string alone can come from an unrelated library
-and does not establish scene adoption.
-Otherwise PadMint fails the attempt before copying a player-facing IPA and
-explains that the game's UIKit/SDL startup must be updated. Changing the minimum
-OS does not remove this linked-SDK requirement. A declaration or callback is only
-static evidence; the record explicitly leaves runtime launch untested.
+platforms are rejected. For SDK 27+ builds, declared application scenes or a
+defined instance method implementing UIKit's scene configuration callback provide
+static startup evidence. Dynamic configurations (including SDL3) do not need a
+scene manifest. Raw selector strings, imported symbols and protocol metadata do
+not establish an implementation.
+Without positive evidence, scene startup is recorded as `unverified` and SDK 27+
+builds show a warning. A launch-method symbol alone cannot prove legacy startup:
+frameworks may provide inherited callbacks, and symbols may be stripped. This
+includes SwiftUI-managed startup, without assuming a framework import proves
+which delegate owns startup. Confirmed startup failures need game integration
+fixes and runtime checks, not rejection based solely on a missing plist or symbol.
+Changing the minimum OS does not remove the linked-SDK requirement. Every result
+leaves runtime launch `not-tested`; signing, launch and gameplay need actual tests.
 
 ## Concrete gaps
 

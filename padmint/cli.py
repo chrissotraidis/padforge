@@ -480,6 +480,11 @@ def execute(args, repo, disc):
                     raise ValueError("Backend exited successfully but produced no output")
                 record["package_validation"] = check_output(target.get("check", "none"), output,
                                                             args.revision, identity["disc_sha256"])
+                apple = record["package_validation"].get("apple_compatibility", {})
+                if apple.get("scene_startup") == "unverified" and any(
+                        int(item["sdk"].split(".")[0]) >= 27 for item in apple["linked_slices"]):
+                    print("Apple scene startup could not be verified from this package. "
+                          "The build is complete, but launch on your device still needs testing.", flush=True)
                 record["output_sha256"] = digest(output)
                 record["output"] = output.name
                 args.output_path = output

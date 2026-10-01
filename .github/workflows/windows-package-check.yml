@@ -29,13 +29,13 @@ jobs:
           $package = (Get-ChildItem "$env:RUNNER_TEMP/package-check" -Directory).FullName
           $tests = "$env:RUNNER_TEMP/player-checks"
           New-Item -ItemType Directory $tests | Out-Null
-          Copy-Item tests/test_start.py, tests/test_finish_submodules.py $tests
+          Copy-Item tests/test_start.py, tests/test_finish_submodules.py, tests/test_package.py, tests/fixtures.py $tests
           Push-Location $package
           try {
             & ./python/python.exe -m padmint --version
             if ($LASTEXITCODE -ne 0) { throw 'Included Python cannot start PadMint' }
             & ./python/python.exe -m unittest discover -s $tests -v
-            if ($LASTEXITCODE -ne 0) { throw 'Guided setup or safe recovery failed' }
+            if ($LASTEXITCODE -ne 0) { throw 'Guided setup, safe recovery or IPA validation failed' }
             & ./python/python.exe -m padmint audit $zip
             if ($LASTEXITCODE -ne 0) { throw 'Packaged content audit failed' }
           } finally {
