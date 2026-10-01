@@ -9,6 +9,35 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- GoldenPad#49 now90160c5 adds a bounded Python3.9 source-archive compatibility
+  fix. Checker/exporter used3.11-only hashlib.file_digest; five fixture tests
+  failed onApple3.9 beforefix, passed3.11, and nowPASSboth with streamed1MiB
+  SHA256. Corruption/missingfile/link rejection, trackedonly fixture export,
+  exactmanifest/checksum, exportedverification and deterministicrepeat PASS.
+  Main AST reconstruction confirms every other production statement unchanged;
+  realpins/recipe/version/AGENTS unchanged. Both changedfile/trackedsource scans,
+  ROM and diff checks PASS. Normal Git-source verification was unaffected.
+  ExacttrackedZIP93270c06bced8820ae6671283d05349a5b1bc9187facead1d329d1197e86aea5.
+  Source-tool fixture proof only, no realfull dependency export, hostedworkflow,
+  app/freshhost/device/rights/publication acceptance. Independent review PASS,
+  replaying all5 tests and AST proof onbothinterpreters at the exactclean head.
+- SunPad#53 exact4639580 hosted36828287631 now SUCCESS, safety/source suite plus
+  iOS/tvOS dependency preparation and runtime/app compilation without game inputs.
+  Main read both BUILD SUCCEEDED log records. Not completed privategame-module
+  IPA, guidedPadMint freshhost, signing/device/gameplay/rights acceptance.
+  Hark PR check36828210095 for5d2d3f5 now SUCCESS: full unsignediPhoneOS
+  app,18maintainedtests, packimport/selection and package/signed-rejection checks.
+  Checkout is PR merge3d78af09b3998e2d9e273a5ed7300997d3a0ee2d, not a new
+  branch/release commit. CI configureddeployment14 and installs native hostlibs;
+  not source-default15/newdevice/minOS/freshplayerhost or publiccontent clearance.
+  Artifact inventory only observed, not downloaded/readback audited.
+- Bounded eight-game Python3.9 helper audit found one additional required-path
+  bug in publicMelee0.2.1 and retaineddraft: build-slippi-rust.py digest uses
+  hashlib.file_digest through literalpython3. Exactfunction synthetic3.9 failure
+  and3.11 control reproduced, no actualRust/appfailure claimed. Fix next, preserve
+  Rust/provenance/source guards. Otherseven inspectedfirstparty wrappers show no
+  concrete additional incompatibility; transitiveengine/tool and remaining
+  Age/Ball/Bell/Barrel/Dino coverage stillopen, not exhaustive readiness.
 - Eight-repo linked-install-doc audit found five current-route contradictions;
   small fixes are pushed on existing drafts, with public assets unchanged:
   HarkinianPad#35 at5d2d3f5 now installs the completed personal PadMint IPA,
