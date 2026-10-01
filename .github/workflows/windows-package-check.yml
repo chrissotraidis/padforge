@@ -20,6 +20,26 @@ jobs:
           python-version: '3.13'
       - name: Package and audit public downloads
         run: python scripts/package-release.py release-check
+      - name: Check portable checksum bytes and all package hashes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $raw = [IO.File]::ReadAllBytes((Join-Path $PWD 'release-check/SHA256SUMS'))
+          if ($raw -contains 13) { throw 'SHA256SUMS contains CR bytes' }
+          if ($raw.Length -eq 0 -or $raw[-1] -ne 10) { throw 'SHA256SUMS must end with LF' }
+          $lines = [Text.Encoding]::UTF8.GetString($raw).TrimEnd("`n").Split("`n")
+          if ($lines.Count -ne 3) { throw 'Expected checksums for all three packages' }
+          foreach ($line in $lines) {
+            if ($line -notmatch '^([0-9a-f]{64})  (PadMint-v[^/\\]+-(windows|macos|linux)\.zip)$') {
+              throw "Invalid checksum entry: $line"
+            }
+            $expected = $Matches[1]
+            $name = $Matches[2]
+            $actual = (Get-FileHash (Join-Path 'release-check' $name) -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actual -ne $expected) { throw "Checksum mismatch: $name" }
+            Write-Host "Checksum verified: $name $actual"
+          }
+          Write-Host 'SHA256SUMS: LF only, no CR bytes, all three package hashes match'
       - name: Check the included Python and player flows
         shell: pwsh
         run: |
