@@ -170,17 +170,25 @@ work, so it takes a few minutes.
 
 ## Other Pad games
 
-On a Mac with Apple Silicon and Xcode, PadMint also makes iPhone and iPad apps
-for **AnnePad**, **BallPad**, **BananaPad**, **BarrelPad**, **BearBirdPad**,
+On a Mac with Apple Silicon and Xcode, PadMint also offers iPhone and iPad build
+recipes for **AnnePad**, **BallPad**, **BananaPad**, **BarrelPad**, **BearBirdPad**,
 **BellPad**, **BlueWake**, **BrawlerPad**, **DinoPad**, **GoldenPad**,
 **HarkinianPad**, **MaskPad**, **MeleePad**, **PaperPad**, **SpaghettiPad**,
 **StarshipPad** and **SunPad**. Drag in your game file (or press Enter for
 games that ask for it inside the app) and pick the game. Each game's README
 says which file it needs and how to install the result.
 
+**Current blocker:** StarshipPad's published v0.2.0 recipe fails with an iOS SDK
+selection error. A checked fix is still a draft, not a new player download.
+See [STATUS.md](STATUS.md) for the build checks and remaining limits.
+
 **AgePad** (iPad with 8 GB or more) works differently: on a Mac with Age of
-Empires II: DE installed through Steam, PadMint adds your own Steam copy to
-the AgePad release in seconds, without Xcode. You then copy the game data to
+Empires II: DE installed through Steam, PadMint adds your own supported Steam
+copy to the AgePad release without Xcode. The installed files must match the
+release's exact compatibility profile. AgePad v0.1.0 rejected an updated Steam
+beta client in our latest check; support for that version is not yet validated.
+Do not change the fingerprints or disable those checks to force a build.
+After a successful build, copy the game data to
 the iPad; see [Get AgePad](https://github.com/chrissotraidis/agepad#get-agepad).
 
 ## Questions

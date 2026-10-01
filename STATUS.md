@@ -20,7 +20,7 @@ tracker; this file mirrors progress so work can resume after interruption.
   All 190 source tests pass on Apple's Python 3.9. Packaged Mac and Linux checks
   pass the 14 guided-start and 14 recovery tests; all downloads pass both content
   checks. The Windows VM was suspended after discovering Chris's request in the
-  BlueWake chat to keep Parallels off for Mac responsiveness. Draft #65 adds a
+  BlueWake chat to keep Parallels off for Mac responsiveness. Merged #65 adds a
   hosted Windows check using the included Python and actual public packages;
   this avoids the local VM. Final hosted run 36789511048 passed all 28 player-flow
   tests using the included Python. Its Windows/Mac/Linux ZIPs are byte-identical
@@ -40,16 +40,33 @@ tracker; this file mirrors progress so work can resume after interruption.
   BarrelPad took 15 s and BellPad 20 s with warm caches. These are build checks,
   not new device-play acceptance. Published 0.2.8 has since built BrawlerPad (60 s),
   BallPad (350 s), MaskPad (50 s), PaperPad (100 s), SpaghettiPad (125 s) and GoldenPad
-  (325 s), BearBirdPad (681 s) and DinoPad (70 s), with warm caches. BlueWake's
-  resumed 0.2.7 personal build completed,
-  including its translated game module. The remaining 0.2.8 sweep is incomplete.
+  (325 s), BearBirdPad (681 s), DinoPad (70 s), AnnePad (2427 s) and SunPad
+  (55 s), with warm caches. MeleePad 0.2.1 completed in 2027 s through 0.2.8.
+  Warm 0.2.8 reruns also passed: HarkinianPad (85 s), BarrelPad (15 s), BellPad
+  (15 s), BlueWake (50 s including runner overhead). Sixteen public-recipe builds
+  pass independent IPA-byte/record/version/build/minimal-structure readback.
+  BananaPad's previous input path was missing; the owner's existing V64 copy
+  matches the supported normalized SHA1. Public BananaPad 0.2.1/build 5 now passes
+  in 1486 s; independent IPA-byte/record/version/build readback also passes.
+- AgePad's public 0.1.0 rerun through 0.2.8 stopped after 5 s after Steam's beta
+  client updated between the successful and failed runs. Six Steam files differ;
+  the error displays only five. The source, embedded profile and relevant runner/
+  injection functions are unchanged; all 651 guarded game files still match.
+  The changed Steam client contains new executable code, so replacing fingerprints
+  alone is unsafe. A separate exact-version compatibility profile is a proposal
+  for Chris, requiring private boundary/injection and compatible-iPad checks.
+  Earlier 0.2.7 success is historical, not current readiness. No guard relaxation,
+  installed-Steam downgrade, personal output upload or new device acceptance claim.
 - StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
   the iOS compile. Draft starshippad#20 fixes SDK selection/cache invalidation;
   local app and device/simulator SDK probes pass. Exact packaged 0.2.8 generic
   candidate build passed in 131.88 s at 731adde with one job, and hosted full
   unsigned iPhoneOS CI passed. Main independently replayed both SDK probes.
-  Draft starshippad#21 stages source-only 0.2.1/build 7; its final metadata build
-  check remains open. Main alone cannot repair release-pinned player builds;
+  Draft starshippad#21 stages source-only 0.2.1/build 7; its exact packaged 0.2.8
+  build passed in 144.25 s and full hosted app check passed. Main independently
+  read back the version, build record, IPA hash and public-source gates. Its
+  personal IPA fails the public-content gate as expected and must remain private.
+  The release pause still requires owner clearance. Main alone cannot repair release-pinned player builds;
   any successor must retain source-only publication and the private release gates.
 - Public entrypoint audit: all 19 buildable catalog games have current PadMint
   release recipes. Current README/release branding has no obsolete PadForge wording
@@ -62,12 +79,124 @@ tracker; this file mirrors progress so work can resume after interruption.
 - PadMint #68 merged after hosted checks: remove Play Protect bypass advice,
   leave Google Play explicitly unvalidated rather than call it too old. Corrected
   the existing kartpad#366 comment too; no device security settings changed.
-- Sanity review found direct make can bypass build's unsupported-host check;
-  a focused preflight fix/tests are assigned. MeleePad's existing player checker
-  misses Xcode/Rust because its recipe lacks player annotations; exact required
-  Rust/toolchain scope must be confirmed before the recipe changes. These are
-  small fixes, not new host support. Unwritable output-folder early checks are
-  deferred behind these two findings.
+- Draft PadMint #70 fixes direct make bypassing the unsupported-host check before
+  source/tools/app downloads, and pins recipe/source/app to one release snapshot.
+  Main independently reviewed the change and passed all 202 tests on Apple's
+  Python 3.9. At d61168d, hosted x64 Windows and Linux each pass 40 extracted-package
+  checks, including all twelve new host-preflight/release-snapshot regressions.
+  Main independently passed the same 40 checks from that run's Mac ZIP and the
+  real Mac launcher version command. Imports, ZIP hashes and both content gates
+  pass. These checks test player flows, not every backend on each host.
+  It is not in public 0.2.8; no new release or supported platform is claimed.
+  Explicit-ref candidates retain their selected source, rechecked before tools.
+- Draft PadMint #72 at cfdebe3 fixes Windows-generated checksum manifests using
+  explicit UTF-8 bytes. The earlier CRLF text confused Unix checksum readers;
+  normalization confirmed the package bytes were already correct. The candidate
+  passes 192 source cases on Python 3.11 and Apple 3.9, and hosted Windows checks
+  all three hashes, LF-only bytes and the unchanged 28-case player-flow suite.
+  Main independently reviewed the three-file diff, replayed four focused tests
+  and verified the unchanged downloaded manifest on Mac without normalization.
+  This is separate from #70, with no version, payload or published asset change.
+- Prerequisite inventory matched 17 non-Kart/non-Melee recipes to the published
+  hashes. Starship, Mask, Spaghetti and Hark require local CMake, Ninja, pkgconf
+  and full Xcode but do not mark them for the player checker. Bounded recipe
+  annotation drafts are staged: Starship#22, Mask#14, Spaghetti#25, Hark#35.
+  Each retains xcodebuild and adds an iPhoneOS SDK probe with xcrun. Main replayed
+  44 player-doctor and 12 make-guard scenarios through the actual 0.2.8 checker,
+  plus exact-source gates. Latest-head hosted checks were skipped, not passed;
+  current published recipes are unchanged. No new downloader or host support. Backend
+  host libraries remain a separate requirement, not satisfied by device-library
+  downloads. Melee still requires preinstalled Rust 1.88.0/iOS target through its
+  Slippi preparation. A Rust-free offline module path is a proposal for Chris,
+  not implemented. Melee#39 stages SDK/IPA guards; main independently passed all
+  fourteen released-checker tests including read-only personal IPA validation.
+  Hosted source checks and full iOS compilation pass at e1c0e55.
+  Sun#53 enables the existing IPA check (formerly none) and Xcode/SDK preflight:
+  complete local source suite, eight focused tests and both source/recipe gates
+  pass; hosted source suite and full iOS/tvOS compilation passed at 000ec1e.
+  These are drafts, not new public downloads. AgePad's injection path does not
+  require Xcode; no blanket
+  iOS-output prerequisite is added.
+- Five more bounded recipe drafts are checked: Bell#19 marks ripgrep; Barrel#18
+  adds pkg-config; Dino#12 marks external CMake/Ninja and corrects the Apple SDL2
+  CMake floor to 3.24; BearBird#23 marks existing Cargo; Banana#17 marks existing
+  Rust/GNU cpp/ripgrep and adds jq. Main independently replayed 12 doctor/10 make
+  guards for Bell/Barrel, eight Dino tests and 48 doctor/46 make guards for
+  BearBird/Banana using released PadMint 0.2.8. Exact recipe invariants and both
+  committed-source ZIP gates pass. Of the Bear/Banana cases, 36 test synthetic
+  in-memory floors, not new declared minimums. Bear's unconditional Cargo check
+  can require Rust even when a warm backend cache could skip decompression.
+  Bell hosted source CI passes; Bear CI was explicitly skipped; Barrel, Dino and
+  Banana have no hosted workflow. No app/device checks are implied. These eleven
+  game recipe/SDK/IPA drafts remain unpublished; current player recipes unchanged.
+- Four further recipe-only drafts pass independent released-0.2.8 checks:
+  BlueWake#11 (bbea38f) marks full Xcode and adds iPhoneOS SDK; Golden#49
+  (4fb580d) additionally checks the simulator SDK required by its current RT64
+  build while preserving Metal. Their 21/37 mocked checker cases pass. Paper#16
+  (c679944) and Ball#14 (fc94761) mark CMake/Ninja, with actual pinned floors
+  3.24/3.25; 28 doctor and 24 make guards pass. Exact recipe invariants and both
+  tracked-root ZIP gates pass all four. Hosted Blue repository audit and Paper
+  pinned-source/input checks pass; Golden/Ball have no hosted workflow. Paper's
+  isolated dependency verification initially failed on uninitialized submodules;
+  matching warm-source verification passed, and its hosted fresh source check
+  passed separately. No app/compiler/device acceptance is implied. Fifteen game
+  recipe/SDK/IPA drafts are now checked, not new public player recipes.
+  Blue's active primary and prior release checkout remain untouched; its SDK
+  draft uses a retained isolated worktree.
+- Anne#15 (6f98b3e) adds only jq/ripgrep player checks and the README install
+  command. Main independently passed 14 doctor and 12 make guards on released
+  0.2.8, exact manifest/README/file/ZIP invariants, the source-policy subset,
+  patch-stack contract and both JSON/tracked-root ZIP gates. No hosted workflow
+  exists; the full native source suite and new app/device checks were not run.
+  Sixteen game recipe/SDK/IPA drafts are checked, still unpublished. The existing
+  alternative-MIPS-linker/default-prefix limitation remains a proposal, not fixed
+  by this jq/rg draft.
+- Brawler#14 (ecb2da6) marks CMake 3.24/full Xcode and adds the iPhoneOS SDK
+  probe; replaces the redundant PATH-only python3.11 check with the current
+  backend's selected-interpreter/Pillow probe. Main independently passed all
+  78 released-0.2.8 cases, including 13 real shell selection scenarios using only
+  generated executable stubs, checkout-doctor retirement and exact resolver/
+  whole-manifest contracts. Existing repository safety/syntax, exact committed
+  ZIP hash comparison and both JSON/ZIP content gates pass. No hosted workflow,
+  actual SDK/Pillow environment, new app build or device acceptance is claimed.
+  Its old public 0.2.0 backend is Homebrew-only; this current-main draft must not
+  be transplanted into that release. Seventeen game recipe/SDK/IPA drafts are
+  independently checked, not new player downloads; published recipes unchanged.
+- PadMint #70/#72 local composed candidate996a2f3 contains only the exact reviewed
+  host/release-snapshot safeguards and LF checksum fix. Independent patch-ID,
+  seven-file union, overlapping-workflow and unchanged-version/lock proofs pass.
+  Both full suites pass 204 cases on Apple Python 3.9 and Python 3.11; the actual
+  extracted Mac package passes 58 relevant cases on each. Main independently
+  replayed all 58 Mac cases in 16.468 s, verified package imports, all three
+  hashes and source/package reference gates. The Windows runtime is byte-identical
+  to the checked cached CI artifact; no Windows runtime was executed, and the
+  official Python download/checksum path was not rerun in the local cache adapter.
+  These locally generated packages remain unpublished candidates named 0.2.8,
+  not replacements for the public release. Existing draft #70 now includes #72
+  via normal fast-forward update at bd2c78f; main independently confirms the
+  exact tested tree and preserved #70 ancestry. Hosted run36808902411 passes
+  40 extracted-package cases on Windows (52.606 s, bundled Python) and Linux
+  (4.348 s, asserted extracted-package import). Fresh hosted packaging reruns
+  the official Windows-runtime download/checksum path and raw LF/hash assertions.
+  Main independently downloaded all three Windows-built packages: checksums and
+  both public/reference gates pass, and each ZIP byte-matches the Mac-tested
+  local construction. Draft #72 remains open and unchanged, no extra PR or
+  supported-host expansion. No main merge, version or public release occurred.
+  Next: stage versioned 0.2.9 in that existing draft and repeat exact-package
+  Mac/Windows/Linux checks before owner publication; public 0.2.8 unchanged.
+  Priority-four host-library readiness is being audited read-only: warm-cache
+  Mac success does not establish fresh-host prerequisites or game-device proof.
+- Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
+  non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
+  filenames and checksum entries present. Published versions/hashes match the
+  earlier snapshot. Current player README/release branding has only deliberate
+  Kart migration wording; historical padforge.json filenames remain supported.
+  Separately, a fresh anonymous download of all six required public base apps
+  across five recipes matches exact SHA256SUMS and passes both content gates.
+  These are empty/base downloads, not personal game-bearing outputs; the scans
+  remain heuristic checks, not rights or gameplay acceptance.
+  The README draft explicitly names the current Starship SDK and Age Steam-profile
+  blockers; 190 Apple Python source tests and hosted Windows package checks pass.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
 - GitHub triage reviewed older open build reports as well as recent comments.
@@ -82,8 +211,10 @@ tracker; this file mirrors progress so work can resume after interruption.
   lacks the earlier promised PowerVR correction; bounded staging is preserved for
   the KartPad agent, with no claimed handset fix or public release.
 - New Discord report: PWR Jaypp says flickering persists in 0.7.3 in both Original
-  and Retro Rewind. Platform and scene are unknown; the earlier startup fix does
-  not establish that this report is resolved.
+  and Retro Rewind. His linked GitHub #327 reply now specifies iPhone 16 and only
+  game startup; ongoing play is reported flawless. That report, #301's failed
+  model-fix reply and #370's iPadOS 18.7.8 black-screen detail belong to the KartPad
+  app agent. No new PadMint failure appeared in those comments; no repeated asks.
 
 Local continuation handles and evidence: `.codex/scratch/pm028/current-builds-results.jsonl`,
 `.codex/scratch/pm028/player-entrypoints.json`,
