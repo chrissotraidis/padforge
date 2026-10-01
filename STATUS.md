@@ -40,7 +40,11 @@ tracker; this file mirrors progress so work can resume after interruption.
   BarrelPad took 15 s and BellPad 20 s with warm caches. These are build checks,
   not new device-play acceptance. Published 0.2.8 has since built BrawlerPad (60 s),
   BallPad (350 s), MaskPad (50 s), PaperPad (100 s), SpaghettiPad (125 s) and GoldenPad
-  (325 s), BearBirdPad (681 s) and DinoPad (70 s), with warm caches. BlueWake's
+  (325 s), BearBirdPad (681 s), DinoPad (70 s), AnnePad (2427 s) and SunPad
+  (55 s), with warm caches. BananaPad's previous input path was missing; the
+  owner's existing V64 copy matches the supported normalized SHA1, and a retry
+  is queued after the serialized sweep. MeleePad is running through the public
+  recipe. BlueWake's
   resumed 0.2.7 personal build completed,
   including its translated game module. The remaining 0.2.8 sweep is incomplete.
 - StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
@@ -48,8 +52,11 @@ tracker; this file mirrors progress so work can resume after interruption.
   local app and device/simulator SDK probes pass. Exact packaged 0.2.8 generic
   candidate build passed in 131.88 s at 731adde with one job, and hosted full
   unsigned iPhoneOS CI passed. Main independently replayed both SDK probes.
-  Draft starshippad#21 stages source-only 0.2.1/build 7; its final metadata build
-  check remains open. Main alone cannot repair release-pinned player builds;
+  Draft starshippad#21 stages source-only 0.2.1/build 7; its exact packaged 0.2.8
+  build passed in 144.25 s and full hosted app check passed. Main independently
+  read back the version, build record, IPA hash and public-source gates. Its
+  personal IPA fails the public-content gate as expected and must remain private.
+  The release pause still requires owner clearance. Main alone cannot repair release-pinned player builds;
   any successor must retain source-only publication and the private release gates.
 - Public entrypoint audit: all 19 buildable catalog games have current PadMint
   release recipes. Current README/release branding has no obsolete PadForge wording
@@ -62,12 +69,18 @@ tracker; this file mirrors progress so work can resume after interruption.
 - PadMint #68 merged after hosted checks: remove Play Protect bypass advice,
   leave Google Play explicitly unvalidated rather than call it too old. Corrected
   the existing kartpad#366 comment too; no device security settings changed.
-- Sanity review found direct make can bypass build's unsupported-host check;
-  a focused preflight fix/tests are assigned. MeleePad's existing player checker
-  misses Xcode/Rust because its recipe lacks player annotations; exact required
-  Rust/toolchain scope must be confirmed before the recipe changes. These are
-  small fixes, not new host support. Unwritable output-folder early checks are
-  deferred behind these two findings.
+- Draft PadMint #70 fixes direct make bypassing the unsupported-host check before
+  source/tools/app downloads, and pins recipe/source/app to one release snapshot.
+  Main independently reviewed the change and passed all 202 tests on Apple's
+  Python 3.9; hosted Windows player-flow check passed. It is not in public 0.2.8.
+  Explicit-ref candidates retain their selected source, rechecked before tools.
+- Prerequisite inventory matched 17 non-Kart/non-Melee recipes to the published
+  hashes. Starship, Mask, Spaghetti and Hark require local CMake, Ninja, pkgconf
+  and full Xcode but do not mark them for the player checker. Bounded recipe
+  annotation drafts are underway; no new downloader or host support. Backend
+  host libraries remain a separate requirement, not satisfied by device-library
+  downloads. Melee's exact Rust provisioning is under review. AgePad's injection
+  path does not require Xcode; no blanket iOS-output prerequisite is added.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
 - GitHub triage reviewed older open build reports as well as recent comments.
@@ -82,8 +95,10 @@ tracker; this file mirrors progress so work can resume after interruption.
   lacks the earlier promised PowerVR correction; bounded staging is preserved for
   the KartPad agent, with no claimed handset fix or public release.
 - New Discord report: PWR Jaypp says flickering persists in 0.7.3 in both Original
-  and Retro Rewind. Platform and scene are unknown; the earlier startup fix does
-  not establish that this report is resolved.
+  and Retro Rewind. His linked GitHub #327 reply now specifies iPhone 16 and only
+  game startup; ongoing play is reported flawless. That report, #301's failed
+  model-fix reply and #370's iPadOS 18.7.8 black-screen detail belong to the KartPad
+  app agent. No new PadMint failure appeared in those comments; no repeated asks.
 
 Local continuation handles and evidence: `.codex/scratch/pm028/current-builds-results.jsonl`,
 `.codex/scratch/pm028/player-entrypoints.json`,
