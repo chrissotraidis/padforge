@@ -182,10 +182,28 @@ tracker; this file mirrors progress so work can resume after interruption.
   both public/reference gates pass, and each ZIP byte-matches the Mac-tested
   local construction. Draft #72 remains open and unchanged, no extra PR or
   supported-host expansion. No main merge, version or public release occurred.
-  Next: stage versioned 0.2.9 in that existing draft and repeat exact-package
-  Mac/Windows/Linux checks before owner publication; public 0.2.8 unchanged.
-  Priority-four host-library readiness is being audited read-only: warm-cache
-  Mac success does not establish fresh-host prerequisites or game-device proof.
+  This unversioned composition is historical; the versioned stage below supersedes it.
+- PadMint 0.2.9 is staged in existing draft #70 at
+  03b83c8be3329906b52c4dc3bda5cbeebafb5d95, including reviewed docs #71 at 6f8d2f9.
+  All 204 source cases pass on Apple Python 3.9; main independently passes the
+  full 204-case suite on Python 3.11 (33.733 s). The actual extracted Mac package
+  passes 58 player cases; main independently replayed them (17.173 s). Exact-head
+  hosted run36809913948 passes 40 Windows bundled-Python cases (69.548 s) and
+  40 Linux extracted-package cases (5.434 s). Main independently downloaded all
+  three versioned packages and verified checksums, exact owned payload/launcher
+  bytes and both content scans. The hosted Mac ZIP equals the locally tested ZIP.
+  Public Latest remains 0.2.8; publication choice is pending with Chris. No main
+  merge, tag, release or new platform claim. These are builder-package tests,
+  not every game backend, fresh-host setup, gameplay or legal acceptance.
+- Priority-four host-library audit is complete. The original public Hark/Mask/
+  Spaghetti/Starship recipes return Ready with zero executable probes and an
+  empty system-library list; main independently reproduced the coverage gap with
+  SHA-verified recipes and guarded execution. Their native Mac tool/archive
+  phase needs external development libraries; iOS downloads do not satisfy it.
+  Small accurate CMake-floor/setup-note updates are being checked in the existing
+  prerequisite drafts. Complete library discovery or provisioning remains a
+  proposal for Chris; no library hard gate, automatic installation, schema or
+  backend change is implemented. Warm-cache Mac success is not fresh-host proof.
 - Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
   non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
   filenames and checksum entries present. Published versions/hashes match the
