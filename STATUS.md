@@ -9,6 +9,27 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- Player-first checkpoint: published PadMint0.2.8 from the verified Mac ZIP
+  completed a fresh HarkinianPad0.2.0/build7 source/backend cache with two jobs
+  in2134.81s. Already-provisioned Mac, not a fresh host; backend PATH Python3.14.
+  Private unsigned IPA31078683bytes SHA256
+  d5aae058573b56011e8c8059ed05d4be1a583db96d94ba663e859dcda9207f20.
+  CRC/version/build/minOS15/executable hash match; gate FAIL1821symbols,
+  keep private. No new import/device/gameplay/rights acceptance.
+- Hark#35 exact5a3ad74 hosted36848255000 SUCCESS:19tests/full unsigned iOS
+  build/import/package/signature rejection. Artifact not separately downloaded;
+  missing-library fix remains draft and public recipe unchanged.
+- Golden#49 now08ef660 honors selected build limits across required generation,
+  runtime, RT64 device/simulator and Xcode helpers; old unset/empty behavior kept.
+  Main independently reviewed/replayed12 fixtures plus5 source-archive tests,
+  separately Apple3.9/Python3.11; actual source/ROM guards and both sourceZIP
+  scans PASS. Pushed OPEN/DRAFT, not hosted/app/device/publication acceptance.
+- Fresh issue sweep: PadMint no open issues, Windows/Golden reporters already
+  confirmed success. New Kart#378 is controller mapping, owned by Kart app agent.
+  Phone-only storage/no-Mac paths still incomplete. Blank progress messages in
+  this cold build are a concrete next UX fix, separate from frozen0.2.9 candidate.
+  Banana/Spaghetti parked; no extra micro-fix agents or release this checkpoint.
+
 - Required build-limit follow-up: DinoPad#12 now cb0ea77 honors the selected
   limit in host tools and MIPS patches, retaining manual precedence/default4
   and the generic Python3.9 fix. Two real-entrypoint fixtures reproduced4vs2;
