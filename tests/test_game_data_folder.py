@@ -44,6 +44,21 @@ class GameDataFolderTests(unittest.TestCase):
             cli.save_game_data(built, root, "KartPad", stream, import_label=labels["android"])
         self.assertIn("choose it with Import from Extracted Game Data Folder. It needs no key.", stream.getvalue())
 
+    def test_phone_export_does_not_ask_for_another_device_transfer(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            built = root / "build/personal.so"
+            (built.parent / "personal.so.data/sys").mkdir(parents=True)
+            (built.parent / "personal.so.data/sys/main.dol").write_bytes(b"synthetic")
+            stream = io.StringIO()
+            with mock.patch.object(cli, "on_android", return_value=True):
+                target = cli.save_game_data(built, root, "Game", stream)
+            self.assertIn(str(target), stream.getvalue())
+            self.assertIn("already on this phone", stream.getvalue())
+            self.assertIn("choose it with Import from Extracted Folder", stream.getvalue())
+            self.assertNotIn("Copy it to your device", stream.getvalue())
+            self.assertEqual((target / "sys/main.dol").read_bytes(), b"synthetic")
+
     def test_backends_without_a_folder_are_unchanged(self):
         with tempfile.TemporaryDirectory() as temporary:
             self.assertIsNone(cli.save_game_data(Path(temporary) / "personal.ipa", Path(temporary), "Game"))

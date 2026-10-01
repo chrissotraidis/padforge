@@ -17,6 +17,8 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -B -m unittest discover -s tests -p test_android_bootstrap.py -v
+      - run: python -B -m unittest discover -s tests -p test_next_steps.py -v
+      - run: python -B -m unittest discover -s tests -p test_game_data_folder.py -v
   packaged-player-flow:
     runs-on: windows-latest
     timeout-minutes: 15
@@ -38,7 +40,7 @@ jobs:
           $package = (Get-ChildItem "$env:RUNNER_TEMP/package-check" -Directory).FullName
           $tests = "$env:RUNNER_TEMP/player-checks"
           New-Item -ItemType Directory $tests | Out-Null
-          Copy-Item tests/test_start.py, tests/test_finish_submodules.py $tests
+          Copy-Item tests/test_start.py, tests/test_finish_submodules.py, tests/test_next_steps.py, tests/test_game_data_folder.py $tests
           Push-Location $package
           try {
             & ./python/python.exe -m padmint --version
