@@ -9,6 +9,42 @@ tracker; this file mirrors progress so work can resume after interruption.
 
 ## Current continuation (1 Oct)
 
+- Required build-limit follow-up: DinoPad#12 now cb0ea77 honors the selected
+  limit in host tools and MIPS patches, retaining manual precedence/default4
+  and the generic Python3.9 fix. Two real-entrypoint fixtures reproduced4vs2;
+  all16 fixture tests PASS separately Apple3.9/Python3.11. Independent review
+  repeats16 tests each plus34 helper cases; real safety/patch/reference checks,
+  production-byte invariants and both committed-source scans PASS. Optional
+  SDL/restoration helpers remain outside this fix; no real game generation.
+- PaperPad#16 now9ce10f6 passes the standard limit to PaperBoat device/simulator
+  CMake while retaining manual precedence/default8. Eight tests PASS both
+  interpreters; independent review reproduces baseline8vs2 and repeats tests.
+  Pin-check stops, configuration, signing/provenance and other production bytes
+  are unchanged. Exact hosted source36842927738 SUCCESS: pins/repository/input
+  checks, not a full game app or execution of the new focused job fixtures.
+- BearBirdPad#23 nowb2192f2 honors the standard limit in required host tools,
+  otherwise retaining the exact CPU/default4 fallback. Eight focused tests
+  (33 fixture cases) PASS both interpreters; main independent replay/byte
+  invariants/source guards PASS. Hosted36842929623 builds pinned host tools;
+  ROM-free Simulator stub/package remains running, not full-game acceptance.
+- DevilTouch#10 nowda768fd passes the standard limit to signed/unsigned Xcode,
+  keeping the manual JOBS override/default8. Six focused tests (100 fixture
+  cases) and the complete11-test repository suite PASS both interpreters;
+  main independent replay/configure/source/signing/packaging invariants PASS.
+  Exact hosted source36842931502 SUCCESS: source/test/content guards, not app.
+- All four existing OPEN/DRAFT heads are pushed and read back; production
+  syntax/diff/safety and both exact committed-source scans PASS. Paper's scan
+  retains one previously allowed source stub, not a zero-symbol/rights claim.
+  No primary, pin, recipe, version, public asset or signing/input change; no
+  new personal app/fresh-player-host/device/gameplay/rights/publication proof.
+- Bounded15-root manifest/helper audit found five remaining explicit compile
+  overrides: Melee, Sun, Golden, Spaghetti and Banana. BlueWake additionally
+  hardcodes8 translation workers in required mod preparation. These are
+  concrete next fixes, not evidence that all other/transitive paths are capped.
+  Bell/Mask/Hark/Starship/Anne/Brawler have no confirmed default numeric
+  override in the inspected first-party paths; runtime readiness is unproven.
+  Larger host-library provisioning/Age-profile choices remain owner discussions.
+  KartPad app fixes remain with the other agent; no new issue reply/test ask.
 - BallPad#14 now ac90603 honors PadMint's existing parallel-build limit in
   engine CMake and FFmpeg make, which previously overrode it with hw.ncpu.
   Manual unset/empty retains its prior CPU default; invalid limits fail before
