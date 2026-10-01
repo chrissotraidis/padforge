@@ -82,11 +82,21 @@ tracker; this file mirrors progress so work can resume after interruption.
 - Draft PadMint #70 fixes direct make bypassing the unsupported-host check before
   source/tools/app downloads, and pins recipe/source/app to one release snapshot.
   Main independently reviewed the change and passed all 202 tests on Apple's
-  Python 3.9. At beb7aed, the hosted Windows package now passes 40 checks, including
-  all twelve new host-preflight/release-snapshot regressions against the included
-  Python. The additive workflow change closes the previous test-selection gap.
+  Python 3.9. At d61168d, hosted x64 Windows and Linux each pass 40 extracted-package
+  checks, including all twelve new host-preflight/release-snapshot regressions.
+  Main independently passed the same 40 checks from that run's Mac ZIP and the
+  real Mac launcher version command. Imports, ZIP hashes and both content gates
+  pass. These checks test player flows, not every backend on each host.
   It is not in public 0.2.8; no new release or supported platform is claimed.
   Explicit-ref candidates retain their selected source, rechecked before tools.
+- Draft PadMint #72 at cfdebe3 fixes Windows-generated checksum manifests using
+  explicit UTF-8 bytes. The earlier CRLF text confused Unix checksum readers;
+  normalization confirmed the package bytes were already correct. The candidate
+  passes 192 source cases on Python 3.11 and Apple 3.9, and hosted Windows checks
+  all three hashes, LF-only bytes and the unchanged 28-case player-flow suite.
+  Main independently reviewed the three-file diff, replayed four focused tests
+  and verified the unchanged downloaded manifest on Mac without normalization.
+  This is separate from #70, with no version, payload or published asset change.
 - Prerequisite inventory matched 17 non-Kart/non-Melee recipes to the published
   hashes. Starship, Mask, Spaghetti and Hark require local CMake, Ninja, pkgconf
   and full Xcode but do not mark them for the player checker. Bounded recipe
@@ -107,6 +117,21 @@ tracker; this file mirrors progress so work can resume after interruption.
   These are drafts, not new public downloads. AgePad's injection path does not
   require Xcode; no blanket
   iOS-output prerequisite is added.
+- Five more bounded recipe drafts are checked: Bell#19 marks ripgrep; Barrel#18
+  adds pkg-config; Dino#12 marks external CMake/Ninja and corrects the Apple SDL2
+  CMake floor to 3.24; BearBird#23 marks existing Cargo; Banana#17 marks existing
+  Rust/GNU cpp/ripgrep and adds jq. Main independently replayed 12 doctor/10 make
+  guards for Bell/Barrel, eight Dino tests and 48 doctor/46 make guards for
+  BearBird/Banana using released PadMint 0.2.8. Exact recipe invariants and both
+  committed-source ZIP gates pass. Of the Bear/Banana cases, 36 test synthetic
+  in-memory floors, not new declared minimums. Bear's unconditional Cargo check
+  can require Rust even when a warm backend cache could skip decompression.
+  Bell hosted source CI passes; Bear CI was explicitly skipped; Barrel, Dino and
+  Banana have no hosted workflow. No app/device checks are implied. All eleven
+  game recipe/SDK/IPA drafts remain unpublished; current player recipes unchanged.
+  BlueWake/Golden SDK requirements are being traced without touching their builds.
+  Brawler's Python resolver and Anne's alternative linker need careful review,
+  not a blanket generic requirement.
 - Notion's overview now distinguishes published releases from outstanding build
   and device checks. AgePad's current README and own-code MIT license were verified.
 - GitHub triage reviewed older open build reports as well as recent comments.
