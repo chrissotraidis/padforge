@@ -35,7 +35,8 @@ class MakeTests(unittest.TestCase):
             source.mkdir(parents=True)
             (source / "version.json").write_text(json.dumps({"version": "1.2.3", "build": 7}))
             manifest = {"name": "Game", "inputs": [{"type": "disc"}], "targets": {"android": {
-                "published_app": "Game-v{version}-android.apk", "steps": [], "tools": []}}}
+                "published_app": "Game-v{version}-android.apk", "steps": [], "tools": [],
+                "hosts": {cli.host_id(): "experimental"}}}}
             built = root / "built.so"
             built.write_bytes(b"pack")
 
@@ -47,6 +48,7 @@ class MakeTests(unittest.TestCase):
                     mock.patch.object(cli.tools, "tools_root", return_value=root / "home/tools"), \
                     mock.patch.object(cli.tools, "install"), \
                     mock.patch.object(cli, "latest_release", return_value=("v1.2.3", {})), \
+                    mock.patch.object(cli, "published_recipe", return_value=(manifest, "release")), \
                     mock.patch.object(cli, "source_complete", return_value=True), \
                     mock.patch.object(cli, "manifest_for", return_value=(manifest, "repository")), \
                     mock.patch.object(cli, "git", return_value="0" * 40), \
@@ -61,6 +63,7 @@ class MakeTests(unittest.TestCase):
                     mock.patch.object(cli.tools, "tools_root", return_value=root / "home/tools"), \
                     mock.patch.object(cli.tools, "install"), \
                     mock.patch.object(cli, "latest_release", return_value=("v1.2.3", {})), \
+                    mock.patch.object(cli, "published_recipe", return_value=(manifest, "release")), \
                     mock.patch.object(cli, "source_complete", return_value=True), \
                     mock.patch.object(cli, "manifest_for", return_value=(manifest, "repository")), \
                     mock.patch.object(cli, "git", return_value="0" * 40), \

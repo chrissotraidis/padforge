@@ -70,6 +70,7 @@ class MakeTests(unittest.TestCase):
                     mock.patch.object(cli.tools, "install") as install, \
                     mock.patch.object(cli.tools, "missing_system_library", return_value=None), \
                     mock.patch.object(cli, "latest_release", return_value=("v1.2.3", {})), \
+                    mock.patch.object(cli, "published_recipe", return_value=(data, "release")), \
                     mock.patch.object(cli, "source_complete", return_value=True), \
                     mock.patch.object(cli, "manifest_for", return_value=(data, "repository")), \
                     mock.patch.object(cli, "git", return_value="0" * 40), \
@@ -83,7 +84,8 @@ class MakeTests(unittest.TestCase):
     def game(self, *tools):
         return {"name": "GoldenPad", "inputs": [{"type": "rom", "when": "in-app"}],
                 "requirements": {"tools": list(tools)},
-                "targets": {"android": {"steps": [], "tools": ["cmake"]}}}
+                "targets": {"android": {"steps": [], "tools": ["cmake"],
+                                        "hosts": {cli.host_id(): "experimental"}}}}
 
     def test_a_missing_program_stops_before_any_download_and_says_how_to_install_it(self):
         xdelta = {"name": "xdelta3", "player": True, "note": "Install xdelta: brew install xdelta"}
