@@ -43,10 +43,11 @@ tracker; this file mirrors progress so work can resume after interruption.
   (325 s), BearBirdPad (681 s), DinoPad (70 s), AnnePad (2427 s) and SunPad
   (55 s), with warm caches. MeleePad 0.2.1 completed in 2027 s through 0.2.8.
   Warm 0.2.8 reruns also passed: HarkinianPad (85 s), BarrelPad (15 s), BellPad
-  (15 s), BlueWake (50 s including runner overhead). Fifteen public-recipe builds
+  (15 s), BlueWake (50 s including runner overhead). Sixteen public-recipe builds
   pass independent IPA-byte/record/version/build/minimal-structure readback.
   BananaPad's previous input path was missing; the owner's existing V64 copy
-  matches the supported normalized SHA1, and its serialized retry is running.
+  matches the supported normalized SHA1. Public BananaPad 0.2.1/build 5 now passes
+  in 1486 s; independent IPA-byte/record/version/build readback also passes.
 - AgePad's public 0.1.0 rerun through 0.2.8 stopped after 5 s after Steam's beta
   client updated between the successful and failed runs. Six Steam files differ;
   the error displays only five. The source, embedded profile and relevant runner/
@@ -99,7 +100,7 @@ tracker; this file mirrors progress so work can resume after interruption.
   Slippi preparation. A Rust-free offline module path is a proposal for Chris,
   not implemented. Melee#39 stages SDK/IPA guards; main independently passed all
   fourteen released-checker tests including read-only personal IPA validation.
-  Hosted source checks pass at e1c0e55; full iOS compilation remains in progress.
+  Hosted source checks and full iOS compilation pass at e1c0e55.
   Sun#53 enables the existing IPA check (formerly none) and Xcode/SDK preflight:
   complete local source suite, eight focused tests and both source/recipe gates
   pass; hosted source suite and full iOS/tvOS compilation passed at 000ec1e.
