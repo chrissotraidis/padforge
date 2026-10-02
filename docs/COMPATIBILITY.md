@@ -63,6 +63,29 @@ use existing unsigned previews with your own data added in the app. They do
 not require a PadMint build; VaultPad is iPad-only. **SnapPad** downloads
 remain paused and no public PadMint recipe is available.
 
+## Recorded Android pack builds
+
+On 3 October, the public PadMint **v0.2.9** packages completed the normal
+`make kartpad android` command with the public **KartPad v0.7.3 / build 246**
+recipe and Europe **RMCP01 revision 0** WBFS input, using two build jobs.
+The release selected source `9f973c4ecc46284edfba06eb7dede67f629eb4c5`.
+
+| Build host | Setup | Result |
+|---|---|---|
+| macOS 26.6.2, ARM64, Apple Python 3.9.6 | Cached tools; fresh game checkout and build | Pack and data export completed |
+| Ubuntu 24.04, ARM64, Python 3.12.3 | Provisioned container; fresh PadMint home and tool downloads | Pack and data export completed |
+| Windows 11, ARM64, bundled Python 3.13.15 | VM with a fresh PadMint home; Windows x64 NDK compiler under emulation | Pack and data export completed; build phase about 96 minutes |
+
+All three outputs passed ELF/AArch64 and 16 KB alignment checks. Each set of
+**2,043** exported game-data files matched the build-cache hashes, and the recomputed
+pack interface matched the actual published Android app. The runtime-state
+symbol check also passed. Generated personal outputs remain private.
+
+These are completed player commands and static output checks. None of the outputs
+was played on a physical Android device in this run. They do not establish
+Windows x64, Linux x64, Intel Mac or Android/Termux acceptance. The timings are
+observations from different environments, not a performance comparison.
+
 ## Known limits and useful evidence
 
 | Route | What is established | What remains |
@@ -73,7 +96,7 @@ remain paused and no public PadMint recipe is available.
 | SpaghettiPad v0.2.1 | [Reporter confirmed both iPhone and iPad work](https://github.com/chrissotraidis/spaghettipad/issues/26#issuecomment-5955452885) after the SDK 27 startup fix | This validates those reported devices, not every host or device |
 | SpaghettiPad off-Mac work | [Draft #29](https://github.com/chrissotraidis/spaghettipad/pull/29): native Windows/Linux x64 and ARM64 module builds, resource generation and portable package fixtures | Complete released PadMint recipe, matching runtime delivery and target-device acceptance of each host's output |
 | HarkinianPad | [Merged #35](https://github.com/chrissotraidis/harkinianpad/pull/35): resources on five native hosts and full Mac-hosted iOS CI at the reviewed candidate | Portable resources do not establish complete off-Mac apps; published v0.2.0 still uses its old prerequisites |
-| StarshipPad | Public v0.2.0 has a reproduced CoreVideo SDK-selection failure; [draft #22](https://github.com/chrissotraidis/starshippad/pull/22) passes full CI | Repair is not yet delivered in the public recipe |
+| StarshipPad | Public v0.2.0 has a reproduced CoreVideo SDK-selection failure; [merged #22](https://github.com/chrissotraidis/starshippad/pull/22) passes candidate and main-branch full CI | Repair is not yet delivered in the public recipe |
 | AgePad | Packages a matching supported Mac Steam installation without Xcode | Updated Steam client was rejected in prior checks; exact-profile support required. Do not bypass fingerprint checks |
 | Other Mac recipes | Release manifests declare experimental Mac ARM64 iOS builds | Per-project tools, source/input requirements and device acceptance still apply; no blanket fresh-host or gameplay claim |
 
