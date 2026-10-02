@@ -7,6 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/chrissotraidis/padmint/releases/latest"><img alt="Latest PadMint" src="https://img.shields.io/github/v/release/chrissotraidis/padmint?label=PadMint&color=34C759"></a>
+  <a href="https://github.com/chrissotraidis/padmint/actions/workflows/windows-package-check.yml"><img alt="Packaged player checks" src="https://github.com/chrissotraidis/padmint/actions/workflows/windows-package-check.yml/badge.svg"></a>
   <img alt="Windows, Mac and Linux" src="https://img.shields.io/badge/runs%20on-Windows%20%7C%20Mac%20%7C%20Linux-0A84FF">
   <img alt="Android phone, experimental" src="https://img.shields.io/badge/Android%20phone-experimental-3DDC84?logo=android">
   <img alt="Game files not included" src="https://img.shields.io/badge/game%20files-not%20included-FF453A">
@@ -28,6 +29,8 @@ it.
 | **iPhone or iPad** | a Windows or Linux computer | [iPhone or iPad](#iphone-or-ipad) (experimental) |
 
 Other Pad games: see [Other Pad games](#other-pad-games).
+Check your project's [build compatibility](docs/COMPATIBILITY.md) before downloading
+tools. It lists the released recipes, host architectures and known blockers.
 
 **You need** your own Mario Kart Wii disc image: the European (PAL) version,
 game ID **RMCP01**, as an ISO, WBFS or RVZ file. Other regions don't work yet.
@@ -189,6 +192,9 @@ selected from each game's release determines which hosts and targets can run.
 An Android phone building a KartPad pack does not imply an Android version of
 every Pad game.
 
+See the [per-project compatibility matrix](docs/COMPATIBILITY.md) for the exact
+public recipe versions and the evidence behind the current limitations.
+
 ## Other Pad games
 
 **DevilTouch and VaultPad have a different route:** their existing public
@@ -273,9 +279,11 @@ keeps the tools you already downloaded.
 
 **Still stuck?**
 Ask in the [KartPad Discord](https://discord.gg/xwHfUD2bxW) or open a
-[KartPad issue](https://github.com/chrissotraidis/kartpad/issues) with your
-computer (Windows, Mac or Linux), your phone model and the last lines PadMint
-printed.
+[PadMint issue](https://github.com/chrissotraidis/padmint/issues) for setup,
+downloads or build failures. Include the game and release, PadMint version,
+host OS and architecture, intended device and the last error lines. Review
+logs for personal paths first; keep game files, keys and personal builds private.
+For a game that builds but fails while playing, use that game's issue tracker.
 
 ---
 
