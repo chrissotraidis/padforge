@@ -91,7 +91,7 @@ observations from different environments, not a performance comparison.
 | Route | What is established | What remains |
 |---|---|---|
 | PadMint v0.2.9 | Released Windows/macOS/Linux ZIPs and checksums; packaged player-flow tests on Windows and Linux | These checks use fixtures and do not build every game |
-| KartPad iOS off a Mac | Experimental route previously tried on Windows 11 ARM and Ubuntu with iPhone 14 | Ordinary Intel/AMD Windows and broader device acceptance remain unverified |
+| KartPad iOS off a Mac | Experimental route previously tried on Windows 11 ARM and Ubuntu with iPhone 14; a Windows 11 Surface Laptop 2 user [reports a v0.7.3 IPA build and updates on iPhone/iPad](https://github.com/chrissotraidis/kartpad/issues/310#issuecomment-5961520278) | The Surface report has no gameplay check and reports an exit opening the import menu; independent Intel/AMD build-and-play and broader device acceptance remain open |
 | KartPad iOS folder import | [Reporter confirmed the app-folder workaround](https://github.com/chrissotraidis/kartpad/issues/380#issuecomment-5945178374) on an M2 iPad Air | The disabled Files-picker Open button remains an app bug |
 | SpaghettiPad v0.2.1 | [Reporter confirmed both iPhone and iPad work](https://github.com/chrissotraidis/spaghettipad/issues/26#issuecomment-5955452885) after the SDK 27 startup fix | This validates those reported devices, not every host or device |
 | SpaghettiPad off-Mac work | [Draft #29](https://github.com/chrissotraidis/spaghettipad/pull/29): native Windows/Linux x64 and ARM64 module builds, resource generation and portable package fixtures | Complete released PadMint recipe, matching runtime delivery and target-device acceptance of each host's output |
