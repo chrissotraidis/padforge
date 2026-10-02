@@ -167,7 +167,8 @@ def _extract_zip(archive, folder, members=None):
     for name, target in links:
         link = base / name
         source = (link.parent / target).resolve()
-        if Path(target).is_absolute() or not source.is_relative_to(root):
+        if (not link.resolve().is_relative_to(root) or Path(target).is_absolute()
+                or not source.is_relative_to(root)):
             raise RuntimeError(f"link {name} -> {target} leaves the tool folder; nothing was installed")
         link.parent.mkdir(parents=True, exist_ok=True)
         try:

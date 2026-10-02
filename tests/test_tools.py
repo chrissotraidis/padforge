@@ -83,6 +83,21 @@ class ToolsTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "leaves the tool folder"):
             tools._extract_zip(archive, self.root / "out2")
 
+    def test_zip_link_names_may_not_leave_the_tool_folder(self):
+        # The target is inside staging; the link itself must also stay there.
+        for name in ("../outside-relative/link", str(self.root / "outside-absolute/link")):
+            with self.subTest(name=name):
+                archive = self.root / "escape-name.zip"
+                with zipfile.ZipFile(archive, "w") as bundle:
+                    bundle.writestr("inside", "fixture")
+                    link = zipfile.ZipInfo(name)
+                    link.external_attr = 0o120777 << 16
+                    bundle.writestr(link, "../stage/inside")
+                with self.assertRaisesRegex(RuntimeError, "leaves the tool folder"):
+                    tools._extract_zip(archive, self.root / "stage")
+                self.assertFalse((self.root / "outside-relative").exists())
+                self.assertFalse((self.root / "outside-absolute").exists())
+
     def test_missing_system_git_says_how_to_install_it(self):
         self.lock["git"] = {"version": "2", "hosts": {}}
         with mock.patch.object(tools.shutil, "which", return_value=None):
