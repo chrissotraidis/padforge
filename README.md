@@ -221,6 +221,12 @@ says which file it needs and how to install the result.
 **Current blocker:** StarshipPad's published v0.2.0 recipe fails with an iOS SDK
 selection error. The [checked fix](https://github.com/chrissotraidis/starshippad/pull/22)
 has merged and passed full CI. The public v0.2.0 recipe still needs an updated release.
+
+**SunPad on iOS/iPadOS 27:** its public v0.2.0 app was built with SDK 27
+without the required UIKit scene startup. [Source fix #55](https://github.com/chrissotraidis/sunpad/pull/55)
+has merged and passed full iOS/tvOS compilation; the published app still needs
+a separately verified update. Physical iOS 27 acceptance remains open.
+
 See [STATUS.md](STATUS.md) for the build checks and remaining limits.
 
 **AgePad** (iPad with 8 GB or more) works differently: on a Mac with Age of
