@@ -155,8 +155,10 @@ stays).
 - **On a Mac** with Apple Silicon and
   [Xcode](https://apps.apple.com/app/xcode/id497799835) installed.
 - **On Windows or Linux** (experimental): no Xcode needed. Tried so far on
-  Windows 11 on ARM and on Ubuntu, each with an iPhone 14; ordinary Intel and
-  AMD Windows PCs haven't been tried yet.
+  Windows 11 on ARM and on Ubuntu, each with an iPhone 14. A Windows 11 Surface
+  Laptop 2 user [reports building v0.7.3 and updating both devices](https://github.com/chrissotraidis/kartpad/issues/310#issuecomment-5961520278),
+  but has not tested gameplay and reports an exit when opening the import menu.
+  That report is not an independently verified Intel/AMD build-and-play result.
 
 1. Start PadMint as in [step 1](#1-start-padmint), drag in your disc image and,
    when asked which device to build for, choose **iPhone or iPad**.
