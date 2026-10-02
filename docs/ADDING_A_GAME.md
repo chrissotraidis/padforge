@@ -79,6 +79,18 @@ python3 -m padmint plan examplepad --repo /path/to/examplepad --revision FULL_CO
  "manifest": null}
 ```
 
+To offer the game in guided setup, add `player_targets` and a positive whole
+number for `free_space_gb`. Measure the first player build, including downloaded
+tools, fetched sources, temporary build files and the exported output; allow
+headroom. The catalog estimate is used by player `doctor` and the initial source
+download check. The recipe's `requirements.disk_gb` applies to checkout `doctor`
+and may allow more room for development builds.
+
+For tools the player must install, set `player: true` and an actionable `note`
+on the recipe requirement. Probe the tool or SDK the backend actually uses;
+finding an unrelated Python executable or Xcode's command-line tools is not
+enough. PadMint-supplied tools belong in the target's `tools` list instead.
+
 ## 3. Promote it
 
 1. Run `python3 -m padmint build` from a clean checkout. The record shows each

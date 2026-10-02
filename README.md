@@ -72,9 +72,11 @@ If PadMint asks which device to build for, choose **Android phone or tablet**.
 That choice describes where you will play, regardless of which computer you use.
 
 Keep the window open. Keep the computer plugged in; PadMint keeps it awake while
-it builds. The first build takes about 15 minutes to an hour, while
-PadMint downloads about 4 GB of tools; later builds take a few minutes. If it
-stops, it says why and what to do.
+it builds. The first build downloads tools and sources and can take an hour or
+longer, especially on Windows on ARM. Finished work is cached, so later runs can
+be quicker; a game update may need a full rebuild. If it stops, it says why and
+what to do. See the [recorded build results](docs/COMPATIBILITY.md#recorded-android-pack-builds)
+for the exact hosts and versions checked.
 
 ### 3. Find two things in Downloads
 
@@ -168,8 +170,8 @@ stays).
    then **Import from Extracted Folder…**, and pick the folder in the Files
    window that opens.
 
-**Updates:** run PadMint again for each new KartPad; it reuses your earlier
-work, so it takes a few minutes.
+**Updates:** run PadMint again for each new KartPad. It reuses compatible cached
+work, but a new game release may need a full rebuild.
 
 ## Build hosts and game devices
 
@@ -240,7 +242,8 @@ it needs your own Wii key file (`common-key.bin`); the folder doesn't.
 
 **Do I run PadMint again for every KartPad update?**
 Android: no, just install the new APK. KartPad tells you if a new game pack is
-ever needed. iPhone and iPad: yes, and it takes a few minutes.
+ever needed. iPhone and iPad: yes; build time depends on how much cached work
+the new release can reuse.
 
 **I don't have a computer.**
 On Android, try [Android, phone only](#android-phone-only-experimental), or use
