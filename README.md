@@ -220,7 +220,7 @@ says which file it needs and how to install the result.
 
 **Current blocker:** StarshipPad's published v0.2.0 recipe fails with an iOS SDK
 selection error. The [checked fix](https://github.com/chrissotraidis/starshippad/pull/22)
-is still a draft, not a new player download.
+has merged and passed full CI. The public v0.2.0 recipe still needs an updated release.
 See [STATUS.md](STATUS.md) for the build checks and remaining limits.
 
 **AgePad** (iPad with 8 GB or more) works differently: on a Mac with Age of

@@ -1,0 +1,1204 @@
+# PadMint status
+
+PadMint was named PadForge until 0.2.0 (padforge#25); older entries below use
+the current name.
+
+Resumable record for the overnight goal loop. Source of truth for decisions and
+per-repo state is the Notion "Public Repo Proprietary-Content Audit" and its
+tracker; this file mirrors progress so work can resume after interruption.
+
+## Current continuation (1 Oct)
+
+- Blank progress display reproduced: existing heartbeat status and warning
+  reason were recorded but omitted from console output. Three-line fallback
+  now shows those existing fields, preserving backend stage/count display,
+  JSON event schema, runner behavior, timings, private logs and release gates.
+  Portable synthetic regression exercises real execute/record paths, not a
+  game build. Final full191tests PASS separately Apple3.9(37.503s)/Python3.11
+  (38.314s); extracted development Mac ZIP29 player/recovery/display tests
+  PASS(14.268s). Development ZIPs retain0.2.8 label, not published assets.
+  All3ZIPs/both changed-file scans PASS; frozen0.2.9 draft03b untouched.
+  ExistingWindows package job includes new regression; existing stagedLinux
+  package-check pattern reused here. Hosted checks await this draft push;
+  latest terminal status belongs in PR#71/Notion, not a release claim.
+
+- Player-first checkpoint: published PadMint0.2.8 from the verified Mac ZIP
+  completed a fresh HarkinianPad0.2.0/build7 source/backend cache with two jobs
+  in2134.81s. Already-provisioned Mac, not a fresh host; backend PATH Python3.14.
+  Private unsigned IPA31078683bytes SHA256
+  d5aae058573b56011e8c8059ed05d4be1a583db96d94ba663e859dcda9207f20.
+  CRC/version/build/minOS15/executable hash match; gate FAIL1821symbols,
+  keep private. No new import/device/gameplay/rights acceptance.
+- Hark#35 exact5a3ad74 hosted36848255000 SUCCESS:19tests/full unsigned iOS
+  build/import/package/signature rejection. Artifact not separately downloaded;
+  missing-library fix remains draft and public recipe unchanged.
+- Golden#49 now08ef660 honors selected build limits across required generation,
+  runtime, RT64 device/simulator and Xcode helpers; old unset/empty behavior kept.
+  Main independently reviewed/replayed12 fixtures plus5 source-archive tests,
+  separately Apple3.9/Python3.11; actual source/ROM guards and both sourceZIP
+  scans PASS. Pushed OPEN/DRAFT, not hosted/app/device/publication acceptance.
+- Fresh issue sweep: PadMint no open issues, Windows/Golden reporters already
+  confirmed success. New Kart#378 is controller mapping, owned by Kart app agent.
+  Phone-only storage/no-Mac paths still incomplete. Blank progress messages in
+  this cold build are a concrete next UX fix, separate from frozen0.2.9 candidate.
+  Banana/Spaghetti parked; no extra micro-fix agents or release this checkpoint.
+
+- Required build-limit follow-up: DinoPad#12 now cb0ea77 honors the selected
+  limit in host tools and MIPS patches, retaining manual precedence/default4
+  and the generic Python3.9 fix. Two real-entrypoint fixtures reproduced4vs2;
+  all16 fixture tests PASS separately Apple3.9/Python3.11. Independent review
+  repeats16 tests each plus34 helper cases; real safety/patch/reference checks,
+  production-byte invariants and both committed-source scans PASS. Optional
+  SDL/restoration helpers remain outside this fix; no real game generation.
+- PaperPad#16 now9ce10f6 passes the standard limit to PaperBoat device/simulator
+  CMake while retaining manual precedence/default8. Eight tests PASS both
+  interpreters; independent review reproduces baseline8vs2 and repeats tests.
+  Pin-check stops, configuration, signing/provenance and other production bytes
+  are unchanged. Exact hosted source36842927738 SUCCESS: pins/repository/input
+  checks, not a full game app or execution of the new focused job fixtures.
+- BearBirdPad#23 nowb2192f2 honors the standard limit in required host tools,
+  otherwise retaining the exact CPU/default4 fallback. Eight focused tests
+  (33 fixture cases) PASS both interpreters; main independent replay/byte
+  invariants/source guards PASS. Exact hosted36842929623 SUCCESS: pinned host
+  tools, ROM-free Simulator stub and package/audit. Artifact not independently
+  downloaded; not a full game or fresh-player-host/device acceptance.
+- DevilTouch#10 nowda768fd passes the standard limit to signed/unsigned Xcode,
+  keeping the manual JOBS override/default8. Six focused tests (100 fixture
+  cases) and the complete11-test repository suite PASS both interpreters;
+  main independent replay/configure/source/signing/packaging invariants PASS.
+  Exact hosted source36842931502 SUCCESS: source/test/content guards, not app.
+- All four existing OPEN/DRAFT heads are pushed and read back; production
+  syntax/diff/safety and both exact committed-source scans PASS. Paper's scan
+  retains one previously allowed source stub, not a zero-symbol/rights claim.
+  No primary, pin, recipe, version, public asset or signing/input change; no
+  new personal app/fresh-player-host/device/gameplay/rights/publication proof.
+- Bounded15-root manifest/helper audit found five remaining explicit compile
+  overrides: Melee, Sun, Golden, Spaghetti and Banana. BlueWake additionally
+  hardcodes8 translation workers in required mod preparation. These are
+  concrete next fixes, not evidence that all other/transitive paths are capped.
+  Bell/Mask/Hark/Starship/Anne/Brawler have no confirmed default numeric
+  override in the inspected first-party paths; runtime readiness is unproven.
+  Larger host-library provisioning/Age-profile choices remain owner discussions.
+  KartPad app fixes remain with the other agent; no new issue reply/test ask.
+- Docs head46781e7 exact Windows36843776566 SUCCESS: bundledPadMint0.2.8
+  launches,28 player/recovery tests PASS (67.938s), all3 ZIP scans PASS.
+  Checkout is PR mergea4796c7 into main27dc9ecb, not a release commit or this
+  later terminal-status edit's execution proof; artifacts not downloaded.
+- BallPad#14 now ac90603 honors PadMint's existing parallel-build limit in
+  engine CMake and FFmpeg make, which previously overrode it with hw.ncpu.
+  Manual unset/empty retains its prior CPU default; invalid limits fail before
+  tools, output setup, downloads or engine operations. Eight command-fixture
+  tests PASS Apple3.9/Python3.11; independent review PASS plus26 supplemental
+  full-entry/guard cases. Source-validator failure remains fail-closed. Main
+  actual maintained-source identity/cleanliness/commit/tree/ancestry check PASS.
+  Exact rewrite proof preserves all other production bytes, pins, recipe,
+  version and packaging; both changed-file/tracked-source scans PASS. No
+  hosted workflow or new app/device/fresh-host/gameplay/rights/publication proof.
+  Developer-only probe and recipient relink scripts are outside this job fix.
+- Required-shell follow-up covers Bell/Dino16 frozen route files and10 required
+  Python snippets, all parse/compile on Apple3.9. Main Ball/Barrel12 frozen
+  shell-file check additionally parses two required Barrel JSON readers and
+  its previously unscanned viewport test; Ball's optional JSON-reader definition
+  also parses. Not runtime/transitive/native/app acceptance.
+- DinoPad#12 now c04ebba accepts generic Python only after an actual>=3.9
+  version check, keeping existing versioned preference. Seven real-entrypoint
+  fixtures PASS separately Apple3.9/Python3.11; independent review PASS,
+  including Apple-only PATH reaching the missing-MIPS gate with no output.
+  All production bytes outside selection and pins/recipe/version unchanged.
+  Complete safety/patch/reference checks and both changed-file/committed-source
+  scans PASS. Tracked ZIP a2ec63095e4adf0a99f4a069e0c7f5a2099466d9f428120e7bf822355e86b191.
+- BarrelPad#18 now07a5023 honors the standard PadMint limit for engine/SDL.
+  Existing nonempty manual override precedes CMake limit then CPU default;
+  invalid selected values stop before unit/source/download/output work.
+  Ten actual-entrypoint fixture tests PASS bothApple3.9/Python3.11, main
+  independently reviewed/replayed; real input/PAL viewport/presentation suite
+  PASS. Exact permitted-rewrite invariants preserve all other entrypoint bytes.
+  Repository safety/syntax/diff and both tracked-source scans PASS; ZIP
+  2b5d10ed64568420b99907ab071d143b588158ab9c175d796f628997ca809da4.
+  No clone behavior, recipe, pin, version, SDK, packaging or data-guard change.
+- Both fixes are pushed on existing OPEN/DRAFTs with body/head readback;
+  published0.2.0 recipes/assets remain unchanged. No hosted workflows, new
+  game/dependency/app builds, fresh-player-host, device/gameplay/rights or
+  publication acceptance. KartPad app work stays with the other agent.
+- Melee36833475426 is now SUCCESS for a9da335: source suite and full iOS app
+  compile without private game inputs; final dependency cleanliness PASS.
+  Actual PR merge333d6b0 into publicmain8bf86d7, Xcode16.4; no independent
+  artifact/fresh-player-host/device/gameplay/rights acceptance. Earlier pending
+  statements below are historical checkpoints, not current live jobs.
+- MeleePad#39 now a9da335 fixes the required Slippi helper's Python3.9 hashing
+  failure with equivalent bounded streaming SHA256. Eight focused tests PASS
+  on Apple3.9 and Python3.11, including the five unchanged real Git source
+  identity guards. The complete default repository suite PASSes separately on
+  both interpreters; required dependency pins remain clean. Independent review
+  PASS; all other production AST statements, pins, recipe and version unchanged.
+  Both changed-file/tracked-source scans PASS. Exact hosted36833475426 source
+  checks SUCCESS, full iOS build still running. This is not a new personal app,
+  physical gameplay, fresh-player-host or rights/publication acceptance.
+- Remaining five frozen public releases received a bounded Python3.9 helper
+  scan: AgePad0.1.0 (one required inject entry), BallPad1.1.1 (13 files),
+  BellPad0.2.0 (5), BarrelPad0.2.0 (1), DinoPad0.2.0 (11). All31 files parse
+  under Apple3.9; no targeted newer-API or eager-union-annotation suspects.
+  This is static evidence only: no runtime/transitive/native/app readiness
+  claim. Required shell snippets and optional Age tools are not covered.
+  Age's updated Steam profile and complete host-library preflight/provisioning
+  remain owner discussions; no new platform, release or backend behavior.
+- GoldenPad#49 now90160c5 adds a bounded Python3.9 source-archive compatibility
+  fix. Checker/exporter used3.11-only hashlib.file_digest; five fixture tests
+  failed onApple3.9 beforefix, passed3.11, and nowPASSboth with streamed1MiB
+  SHA256. Corruption/missingfile/link rejection, trackedonly fixture export,
+  exactmanifest/checksum, exportedverification and deterministicrepeat PASS.
+  Main AST reconstruction confirms every other production statement unchanged;
+  realpins/recipe/version/AGENTS unchanged. Both changedfile/trackedsource scans,
+  ROM and diff checks PASS. Normal Git-source verification was unaffected.
+  ExacttrackedZIP93270c06bced8820ae6671283d05349a5b1bc9187facead1d329d1197e86aea5.
+  Source-tool fixture proof only, no realfull dependency export, hostedworkflow,
+  app/freshhost/device/rights/publication acceptance. Independent review PASS,
+  replaying all5 tests and AST proof onbothinterpreters at the exactclean head.
+- SunPad#53 exact4639580 hosted36828287631 now SUCCESS, safety/source suite plus
+  iOS/tvOS dependency preparation and runtime/app compilation without game inputs.
+  Main read both BUILD SUCCEEDED log records. Not completed privategame-module
+  IPA, guidedPadMint freshhost, signing/device/gameplay/rights acceptance.
+  Hark PR check36828210095 for5d2d3f5 now SUCCESS: full unsignediPhoneOS
+  app,18maintainedtests, packimport/selection and package/signed-rejection checks.
+  Checkout is PR merge3d78af09b3998e2d9e273a5ed7300997d3a0ee2d, not a new
+  branch/release commit. CI configureddeployment14 and installs native hostlibs;
+  not source-default15/newdevice/minOS/freshplayerhost or publiccontent clearance.
+  Artifact inventory only observed, not downloaded/readback audited.
+- Bounded eight-game Python3.9 helper audit found one additional required-path
+  bug in publicMelee0.2.1 and retaineddraft: build-slippi-rust.py digest uses
+  hashlib.file_digest through literalpython3. Exactfunction synthetic3.9 failure
+  and3.11 control reproduced, no actualRust/appfailure claimed. Fixed in the
+  current Melee draft above, preserving Rust/provenance/source guards.
+  Otherseven inspectedfirstparty wrappers show no
+  concrete additional incompatibility; transitiveengine/tool and remaining
+  Age/Ball/Bell/Barrel/Dino helper scan now recorded above, not exhaustive readiness.
+- Eight-repo linked-install-doc audit found five current-route contradictions;
+  small fixes are pushed on existing drafts, with public assets unchanged:
+  HarkinianPad#35 at5d2d3f5 now installs the completed personal PadMint IPA,
+  distinguishes current source15/identity0.2.0-build7 from old Preview6/CI14,
+  and fixes bundled Mac Python3.9 hashing in the provenance writer. Previously
+  three tests failed on hashlib.file_digest; streaming SHA256 passes empty,
+  small and multi-chunk parity. All18 tests PASS on Apple3.9/Python3.11;
+  report/check logic unchanged by AST comparison. BlueWake#11 ate47cd95
+  requires25GBfree, matching the unchanged recipe, not a measured peak guarantee.
+  GoldenPad#49 at65c14bd identifies0.2.2/build15 recipe-only release and completed
+  personal IPA, scoping old packaging/private Mac downloads to history.
+  Main's five cross-guide/link/recipe/guard/hash-invariant checks PASS on both
+  interpreters; repository/diff/both exact tracked-source scans PASS.
+  PaperPad#16 at9e852fd routes current PaperBoat/iOS16.3 personal IPA rather
+  than Original's retired Preview2; separate bundle IDs/saves remain explicit.
+  SunPad#53 at4639580 distinguishes the public shell from the complete private
+  module-bearing IPA, preserving nested signing/import/save warnings; tvOS stays
+  private source-development, no public download or PadMint tvOS recipe invented.
+  Main independently reviewed four docs and replayed12 portable checks on both
+  interpreters plus both tracked-source scans PASS. All recipe/backend/host/
+  version/signing/device and historical acceptance boundaries preserved except
+  Hark's equivalent hash operation. Exact Blue36828211079 repository audit and
+  Paper36828287576 source-integrity SUCCESS. Hark36828210095 source/controller
+  checks and Sun36828287631 safety/source suite PASS, full app jobs pending.
+  No new app/device/fresh-host/rights/publication acceptance. Other Kart agent
+  owns recent app reports; PadMint open issues remain empty, no duplicate reply.
+- Two contradictory installation docs corrected in drafts, with regression tests:
+  DevilTouch#10 at5106aea accurately separates the public preview's minimum iOS13
+  from current-source default15 and removes stale no-public-IPA wording. Five
+  tests PASS Apple3.9/Python3.11; independent historical-source/actual-public-IPA
+  review PASS; source safety and both changed-file/tracked-source scans PASS.
+  Exact-head hosted source36823793109 SUCCESS. No app/release/support change.
+  VaultPad#10 nowf6c7a3f additionally corrects docs/INSTALL.md's retired-download
+  notice and names the existing unsigned preview's canonical tag. Source build
+  is optional, recipient signing still required. Six tests PASS both interpreters
+  and independent review; production build/recipe/workflow unchanged from2c44fd1,
+  both changed-file/tracked-source scans PASS. Exact full hosted36824160065
+  SUCCESS: six regressions, fresh engine-resource/Simulator/device builds and
+  unsigned package. Earlier2c44 hosted36822580772 also SUCCESS. Both real CI
+  artifacts downloaded once and independently verified: GitHub outer digests,
+  exact IPA checksums, actual0.1.0/build1/minOS15/iPad-only/arm64/unsigned,
+  minimal structure and both content scans PASS. Xcode16.4/SDK18.5 evidence,
+  not PadMint guided fresh-host/Xcode27 cold-resource/device/gameplay/rights proof;
+  previous warm app-build evidence belongs to2c44fd1, not this docs head.
+  All existing signing/private-input/save/device-acceptance limits retained.
+- Three see-repo backend rechecks through actual public PadMint0.2.8 completed:
+  SnapPad retained draft#7 at779583e (71.57s), DevilTouch current main1f50702
+  (183.19s), VaultPad new draft#10 at2c44fd1 (11.54s). Actual IPA/record/source/
+  recipe/version/unsigned/minimal-structure readbacks pass. Snap's full personal
+  IPA correctly fails both content scans with4880 address-named functions and
+  remains private; Devil/Vault scans pass but outputs remain personal-only.
+  This is warm-cache build evidence, not public guided-recipe availability,
+  fresh-host readiness, new device/gameplay or rights acceptance. Snap remains
+  formally L0 pending source-stub policy. Devil's current personal minimum iOS15
+  differs from the existing published preview's minimum13; public assets unchanged.
+- VaultPad#10 forwards PadMint's existing parallel limit to raw xcodebuild;
+  actual build log confirms -jobs2. Five synthetic regression tests PASS on
+  Apple3.9/Python3.11, independently repeated; repository verification,
+  unchanged-tail review and both changed-file/tracked-source scans PASS.
+  Previous fixed IPA/checksum/app copied and verified before replacement.
+  Hosted full Simulator/package run36822580772 now passes at2c44fd1;
+  separate doc-follow-up full run36824160065 also passes atf6c7a3f.
+  Existing warm ce.dat bypasses the host configure branch. No aggregate worker
+  cap, cold-resource, device or publication claim. Primary/signing untouched.
+- Fresh issue sweep: PadMint has no open issues. New KartPad#376 is graphics,
+  outside this loop's app-fix ownership; no duplicate reply/test request sent.
+  Known phone-only storage and fresh-host tool setup remain larger owner choices.
+- Owner scope update: this loop now owns PadMint and non-KartPad build compatibility.
+  A different agent owns KartPad app bugs. Builder reports in KartPad issues remain
+  in scope, but no new rendering/runtime diagnostics or repeated player test asks.
+  Small checked fixes can proceed; major process/UX changes need owner discussion.
+- Non-offered catalog follow-up: DevilTouch and VaultPad already have public
+  engine-app previews, so their existing unsigned IPAs do not need a PadMint
+  personal build. One anonymous download each matches its published checksum
+  and GitHub digest; exact package metadata and both released0.2.8/reference
+  content scans PASS. DevilTouch1.5.5/build2 supports iPhone+iPad; VaultPad0.1.0/
+  build1 is iPad-only. Both releases are non-draft prereleases. Their latest API
+  endpoints return404, but canonical preview pages return200; web/latest was
+  not tested. README now points to the explicit existing previews, not a new
+  recipe/platform/release or rights/device acceptance claim.
+- SnapPad#8 stages corrected README download status and bounded IPA audit
+  messages at a44cef86e2a1d4d6073d907ac49429d4156db582. All three old releases
+  are drafts. Existing README/packaging contract tests PASS Apple3.9/Python3.11;
+  executable audit checks/control flow unchanged after excluding comment/result
+  notes. Four changed files pass both scans. Exact tracked ZIP still FAILs on
+  the same unchanged one test stub; owner policy/source clearance remains open.
+  Existing#7 manifest/RT64/install-guide edits untouched. No hosted workflow,
+  new game build, download link, device mutation or publication permission.
+- PadMint 0.2.8 is published (Latest, #65): #63 preserves tracked, staged, untracked and
+  ignored dependency edits during interrupted-download recovery; #64 clarifies
+  phone file selection, rejects disc IDs with an actionable menu message and
+  confirms the chosen filename. Both fixes are included in the public packages.
+  All 190 source tests pass on Apple's Python 3.9. Packaged Mac and Linux checks
+  pass the 14 guided-start and 14 recovery tests; all downloads pass both content
+  checks. The Windows VM was suspended after discovering Chris's request in the
+  BlueWake chat to keep Parallels off for Mac responsiveness. Merged #65 adds a
+  hosted Windows check using the included Python and actual public packages;
+  this avoids the local VM. Final hosted run 36789511048 passed all 28 player-flow
+  tests using the included Python. Its Windows/Mac/Linux ZIPs are byte-identical
+  to the staged packages after preserving checkout line endings. Anonymous public
+  downloads match SHA256SUMS; tag points to f0efbb738cac934559e986143343dc8720a6fb1d.
+- KartPad #371 merged: device choice means where the player will play; phone-only
+  setup needs about 25 GB free. The guide explains file-menu numbers versus RMCP01.
+- AnnePad 0.2.2 build 7 rebuilt after two interruptions. Draft #14, recipe/checksums
+  pass both content checks. In-place iPhone install preserved every backed-up
+  file; attract sequence runs. The blocked test runner was the iPhone's explicit
+  Enable UI Automation passcode approval. Chris approved it; the userspace device
+  driver now starts and passes without capturing the Mac keyboard. Interactive
+  battle acceptance remains open; test-runner success is not gameplay acceptance.
+- Published PadMint 0.2.7 made AgePad 0.1.0's personal IPA in 45 seconds. HarkinianPad,
+  BarrelPad and BellPad also built through that package. HarkinianPad took 2519 s,
+  including a stalled Xcode child cleared without restarting shared services;
+  BarrelPad took 15 s and BellPad 20 s with warm caches. These are build checks,
+  not new device-play acceptance. Published 0.2.8 has since built BrawlerPad (60 s),
+  BallPad (350 s), MaskPad (50 s), PaperPad (100 s), SpaghettiPad (125 s) and GoldenPad
+  (325 s), BearBirdPad (681 s), DinoPad (70 s), AnnePad (2427 s) and SunPad
+  (55 s), with warm caches. MeleePad 0.2.1 completed in 2027 s through 0.2.8.
+  Warm 0.2.8 reruns also passed: HarkinianPad (85 s), BarrelPad (15 s), BellPad
+  (15 s), BlueWake (50 s including runner overhead). Sixteen public-recipe builds
+  pass independent IPA-byte/record/version/build/minimal-structure readback.
+  BananaPad's previous input path was missing; the owner's existing V64 copy
+  matches the supported normalized SHA1. Public BananaPad 0.2.1/build 5 now passes
+  in 1486 s; independent IPA-byte/record/version/build readback also passes.
+- AgePad's public 0.1.0 rerun through 0.2.8 stopped after 5 s after Steam's beta
+  client updated between the successful and failed runs. Six Steam files differ;
+  the error displays only five. The source, embedded profile and relevant runner/
+  injection functions are unchanged; all 651 guarded game files still match.
+  The changed Steam client contains new executable code, so replacing fingerprints
+  alone is unsafe. A separate exact-version compatibility profile is a proposal
+  for Chris, requiring private boundary/injection and compatible-iPad checks.
+  Earlier 0.2.7 success is historical, not current readiness. No guard relaxation,
+  installed-Steam downgrade, personal output upload or new device acceptance claim.
+- AgePad#10 stages a small diagnostic/docs fix atdb3061a: missing-file/version
+  errors report how many distinct names were omitted after the first five, and
+  the README warns that the updated Steam beta client was rejected. Main17
+  portable tests PASS; independent8 synthetic cases PASS on Apple3.9/Python3.11.
+  AST/exact-source reconstruction confirms unchanged guards/packaging logic;
+  source safety and both exact tracked-root ZIP scans PASS. The full headless
+  native/compile/parser suite passes with Simulator execution and real release
+  round trip explicitly skipped. Exact-head hosted36817610293 passes safety,
+  repository/manifest checks and the same headless game-side suite.
+  Public0.1.0 profile/assets and primary checkout unchanged; this is not a new
+  compatible profile, device result, account-safety assurance or release.
+- StarshipPad v0.2.0 fails through 0.2.8: cached Mac-SDK framework paths leak into
+  the iOS compile. Draft starshippad#20 fixes SDK selection/cache invalidation;
+  local app and device/simulator SDK probes pass. Exact packaged 0.2.8 generic
+  candidate build passed in 131.88 s at 731adde with one job, and hosted full
+  unsigned iPhoneOS CI passed. Main independently replayed both SDK probes.
+  Draft starshippad#21 stages source-only 0.2.1/build 7; its exact packaged 0.2.8
+  build passed in 144.25 s and full hosted app check passed. Main independently
+  read back the version, build record, IPA hash and public-source gates. Its
+  personal IPA fails the public-content gate as expected and must remain private.
+  The release pause still requires owner clearance. Main alone cannot repair release-pinned player builds;
+  any successor must retain source-only publication and the private release gates.
+- Public entrypoint audit: all 19 buildable catalog games have current PadMint
+  release recipes. Current README/release branding has no obsolete PadForge wording
+  except deliberate KartPad migration help. Historical release tags may still use
+  padforge.json; PadMint deliberately supports that filename. Checksums/parser/tag
+  comparisons are checked separately from actual compilation and device play.
+- All 18 offered non-Kart recipes pass anonymous download, SHA256SUMS, released
+  parser and release-tag recipe comparisons (legacy filename fallback included).
+  Three see-repo catalog entries are not offered as player builds.
+- PadMint #68 merged after hosted checks: remove Play Protect bypass advice,
+  leave Google Play explicitly unvalidated rather than call it too old. Corrected
+  the existing kartpad#366 comment too; no device security settings changed.
+- Draft PadMint #70 fixes direct make bypassing the unsupported-host check before
+  source/tools/app downloads, and pins recipe/source/app to one release snapshot.
+  Main independently reviewed the change and passed all 202 tests on Apple's
+  Python 3.9. At d61168d, hosted x64 Windows and Linux each pass 40 extracted-package
+  checks, including all twelve new host-preflight/release-snapshot regressions.
+  Main independently passed the same 40 checks from that run's Mac ZIP and the
+  real Mac launcher version command. Imports, ZIP hashes and both content gates
+  pass. These checks test player flows, not every backend on each host.
+  It is not in public 0.2.8; no new release or supported platform is claimed.
+  Explicit-ref candidates retain their selected source, rechecked before tools.
+- Draft PadMint #72 at cfdebe3 fixes Windows-generated checksum manifests using
+  explicit UTF-8 bytes. The earlier CRLF text confused Unix checksum readers;
+  normalization confirmed the package bytes were already correct. The candidate
+  passes 192 source cases on Python 3.11 and Apple 3.9, and hosted Windows checks
+  all three hashes, LF-only bytes and the unchanged 28-case player-flow suite.
+  Main independently reviewed the three-file diff, replayed four focused tests
+  and verified the unchanged downloaded manifest on Mac without normalization.
+  This is separate from #70, with no version, payload or published asset change.
+- Prerequisite inventory matched 17 non-Kart/non-Melee recipes to the published
+  hashes. Starship, Mask, Spaghetti and Hark require local CMake, Ninja, pkgconf
+  and full Xcode but do not mark them for the player checker. Bounded recipe
+  annotation drafts are staged: Starship#22, Mask#14, Spaghetti#25, Hark#35.
+  Each retains xcodebuild and adds an iPhoneOS SDK probe with xcrun. Main replayed
+  44 player-doctor and 12 make-guard scenarios through the actual 0.2.8 checker,
+  plus exact-source gates. Latest-head hosted checks were skipped, not passed;
+  current published recipes are unchanged. No new downloader or host support. Backend
+  host libraries remain a separate requirement, not satisfied by device-library
+  downloads. Melee still requires preinstalled Rust 1.88.0/iOS target through its
+  Slippi preparation. A Rust-free offline module path is a proposal for Chris,
+  not implemented. Melee#39 stages SDK/IPA guards; main independently passed all
+  fourteen released-checker tests including read-only personal IPA validation.
+  Hosted source checks and full iOS compilation pass at e1c0e55.
+  Sun#53 enables the existing IPA check (formerly none) and Xcode/SDK preflight:
+  complete local source suite, eight focused tests and both source/recipe gates
+  pass; hosted source suite and full iOS/tvOS compilation passed at 000ec1e.
+  These are drafts, not new public downloads. AgePad's injection path does not
+  require Xcode; no blanket
+  iOS-output prerequisite is added.
+- Five more bounded recipe drafts are checked: Bell#19 marks ripgrep; Barrel#18
+  adds pkg-config; Dino#12 marks external CMake/Ninja and corrects the Apple SDL2
+  CMake floor to 3.24; BearBird#23 marks existing Cargo; Banana#17 marks existing
+  Rust/GNU cpp/ripgrep and adds jq. Main independently replayed 12 doctor/10 make
+  guards for Bell/Barrel, eight Dino tests and 48 doctor/46 make guards for
+  BearBird/Banana using released PadMint 0.2.8. Exact recipe invariants and both
+  committed-source ZIP gates pass. Of the Bear/Banana cases, 36 test synthetic
+  in-memory floors, not new declared minimums. Bear's unconditional Cargo check
+  can require Rust even when a warm backend cache could skip decompression.
+  Bell hosted source CI passes; Bear CI was explicitly skipped; Barrel, Dino and
+  Banana have no hosted workflow. No app/device checks are implied. These eleven
+  game recipe/SDK/IPA drafts remain unpublished; current player recipes unchanged.
+- Four further recipe-only drafts pass independent released-0.2.8 checks:
+  BlueWake#11 (bbea38f) marks full Xcode and adds iPhoneOS SDK; Golden#49
+  (4fb580d) additionally checks the simulator SDK required by its current RT64
+  build while preserving Metal. Their 21/37 mocked checker cases pass. Paper#16
+  (c679944) and Ball#14 (fc94761) mark CMake/Ninja, with actual pinned floors
+  3.24/3.25; 28 doctor and 24 make guards pass. Exact recipe invariants and both
+  tracked-root ZIP gates pass all four. Hosted Blue repository audit and Paper
+  pinned-source/input checks pass; Golden/Ball have no hosted workflow. Paper's
+  isolated dependency verification initially failed on uninitialized submodules;
+  matching warm-source verification passed, and its hosted fresh source check
+  passed separately. No app/compiler/device acceptance is implied. Fifteen game
+  recipe/SDK/IPA drafts are now checked, not new public player recipes.
+  Blue's active primary and prior release checkout remain untouched; its SDK
+  draft uses a retained isolated worktree.
+- Anne#15 (6f98b3e) adds only jq/ripgrep player checks and the README install
+  command. Main independently passed 14 doctor and 12 make guards on released
+  0.2.8, exact manifest/README/file/ZIP invariants, the source-policy subset,
+  patch-stack contract and both JSON/tracked-root ZIP gates. No hosted workflow
+  exists; the full native source suite and new app/device checks were not run.
+  Sixteen game recipe/SDK/IPA drafts are checked, still unpublished. The existing
+  alternative-MIPS-linker/default-prefix limitation remains a proposal, not fixed
+  by this jq/rg draft.
+- Brawler#14 (ecb2da6) marks CMake 3.24/full Xcode and adds the iPhoneOS SDK
+  probe; replaces the redundant PATH-only python3.11 check with the current
+  backend's selected-interpreter/Pillow probe. Main independently passed all
+  78 released-0.2.8 cases, including 13 real shell selection scenarios using only
+  generated executable stubs, checkout-doctor retirement and exact resolver/
+  whole-manifest contracts. Existing repository safety/syntax, exact committed
+  ZIP hash comparison and both JSON/ZIP content gates pass. No hosted workflow,
+  actual SDK/Pillow environment, new app build or device acceptance is claimed.
+  Its old public 0.2.0 backend is Homebrew-only; this current-main draft must not
+  be transplanted into that release. Seventeen game recipe/SDK/IPA drafts are
+  independently checked, not new player downloads; published recipes unchanged.
+- PadMint #70/#72 local composed candidate996a2f3 contains only the exact reviewed
+  host/release-snapshot safeguards and LF checksum fix. Independent patch-ID,
+  seven-file union, overlapping-workflow and unchanged-version/lock proofs pass.
+  Both full suites pass 204 cases on Apple Python 3.9 and Python 3.11; the actual
+  extracted Mac package passes 58 relevant cases on each. Main independently
+  replayed all 58 Mac cases in 16.468 s, verified package imports, all three
+  hashes and source/package reference gates. The Windows runtime is byte-identical
+  to the checked cached CI artifact; no Windows runtime was executed, and the
+  official Python download/checksum path was not rerun in the local cache adapter.
+  These locally generated packages remain unpublished candidates named 0.2.8,
+  not replacements for the public release. Existing draft #70 now includes #72
+  via normal fast-forward update at bd2c78f; main independently confirms the
+  exact tested tree and preserved #70 ancestry. Hosted run36808902411 passes
+  40 extracted-package cases on Windows (52.606 s, bundled Python) and Linux
+  (4.348 s, asserted extracted-package import). Fresh hosted packaging reruns
+  the official Windows-runtime download/checksum path and raw LF/hash assertions.
+  Main independently downloaded all three Windows-built packages: checksums and
+  both public/reference gates pass, and each ZIP byte-matches the Mac-tested
+  local construction. Draft #72 remains open and unchanged, no extra PR or
+  supported-host expansion. No main merge, version or public release occurred.
+  This unversioned composition is historical; the versioned stage below supersedes it.
+- PadMint 0.2.9 is staged in existing draft #70 at
+  03b83c8be3329906b52c4dc3bda5cbeebafb5d95, including reviewed docs #71 at 6f8d2f9.
+  All 204 source cases pass on Apple Python 3.9; main independently passes the
+  full 204-case suite on Python 3.11 (33.733 s). The actual extracted Mac package
+  passes 58 player cases; main independently replayed them (17.173 s). Exact-head
+  hosted run36809913948 passes 40 Windows bundled-Python cases (69.548 s) and
+  40 Linux extracted-package cases (5.434 s). Main independently downloaded all
+  three versioned packages and verified checksums, exact owned payload/launcher
+  bytes and both content scans. The hosted Mac ZIP equals the locally tested ZIP.
+  Public Latest remains 0.2.8; publication choice is pending with Chris. No main
+  merge, tag, release or new platform claim. These are builder-package tests,
+  not every game backend, fresh-host setup, gameplay or legal acceptance.
+- Priority-four host-library audit is complete. The original public Hark/Mask/
+  Spaghetti/Starship recipes return Ready with zero executable probes and an
+  empty system-library list; main independently reproduced the coverage gap with
+  SHA-verified recipes and guarded execution. Their native Mac tool/archive
+  phase needs external development libraries; iOS downloads do not satisfy it.
+  The existing prerequisite drafts now carry checked library setup notes:
+  Hark#35 at298f3de, Mask#14 at424b6d9, Star#22 at57ced90 and Spaghetti#25
+  initially340ca03. Their already-correct CMake floors (3.26/3.24) were retained,
+  not newly introduced. Main independently passed 224 program/doctor/make cases
+  plus earlier 44 doctor/12 make guards, exact source snapshots and both JSON/ZIP
+  gates. All four hosted repository-safety checks pass. Exact-head hosted full
+  unsigned iPhoneOS app/package-audit jobs pass for Hark298f3de (36812269945),
+  Mask424b6d9 (36812273544) and Star57ced90 (36812285661). Mask's ROM-free
+  Simulator UI job also completed successfully; its overall workflow now passes.
+  This is not physical-device/gameplay proof. CI installs host libraries explicitly;
+  this is not generic player-host provisioning or fresh-host PadMint proof.
+  Spaghetti#25 now071e091 additionally marks its existing required ripgrep for
+  player checks. Main passed 18 released-PadMint-0.2.8 program/doctor/make cases,
+  exact one-flag/whole-manifest/committed-root ZIP proof, repository safety and
+  both JSON/ZIP gates. Exact-head hosted36812944634 passes repository safety and
+  its full unsigned iPhoneOS app job, including palm-tree identity, mod selection/
+  catalog and package/signing rejection checks. Its existing CI artifact digest,
+  IPA checksum, actual 0.2.0/build 7/arm64 metadata, unsigned audit and signed-only
+  rejection pass independent verification and main's full scratch replay.
+  IPA SHA256 fa31ee216f54c2c21517d171a34bd4a265a37044f1f95233b3062b3412406e9f.
+  The public-content gate correctly fails 778 game-code symbols; keep it private.
+  No embedded build-provenance record exists; CI checkout/pin evidence is separate.
+  Public recipes/releases and backend code are unchanged.
+  Complete library discovery or provisioning remains a
+  proposal for Chris; no library hard gate, automatic installation, schema or
+  backend change is implemented. Warm-cache Mac success is not fresh-host proof.
+  One private warm HarkinianPad build through the actual staged 0.2.9 Mac package
+  completed once in 313.1 s, four jobs, exit 0. Public v0.2.0/build 7 source
+  89e633a and the original recipe remain unchanged; all 35 package files match
+  the checked Mac ZIP. Main independently replayed actual IPA/record/hash/version/
+  minimal-structure and separate embedded provenance assertions. IPA SHA256
+  9f1b80f71d0aaee064195f9a6e51f86ecd831741ab3a1dbc04a7de1adaa551ba.
+  The unsigned private IPA correctly fails the public gate on 1,821 game-code
+  symbols. Warm imgui/stormlib dependency edits are recorded and preserved.
+  This is public-backend warm compile/package proof, not the #35 source-head
+  build, fresh-host setup, signing, device play or rights acceptance. No output
+  upload; staged 0.2.9 remains unpublished.
+- Fresh public entrypoint/recipe audit: all 19 offered release recipes (18
+  non-Kart) pass checksum/parser/tag comparisons, with exact required app asset
+  filenames and checksum entries present. Published versions/hashes match the
+  earlier snapshot. Current player README/release branding has only deliberate
+  Kart migration wording; historical padforge.json filenames remain supported.
+  Separately, a fresh anonymous download of all six required public base apps
+  across five recipes matches exact SHA256SUMS and passes both content gates.
+  These are empty/base downloads, not personal game-bearing outputs; the scans
+  remain heuristic checks, not rights or gameplay acceptance.
+  The README draft explicitly names the current Starship SDK and Age Steam-profile
+  blockers; 190 Apple Python source tests and hosted Windows package checks pass.
+- Notion's overview now distinguishes published releases from outstanding build
+  and device checks. AgePad's current README and own-code MIT license were verified.
+- GitHub triage reviewed older open build reports as well as recent comments.
+  KartPad #104 (S24 graphics), #357 (S26 Automatic) and #366 (phone storage) remain
+  actionable. #366's first-build timing corrected. Draft #369's diagnostic modes
+  were checked on the emulator; affected Adreno hardware is still needed. These
+  app-specific follow-ups are handed off, not owned by this loop after the scope update.
+- The wider sweep covered 61 repositories and 82 open issues. Replied to new
+  KartPad #370 (M2 iPad black screen), corrected #332's obsolete setup advice,
+  and edited #192 to remove the request for a private diagnostic archive.
+  Existing #301 logs did not establish the idle-freeze cause. #304's published APK
+  lacks the earlier promised PowerVR correction; bounded staging is preserved for
+  the KartPad agent, with no claimed handset fix or public release.
+- New Discord report: PWR Jaypp says flickering persists in 0.7.3 in both Original
+  and Retro Rewind. His linked GitHub #327 reply now specifies iPhone 16 and only
+  game startup; ongoing play is reported flawless. That report, #301's failed
+  model-fix reply and #370's iPadOS 18.7.8 black-screen detail belong to the KartPad
+  app agent. No new PadMint failure appeared in those comments; no repeated asks.
+- Latest #304 response separates a new Termux missing-header build report from
+  PowerVR startup. The KartPad agent merged source repair#374 at4c67f07 and owns
+  its tests/future recipe integration; public0.7.3 remains pinned to older source.
+  No duplicate implementation or reporter request from this loop.
+
+Local continuation handles and evidence: `.codex/scratch/pm028/current-builds-results.jsonl`,
+`.codex/scratch/pm028/player-entrypoints.json`,
+the BlueWake run `09959a9f8e454a708859f3eecb6b876e`, and
+`.codex/scratch/release-rerun/annepad/device-022`. Personal outputs stay local.
+
+## Loop 2: formula, KartPad 0.6.0, then every repo (started 29 Sep 09:05)
+
+Plan and owner decisions: Notion "PadMint release formula and pilot plan".
+
+- **Step 1 done (09:20).** Windows 11 VM at 16 GB / 8 cores, commands run
+  inside it; Docker Desktop runs Linux containers (image pulls work).
+- **Step 2 done (09:55).** #336 merged (`87467f3`); main's GitHub source
+  archive passes the content check. iOS (11m44s) and Mac (10m42s) builds
+  complete through PadMint at 0.6.0/240. CI `boundaries` has failed on main
+  since 26 Sep (unrelated pipeline-budget probe). Details:
+  KartPad #336 now passes the content check:
+  REL guard fixture built from the guard's own anchors; synthetic g6/g7
+  translator fixtures generated in tests and checked by SHA-256; translated-build
+  log and candidate record moved to private scratch; translator pinned as fork
+  branch `kartpad-translator` (same tree). One version file, `version.json`
+  (0.6.0 / build 240), read by Android, Mac, the iOS builder and PadMint's
+  build record. Verification builds (iOS, Mac) running.
+- **Step 3 design notes.** Translated code self-registers through static
+  registrars, so a separately loaded game library can register itself if the
+  runtime exports its API. Game-derived pieces: shards, registration and
+  dispatch tables, `data_sections_init` + blobs, guest symbol table and
+  `RuntimeConfig.h` (SDA bases). Next: link the runtime without them to list
+  the exact interface.
+- **Step 3 progress (10:20).** Android emulator probe proved a library in app
+  storage can load and bind to one in the APK (S3). Runtime fork branch
+  `codex/game-pack` (android): `MKW_GAME_PACK=APP` builds the runtime without
+  game code, a small loader (`src/game_pack.cpp`) loads the pack named by
+  `KARTPAD_GAME_PACK`, checks its version and supplies data-init and the SDA
+  bases; eight HLE calls into specific translated functions resolve through the
+  registry. Standalone `runtime/game_pack` project builds the pack with only
+  the NDK. KartPad: launcher "Add your game pack" step, `scripts/build-android-app.sh`,
+  `scripts/build-game-pack.sh`, shared `translated-definitions.txt`. First
+  empty APK builds (47.6 MB) but the content check FAILS it: (1) Dolphin's
+  Android disc-import library carries both Wii common keys (previous public
+  APKs likely did too); (2) 559 exported `func_*` HLE override names. Fixes in
+  progress: export list without `func_*`; Android disc import rebuilt coreless
+  with the player's own key file, like iOS (#335).
+- **Step 3, Android done (11:10).** Both content-check failures fixed: Android
+  disc import asks once for the player's own `common-key.bin` (an extracted
+  folder needs no key); the empty APK exports 0 `func_*` names and passes the
+  gate. Empty 0.6.0 APK + pack chosen in the app's Choose File screen reached an
+  active race (Luigi Circuit, lap 1/3, 60 FPS, API 36 emulator on the Mac GPU),
+  existing licence and save intact. Fixes found on the way, now D6 rules: header
+  state lives once in the app (`MKW_GAME_PACK_MODULE`, checked by KartPad's
+  `scripts/check-game-pack-state.py` in every pack build); the pack hands the
+  app its 8 wrapped original functions (pack interface v2); one pack per app
+  version. Pack build ~5 min at 8 jobs on this Mac. Next: iPhone half (empty IPA
+  + pack in `Frameworks/`), then Windows/Linux hosts (step 4).
+- **Step 3, iPhone half (11:45).** Empty 0.6.0 IPA passes the content check
+  (0 address-named functions) and installs in place on the iPhone 14 with data
+  intact; the iPhone pack builds and passes the state check. The iPhone race
+  waits on iPhone Mirroring, which needs the phone locked once by hand.
+- **Step 4 (12:45 to 15:00).** `padmint tools` (pinned, digest-checked
+  Git, .NET 8, CMake, Ninja, NDK, nodtool), `padmint get` and
+  `padmint make GAME PLATFORM --disc FILE`. KartPad's pack build is now
+  pure Python (no bash, perl, rsync). Windows fixes: Git by full path,
+  forward-slash paths, nodtool.EXE version text, blob symbol spellings, paths
+  under 260 characters, llvm-cxxfilt instead of c++filt.
+- **Android gate PASS (15:00).** A clean `padmint make kartpad android` in
+  the Windows 11 VM made a pack (SHA-256 `c248cb3c...30c3`) that the
+  release-signed empty APK imported and raced with (Luigi Circuit, lap 1/3).
+  Windows timing on this ARM VM: tools ~2 min, extract + translate ~3 min,
+  compile ~45 min under x64 emulation. Same Release code as the Mac pack
+  (116.4 vs 116.6 MB). App fix found on the way (KartPad `b6348e92`): a
+  failed import, e.g. a full device, now shows a dialog instead of vanishing.
+  Next: rebuild the release APK from `b6348e92`, Linux run in Docker,
+  iPhone race, then publish.
+- **Linux gate PASS, releases staged (17:00).** Clean Ubuntu x86_64: `padforge
+  make kartpad android` 21 min end to end; its pack raced in the final APK.
+  Fixes found: Git hint, .NET invariant globalization, NDK symlinks, published
+  app name. Mac: `padmint make kartpad ios` from a fresh home, 9 min; the IPA
+  boots on the iPhone 14 with saves intact. Players get three ZIPs with a
+  launcher and a guided start (D8); Windows and Linux downloads checked. KartPad
+  v0.6.0 and PadMint v0.1.0 staged and gate-checked. Waiting on the iPhone
+  race (the phone must be locked once, or the UI Automation passcode entered).
+- **Published (17:40).** iPhone gate PASS (PadMint-made IPA raced on the
+  iPhone 14); KartPad v0.6.0 and PadMint v0.1.0 released and verified by
+  anonymous download; pinned KartPad issue #338.
+- **Step 7 to 9 (18:30).** D9: iPhone builds target iOS 15 (Xcode 27).
+  PadMint: games whose file is added in the app need no `--disc`.
+  - BlueWake: formula PR #4 (empty IPA via `build.sh --app-only`; the module
+    via `--app`); `padmint make bluewake ios` compiling the module.
+  - SunPad: formula PR #50 (app-only build, module added to the published
+    IPA, "no game code yet" message); build after BlueWake.
+  - HarkinianPad: #30 and #31 merged (0.2.0, recipe only); play-test next.
+  - Recipe-only PRs: MaskPad #10, SpaghettiPad #20, StarshipPad #16,
+    BallPad #9, BellPad #17, BrawlerPad #9 (fix: the recipe built an app
+    that cannot run on a device).
+  - Open engines released: DevilTouch v1.5.5-preview.1, VaultPad
+    v0.1.0-preview.1 (all assets pass the content check).
+  - PaperBoat #1 and PaperPad #11 merged (Torch URL); BananaPad, SnapPad and
+    DinoPad still pin an older PaperPad.
+  - Owner calls: N64 split vs recipe-only, HarkinianPad #28, SnapPad,
+    GalaxyPad and F0X gate policy, UTP, KidPad listing, AltStore #5, CTRPad
+    Actions billing.
+- **Status (20:10).** Done means three things per repo: a public release in
+  the formula's shape, a README "Get it" section that matches it, and the
+  Notion row linking both (new tracker columns: Release, README ready).
+  - KartPad on a real Android phone: the public PadMint v0.1.0 made the pack
+    on this Mac (19 min); added through Choose file on a Pixel 9 Pro XL, it
+    raced at 60 FPS. Gap for 0.6.1: no button to replace an added pack.
+  - BlueWake: `padmint make bluewake ios` PASS (2 h 19 min including
+    tuning; 412 MB module). Installed in place on the iPhone; the console
+    shows the module loading, disc reads and 30 FPS at full speed. The
+    gameplay screenshot waits for the iPhone's screen to be woken.
+  - Merged: StarshipPad #16, BallPad #9, BrawlerPad #9, DevilTouch #8
+    (README points to the release). MaskPad #10: release check reads
+    version.json. VaultPad #8 (README) waits for CI.
+  - HarkinianPad: `padmint make harkinianpad ios --ref main` building; then
+    iPhone gameplay and the recipe-only v0.2.0 release. Then a PadMint build
+    check and release for BellPad, SpaghettiPad, StarshipPad, BallPad,
+    BrawlerPad and MaskPad.
+- **Status (21:50).** The iPhone was dark because iPhone Mirroring was still
+  attached (closed at 20:28); it is now locked and needs the owner's unlock
+  before any gameplay screenshot. Until then:
+  - Built through PadMint and installed in place (saves kept): HarkinianPad
+    0.2.0 (main; loads oot.o2r, opening scene), GoldenPad 0.2.0 (#40 branch).
+  - Built through PadMint from main, recipe-only release staged (content
+    check PASS): HarkinianPad, BellPad, SpaghettiPad, StarshipPad, BallPad
+    1.1.0. BrawlerPad and MaskPad building. `recipe-release.sh` stages each
+    release the same way (recipe from the built commit, version.json check,
+    SHA256SUMS, audit, notes).
+  - D10 (N64 ports publish the recipe only). Release PRs in the same shape:
+    GoldenPad #40, BearBirdPad #16, BananaPad #10, AnnePad #7, DinoPad #7,
+    BarrelPad #15 (also fixes the build under stock bash 3.2). Build checks
+    queued after MaskPad.
+  - PadMint main: guided start handles games whose manifest lives in their
+    repository and takes a per-game help link (64 tests). A v0.1.1 release
+    with `player_targets` for each released game follows the first recipe
+    releases (v0.1.0 offers only KartPad and asks every game for a disc).
+  - Merged: MaskPad #10, VaultPad #8 (README).
+- **Status (00:00, 30 Sep).** Released after a PadMint build and iPhone 14
+  gameplay with the owner's data: BlueWake 0.1.0 (empty app + module),
+  HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
+  BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad (recipe only). All twelve
+  are in the catalog's guided start. v0.1.1 is the other chat's Windows hotfix;
+  main is 0.1.2 (player hardening, PR #5). Before publishing 0.1.2: Windows
+  gate with the bundled Python (KartPad build in the VM, C:\\pffix-full.log)
+  and a Mac run through PadMint.command (Apple's Python).
+  - BananaPad #10: fresh clones failed verify-sources (submodule fingerprint
+    included git describe text); fixed, rebuilding. DinoPad #7: catalogued;
+    build next. Then SunPad #50 and MeleePad.
+- **Status (02:15, 30 Sep).** Released since 00:00: PadMint 0.1.2 (Windows
+  and Mac builds passed; Linux: the container starts) and BananaPad 0.2.0. Every released repo was
+  re-checked on GitHub: the release has the formula's assets, the README points
+  to PadMint, and the Notion row has Release, README ready and L5 set; stale
+  "Next action" text on those rows was rewritten.
+  - DinoPad #7 builds through PadMint (0.2.0 build 4) and is installed in
+    place on the iPhone (ROM and save kept). Gameplay check waits for the
+    phone: XCTest shows an "Enable UI Automation" passcode prompt.
+  - SunPad #50: the empty app failed the content check (Wii retail and Korean
+    common keys from Dolphin's IOSC defaults; two license test ZIPs). Fixed
+    with D11 (RecompCore `da96175`, ModernGekko `8f49c55` on
+    `codex/sunpad-apple`), notices skip archives, and build-ios-app.sh now
+    merges the fresh core (it linked a stale `libSunPadCore.a`). The empty
+    IPA passes; a fresh-home PadMint build from the branch is running.
+  - MeleePad #35: same fix cherry-picked (RecompCore `3f2a51f`, ModernGekko
+    `9be2c5b` on `codex/meleepad-slippi-preview5`); empty-app build next.
+- **Status (04:00, 30 Sep).** Four more ports build end to end through
+  PadMint from fresh homes and run on the iPhone 14 (installed in place,
+  saves kept); each release is staged with the content check passing, and each
+  PR names its one remaining step: controlled gameplay on the phone, which
+  waits for the phone's UI automation to be re-enabled with the passcode.
+  - SunPad #50: title screen reached. Also moved the iOS module build into the
+    checkout (a shared /tmp CMake cache broke a second checkout).
+  - MeleePad #35: launcher; disc import pending. Fixes: Slippi link inputs
+    built before provisioning, `-DHAVE_PIPE2=OFF` (macOS 27 SDK), rustup listed.
+  - PaperPad #12 (new recipe: version.json, build-ios-device.sh, padforge.json,
+    README Get PaperPad): 12.8 min build, opening scene plays.
+  - DinoPad #7: launcher, ROM and save kept.
+  - Catalog entries for MeleePad and PaperPad: PR #10 (draft until released).
+  - Phone: CoreDevice file copies from the phone stall (AFC works); XCTest hangs
+    or asks for the passcode. Installs, launches and screenshots work.
+- **Status (04:30, 30 Sep).** PadMint 0.1.3 published: BananaPad in the
+  guided start (it was released but not offered), and the gate reads gzip,
+  bzip2, xz and tar contents (#11), which let PeonPad #8 merge. Checked on Mac,
+  Windows 11 VM (bundled Python) and Linux (Python 3.9); anonymous downloads
+  match SHA256SUMS. SunPad and MeleePad staged empty IPAs rebuilt from fresh
+  clones; the phone copies use them. EctoPad's one blocker recorded: no build
+  from a fresh clone yet.
+
+## Morning handoff (30 Sep, written 04:25)
+
+**Update 08:15:** the phone recovered after restarting its `dtfileserviced`
+and `testmanagerd` from the Mac (`devicectl device process signal`). Played on
+the iPhone 14 and released: SunPad, MeleePad, PaperPad, DinoPad (0.2.0 each);
+DevilTouch's published app reached Tristram (L5). PadMint 0.1.4 offers all 18
+games. VaultPad (iPad-only) and the owner decisions below remain.
+
+**Update 09:20:** player path verified end to end: the published PadMint 0.1.4
+from an empty home downloaded the published SunPad 0.2.0 app and recipe and
+built a personal IPA in 47.6 min; it boots on the iPhone with the save kept.
+PadMint 0.1.5 published with the PadMint-experience chat's #13-#16, a quieter
+end-of-build message and safe output names. VaultPad #6 merged after a
+fresh-home build. KartPad #343 (game_ids for #14's check) waits for the next
+KartPad release.
+
+**Re-audit 10:30:** all 41 public release downloads account-wide pass the
+content check; every tracker release link resolves. Fixed: PaperPad 0.2.0's
+recipe built PaperPad Original, not the PaperBoat app its README describes, so
+PaperPad 0.2.1 builds PaperBoat (played on the iPhone); six READMEs still said
+"a new version is in progress" (fixed or merging); GalaxyPad #15 merged.
+`catalog/paperpad.json`'s note still names build-ios-device.sh (cosmetic).
+
+**Update 12:10:** PadMint 0.1.6 (Windows long paths), 0.1.7 (Android packs on
+ARM Linux, raced in the emulator) and 0.1.8 published. 0.1.8 carries the
+PadMint-experience chat's #22 (`PADFORGE_CACHE`, one download cache for
+every game version) and #23 (a backend's game data folder saved once for the
+player), and `padmint list` now shows player targets instead of the
+built-in fallback manifests. Each checked on Mac, Linux (Docker) and the
+Windows 11 VM; anonymous downloads match SHA256SUMS. KartPad #343-#348 merged;
+KartPad 0.6.1 (kartpad#349) is being built and gated. kartpad#347 (packs that
+survive app updates) approved with notes for 0.7.0. OpenMobileTTS
+v3.1.0-preview.2 published. The PaperPad catalog note now names PaperBoat's
+scripts.
+
+**Update 13:50:** KartPad 0.6.1 published (Latest): Replace Game Pack, the
+shared Retro Rewind download and the PadMint game data folder. Gates with the
+public PadMint 0.1.8 from fresh homes: iPhone 14 race (Mac IPA, 12 min);
+emulator update from 0.6.0 raced with the Mac pack (6 min, Retro Rewind from
+the cache), then with Replace Game Pack, then with the Windows 11 VM pack
+(about 60 min, Defender slows the ARM VM); a new emulator install imported
+"KartPad game data" with no key and raced. Pinned #338 is version-free now.
+Open: padforge#25 asked us to rename the project (done in PadMint 0.2.0); kartpad#350
+(ABI 3 packs, 0.7.0), #351 (stale tests) and #352 (fresh-install status line)
+from the PadMint-experience chat.
+
+**Update 14:45:** KartPad 0.7.0 published (Latest): pack ABI 3, so game packs
+survive app updates (kartpad#347/#350, merged via #353). Gates: emulator update
+from 0.6.1 (prompt, 0.6.1 pack refused, 0.7.0 pack imported, old file removed,
+raced); iPhone 14 race; a version-only test build kept the pack and raced with
+no PadMint run, and PadMint reused the pack (Android compile skipped with an
+identical file, iPhone IPA in 72 s); a header-change test build refused the
+pack. Open: Pixel 9 Pro XL check (not connected); padforge#25 (renamed to PadMint).
+
+**Update 15:45:** Renamed to PadMint (padforge#25; committed there for 7 Oct).
+#26 merged (package, `padmint` command, launchers, ~/.padforge moved to
+~/.padmint once; padforge.json and PADFORGE_* still accepted); repo renamed
+to chrissotraidis/padmint; PadMint 0.2.0 published and checked on Mac (full
+KartPad Android build from the published 0.7.0 in 132 s, pack reused),
+Windows 11 VM (real old home moved, no downloads) and Linux. The 0.1.x
+PadForge releases are drafts now (tags kept). Game repos: 17 rename PRs
+merged, MaskPad, MeleePad and SunPad wait on CI; KartPad 0.7.1 carries the
+in-app wording and the runtime's pack messages (fingerprints unchanged).
+
+**Android phone, no computer (30 Sep, 21:00; draft, codex/pm-android-phone):**
+`launchers/padmint-android.sh` sets up Ubuntu 24.04 in Termux (proot-distro)
+and runs PadMint there (host linux-arm64). Experimental, one recorded run: an
+API 36 arm64 emulator (8 GB, 8 cores, 32 GB) typed the one line into Termux
+0.118.3, built KartPad 0.7.2's pack from mkw.rvz (pack SHA-256
+`a30d62ea...f839`) and the published 0.7.2 APK raced with it (Luigi Circuit,
+lap 1/3, 59 FPS). Paste to pack: 58 min (setup 4, tools 15, build 37:
+compile 25 at 5 jobs). Peak: 4.1 GB in Termux, 2.4 GB still free, no
+process kills; about 22 GB of storage including the disc. Fixes found: .NET
+needs a heap limit under Android's address space; proot's emulated hard links
+break copytree (PadMint's game data copy here; KartPad's export on reruns,
+kartpad `codex/android-phone-build`). Not tried on a real phone.
+
+**Update 18:10:** KartPad 0.7.1 and 0.7.2 published; both keep players' game
+packs (fingerprints unchanged; in 0.7.2 the new app-only vi_pacing.h lives in
+runtime/app_only/ so it is not a pack-interface input). 0.7.2 carries the fixes
+promised on 27 Sep (#330 measured on the emulator, #327, #329/#316 Automatic on
+Adreno 8xx, #104 with the S24 option). PadMint 0.2.0 reused packs for both
+iPhone builds (compile 2-3 s). All published *-padforge.json recipe assets
+renamed to *-padmint.json with SHA256SUMS updated and verified; release notes
+say PadMint. MeleePad #36 and SunPad #51 merged; MaskPad #12 waits on a UI test
+that also fails on MaskPad's main (testControlPressReleaseToggleAndLifecycleCancellation).
+
+**Update 18:45:** MaskPad #12 merged after that UI test passed on re-run
+(flaky), so all 20 game repos use padmint.json. Player replies posted on
+kartpad #104, #316, #327, #329, #330 and #357. iPhone players without a Mac
+(#327) cannot build today; that is the most requested gap.
+
+**Update 21:00:** PadMint 0.2.1 published: #28, #30, #31, #32, #33, #34 (see
+release notes). Checked on Mac, Ubuntu 26.04 ARM64 and the Windows 11 VM.
+Player builds of KartPad 0.7.2 with 0.2.0 on clean Ubuntu 24.04 (plus
+libxml2) and 26.04 (libxml2.so.16 shim) were byte-identical and raced on the
+emulator. Seven game repos now declare their real build tools (goldenpad#42
+and bearbirdpad#18 use PadMint's LLVM, so they need new releases built with
+0.2.1). Parallel work: Android builds on the phone (Carson), iPhone IPAs
+without a Mac (Hubble).
+
+**Update 06:30, 1 Oct (0.2.7):** AgePad 0.1.0 published by Chris (30 Sep,
+22:41; assets pass the content check, anonymous downloads match). #29 adds
+AgePad to the catalog (iPad 8 GB+; PadMint injects the player's own Steam copy
+in about 12 s, checked on this Mac from the published release). #61 measured
+free space for every game (doctor no longer says 0 GB needed).
+
+**Update 06:05, 1 Oct (0.2.6):** rerun census across every game (player path):
+AnnePad 0.2.1 failed on every second run, BallPad on any rerun after
+packaging, MeleePad on reruns and after another folder's build (/tmp module
+folder), BananaPad after an interrupted download; fixed and released as
+AnnePad (0.2.2 pending disk), BallPad 1.1.1, MeleePad 0.2.1, BananaPad 0.2.1.
+#59: PadMint finishes a half-downloaded submodule in its own game folders
+(only when every difference is a submodule), which covers SunPad and
+SpaghettiPad. James's sweep with 0.2.2: 14 of 17 built; BlueWake unproven
+(disk watchdog).
+
+**Update 01:45, 1 Oct (0.2.5):** the full build sweep with 0.2.2 (James) found
+MaskPad failing from a clean folder: "building for 'iOS', but linking in dylib
+... MacOSX.sdk/usr/lib/libz.1.tbd". Cause: PadMint.command runs Apple's
+/usr/bin/python3, an xcrun shim that exports SDKROOT=MacOSX.sdk,
+CPATH=/usr/local/include and LIBRARY_PATH=/usr/local/lib to every build, so
+CMake resolved the iPhone build's zlib from the Mac SDK. Earlier MaskPad checks
+reused a configured folder. #57 drops the three for ios/tvos targets and says
+so in the log; no recipe uses them.
+
+**Update 00:50, 1 Oct (0.2.4):** PadMint 0.2.3 published 1 Oct 00:20 (Latest,
+checked on Mac, Linux and the Windows VM). town3r's GoldenPad build next
+stopped on Xcode's Metal Toolchain (downloaded separately since Xcode 26).
+0.2.4: #55 a version check that exits non-zero counts as missing, and
+requirements can carry a label, so a recipe can require the Metal Toolchain
+(xcrun metal --version); #54 README: Play Protect "Unsafe app blocked" for
+Termux on Android 17 (More details, Install anyway). Metal census (player
+path of each latest release): AnnePad, BananaPad, BearBirdPad, DinoPad and
+GoldenPad compile RT64's Metal shaders on the Mac; the libultraship games,
+KartPad, BlueWake, MeleePad, SunPad, BallPad, BellPad and BarrelPad do not.
+Recipes marked (annepad#11, bananapad#14, bearbirdpad#21, dinopad#11,
+goldenpad#47); those games get recipe-only releases next.
+
+**Update 00:10, 1 Oct (0.2.3):** PadMint 0.2.2 and KartPad 0.7.3 published
+30 Sep (both Latest, anonymous downloads verified; KartPad fingerprints
+unchanged, emulator and iPhone 14 in-place updates raced). GoldenPad and
+BearBirdPad 0.2.1 published (recipes use PadMint's LLVM). 0.2.3: #50 README
+after the release; #51 N64 ROMs and GameCube/Wii discs recognized from their
+header (town3r's GoldenEye .z64 on padmint#7 had to be picked from a list of
+18); #52 recipes mark programs the player installs ("player": true), checked
+before any download (GoldenPad needs Homebrew SDL2 for its shader step; our
+Macs had it, town3r's didn't; goldenpad#46 marks cmake, ninja, xdelta3 and
+sdl2-config). Open: Pixel 9 Pro XL Termux run (phone locked), full 0.2.2
+build sweep of every game (James).
+
+**Update 22:55 (0.2.2):** merged #36 (import button named per platform), #37
+(Android phone via Termux, experimental), #38 (failure messages with the fix),
+#39 (iPhone packs on Windows and Linux: LLVM, libc++ and Apple open-source
+headers pinned; D12), #40 (time left), #41 (doctor reads the release recipe
+and checks only the player path), #42 (newer recipe says "get the latest
+PadMint"), #43 (player-first README), #44 (game data copy on Windows: no "."
+in extended-length paths), #45 (CMake caches left by the .padforge move are
+set up again, padmint#7), #46 (unzip-first message, "Reading your file"), #47
+(keep awake; QuickEdit off while building), #48 (guided start offers
+iPhone/iPad on Windows and Linux for ios_off_mac games: KartPad). Off-Mac
+proof: KartPad 0.7.2 iPhone pack built on Ubuntu 24.04 arm64 (13.5 min) and
+on the Windows 11 ARM64 VM with native arm64 Python (29 min), fingerprint
+35ccf81c both, state check PASS, each raced on the iPhone 14 with the save
+byte-identical. KartPad main had drifted to iOS fingerprint ad53234e (a comment
+in build-ios-device-game-app.sh); kartpad#365 restored 35ccf81c. KartPad 0.7.3
+(kartpad#361, #363) follows this release: its recipe names libcxx.
+
+- **Done** (release + README + tracker): KartPad 0.6.0, BlueWake 0.1.0,
+  HarkinianPad, MaskPad, SpaghettiPad, StarshipPad, BallPad 1.1.0, BrawlerPad,
+  BellPad, GoldenPad, BearBirdPad, AnnePad, BarrelPad, BananaPad; PadMint 0.1.3.
+- **Needs 5 minutes with the iPhone, then publish** (runbook:
+  `~/.codex/scratch/release-staging/READY-30sep.md`): SunPad #50 (press Start),
+  MeleePad #35 (Import Game Data → On My iPhone → MeleePad → the .iso),
+  PaperPad #12 (press Start), DinoPad #7 (Start Dinosaur Planet). Each is the
+  PadMint build, installed in place with saves kept; releases are staged and
+  pass the content check. Then PadMint PR #10 + 0.1.4 for the guided start.
+- **Phone:** XCTest needs "Enable UI Automation" (passcode) and now stalls at
+  "waiting for workers to materialize"; CoreDevice file copies from the phone
+  stall too (AFC works). Unplugging and replugging the cable, then entering the
+  passcode at the prompt, should clear both.
+- **Device checks open:** DevilTouch (published IPA plays its intro with your
+  MPQ; tap into town); VaultPad is iPad-only.
+- **Your decisions:** AltStore #5 and the clean engines (mark Clear), SnapPad #7
+  test stub, GalaxyPad #15 anchors (spread across research scripts), F0X and
+  HarkinianPad #28 patch context, UTP, CTRPad, KidPad listing. EctoPad needs a
+  bootstrap script first.
+- **Notes:** the local `~/.codex/release-gate/release_gate.py` that AGENTS
+  rules cite is an older copy of PadMint's gate (no compressed-file support).
+  KartPad's pinned #338 is closed (still pinned). Phone copies to tidy: Melee ISO
+  in MeleePad Documents (for the import), DK64.v64 and Animal Crossing.iso in
+  BlueWake Documents, a stray copy in BellPad's Library.
+- **Disk (165 GB free):** cleanup candidates, not deleted: scratch
+  padforge-mac-home 64 GB, worktrees/kartpad-padforge/build 44 GB,
+  bluewake-public-cold 15 GB, kp060-phone 15 GB, padforge-fresh-home 11 GB,
+  bluewake-fresh 9.8 GB, pack-e2e-mac 6.6 GB, tonight's padforge-*-home and
+  *-fresh-020 folders (about 20 GB together).
+
+## Overnight run 28–29 Sep (complete)
+
+## Morning handoff (06:15)
+
+- **Complete personal builds through PadMint (16 games):** KartPad (iOS and
+  Mac), GoldenPad, SunPad, AnnePad, SnapPad, MaskPad, HarkinianPad, DevilTouch,
+  BarrelPad, VaultPad, StarshipPad, BrawlerPad, SpaghettiPad, BearBirdPad,
+  BellPad, BallPad. The gate rejects every output as personal. On `main`:
+  GoldenPad and the six earlier ones; the rest wait on PRs (merge queue below).
+- **Not verified:** no device install or gameplay (no L5); no non-Mac host build.
+- **Nothing published, nothing deleted.** Moved-aside folders and cleanup
+  candidates with sizes are in the Notion morning summary.
+- **Next session:** owner decisions below; then device tests; then the PadMint
+  follow-ups (job cap, Homebrew leak warning).
+
+## Rules for this run
+
+- Nothing public may contain translated or decompiled game code, keys, disc/ROM
+  images or extracted assets. A positive gate result is a stop.
+- No releases, tags, uploads, AltStore changes, visibility changes, posts or
+  comments. No deleting drafts, forks, repos, branches or history.
+- Game repos are changed only in worktrees under `~/.codex/worktrees`. Primary
+  checkouts with other agents' uncommitted work are not touched.
+- Public game-repo PRs merge only for docs/manifest/wrapper/AGENTS changes whose
+  tree passes the gate and the repo's own checks. Everything else stays a PR.
+- Public READMEs do not mention PadMint while it is private.
+- One heavy build at a time, none while another agent's build runs, `-j8` max.
+  No new full build below 50 GB free; stop below 30 GB. Nothing is deleted for space.
+
+## Levels
+
+| Level | Meaning |
+|---|---|
+| L0 | Contained: affected downloads hidden |
+| L1 | Docs accurate, dead release links fixed, gate rule present, source tree passes gate |
+| L2 | Validated `padforge.json`; `padmint plan` succeeds |
+| L3 | Source stages run through PadMint with verified outputs |
+| L4 | Personal build through PadMint; gate rejects output as personal, passes source |
+| L5 | Verified on a physical device (owner) |
+
+## Log
+
+- 23:49 Environment: BlueWake cold trained build compiling (other agent, read-only
+  for this run); 71 GB free; load ~230. Active agents: BlueWake, YomiBoy.
+- 23:55 PadMint PR #1 merged to `main` (`5361f33`); 26 tests pass.
+- 00:10 Decisions + feasibility in `docs/DECISIONS.md` (iPhone module links
+  without Apple SDK for one real chunk; Android host-neutral is conditional).
+  Core on main `70de086`: manifests, catalog, list/doctor/check-manifest/audit,
+  keyless gate (byte-identical results to the private gate), automatic gate on
+  every personal output.
+- 00:15 Owner decision: KartPad v0.1.0 and v0.2.0-preview.1 releases are still
+  public and their tag source archives contain both Wii common keys (not acted on).
+- 00:20 KartPad draft PR #336: build-it-yourself docs, retired links, common-key
+  note, Builder stage events, padforge.json. Source gate FAILS on existing
+  fixtures; `tests/fixtures/rel_report/function.cpp` shares all 3 labels and 11
+  non-trivial lines with the translated game function (owner review).
+- 00:25 `c21c595`: in-app inputs (no --disc), generic IPA check, MaskPad entry.
+- 00:30 GoldenPad PR #38 merged (draft padforge.json, all targets planned).
+  Sweep of 23 repos; retired-link PRs merged for HarkinianPad #27, SpaghettiPad
+  #17, BrawlerPad #6, BearBirdPad #13, VaultPad #3; open for SunPad #49,
+  MeleePad #34, AnnePad #7, CTRPad #40, GalaxyPad #15, SnapPad #7 (see Notion).
+- 00:35 MaskPad fresh build through PadMint failed at configure on Xcode 27
+  (upstream caches a 10.15 deployment target; Xcode 27 minimum iOS is 15.0).
+  Fixed on the MaskPad branch; rebuild running.
+- 00:45 HarkinianPad fork → patches: three patches against upstream Shipwright,
+  libultraship and ZAPDTR reproduce the fork trees exactly; gate PASS.
+  Draft PR #28 (decompiled context lines need owner policy).
+- 00:47 MaskPad complete build through PadMint: 17m28s, exit 0, 17.7 MB personal
+  IPA, gate FAIL on the IPA as expected, source PASS (draft PR #9, L4 on branch).
+- 00:50 PadMint: `steps` manifests, per-step env, `padmint ui` (checked live).
+- 00:55 L2 merged: StarshipPad #14, BrawlerPad #7, SpaghettiPad #18,
+  DevilTouch #5, BellPad #15, BearBirdPad #14, BarrelPad #13, VaultPad #4.
+  Manifests on open PRs: AnnePad #7, SnapPad #7, SunPad #49.
+- 01:00 KartPad bootstrap verified; StarshipPad complete build running.
+- 01:08 StarshipPad complete build through PadMint from main: 13m38s, exit 0,
+  6.9 MB IPA, gate FAIL as expected → L4; manifest marked experimental (#15).
+- 01:10–01:27 KartPad through PadMint: fixed two Builder bugs on #336
+  (interrupted-bootstrap recovery; work-root vs shared download cache), then a
+  complete build: 17m25s, exit 0, 64.8 MB IPA, provenance check passed, gate
+  FAIL as intended, **no Wii key in the personal IPA** (confirms #335).
+- 01:30 KartPad accepts other dumps after verified extraction (ISO and RVZ
+  converted from the pinned WBFS pass; Wind Waker ISO refused). On #336.
+- 01:30 Xcode 27 finding: iOS deployment target 14.0 fails CMake's
+  try-compile. Affects MaskPad (#9) and HarkinianPad (#30, draft); all other
+  ports target iOS 15+ (remaining 14.0/13.0/11.0 values are macOS targets).
+- 01:33 Build queue (scratch runner): BrawlerPad running; then HarkinianPad
+  (#30 branch), SpaghettiPad, BearBirdPad, DevilTouch, BellPad, BarrelPad,
+  VaultPad, BallPad, BananaPad, AnnePad (#7), SnapPad (#7), DinoPad (#7).
+- 01:40 BrawlerPad complete build from main (9m47s) → L4; manifest experimental.
+- 01:54 HarkinianPad complete build on #30 (13m50s) → L4 on branch; from main
+  it fails on Xcode 27, so #30 is required.
+- 02:00 GoldenPad L2 blocker: pinned GoldenEye64Recomp fork lacks `us.toml` and
+  the TLB-free patch; maintainer builds used a local upstream checkout.
+- 02:10 `padmint history --repo` added. Clean engines' public IPAs all pass
+  the gate.
+- 02:14 SpaghettiPad complete build from main (19m55s) → L4; manifest experimental.
+- 02:26 BearBirdPad complete build from main with the owner's ROM (11m48s) → L4.
+- 02:28 BellPad complete build from main (1m27s) → L4. Its personal IPA *passes*
+  the gate: decompilation code has named functions. Recorded as a gate limit.
+- 02:28 Early failures fixed and re-queued: DevilTouch (Xcode 27 target; draft
+  #6), BarrelPad (manifest used macOS /bin/bash 3.2; #14 merged), VaultPad
+  (empty submodule in worktrees; #5 merged).
+- 02:33 BallPad complete build from main (5m02s) → L4 (gate PASS, decompilation).
+  Manifests marked experimental: BearBirdPad #15, BellPad #16, BallPad #8.
+- 02:30 KartPad build-only Mac target added to #336 (queued for a real build).
+- 02:37 BananaPad failed: PaperBoat's Torch submodule repo (JeodC/Torch-LH) was
+  deleted upstream; pinned commit still in JeodC/Torch. Draft PaperBoat#1
+  (URL only). Blocks fresh clones of PaperPad, BananaPad, SnapPad, DinoPad.
+- 02:54–03:10 Fresh-build failures, all diagnosed and fixed on PR branches:
+  AnnePad release audit list stale since 5 Aug (fix on #7, verified on the
+  built core); SnapPad manifest missed host tools (#7); DinoPad manifest ran its
+  safety check too early (#7); BarrelPad `clone-refs.sh` breaks under macOS
+  bash 3.2 — the only bash on stock macOS (draft #15); VaultPad host build uses
+  macOS 10.13, Xcode 27 needs 12.0+ (draft #6). All re-queued.
+- Queue chain: DevilTouch (#6) → KartPad Mac target (#336) → AnnePad (#7) →
+  SunPad (#49) → BarrelPad (#15), SnapPad (#7), DinoPad (#7) → VaultPad (#6).
+- 03:10 DevilTouch complete build on #6 (6m06s) → L4 on branch (gate PASS).
+- 03:15 KartPad Mac target stopped on a missing macOS Dawn archive that
+  bootstrap never fetched; fixed on #336 (`217aa57`, hash from the lock).
+  AnnePad fix commit had landed on a detached HEAD; recovered and pushed
+  (`26ccdd2`). AnnePad patches fetched deps in place (rebuild blocker; noted).
+  Re-queued after VaultPad: AnnePad, KartPad Mac.
+- 03:22 BarrelPad complete build on #15 (45 s) → L4 on branch.
+- 03:21 SunPad: dependencies bootstrapped (8m46s), then Dolphin desktop tools
+  failed on the macOS 27 SDK (curl pipe2 availability). Fix on #49
+  (`-DHAVE_PIPE2=OFF`); MeleePad has the same configure. Re-queued last.
+- 03:27 SnapPad: iOS configure fails on Xcode 27 (SDL2 try-compiles cannot find
+  AvailabilityMacros.h) — needs investigation. DinoPad manifest rewritten to the
+  README order; re-queued before SunPad.
+- 03:37 VaultPad complete build on #6 (9m17s) → L4 on branch (gate PASS on the
+  personal output; decompilation-style source).
+- 03:57 AnnePad on #7: dependencies, ROM preparation, translation and the iOS
+  device build all succeeded (20m25s), then packaging stopped on a missing
+  macOS host tool (`build-macos/file_to_c`). The manifest now builds the Mac
+  host tools first (#7, `7836a74`); re-queued.
+- 04:08 KartPad Mac target on #336: compiled, linked, signed and packaged
+  `KartPad.app`, then the package audit failed. Cause: the packager still
+  stamped 0.4.17/build 39 while the audit expects the public 0.4.22/build 43.
+  Packager defaults updated (`cbf6818`); a copy of that app re-stamped to
+  0.4.22/43 with its original Bluetooth entitlement passes the full audit.
+  Clean rebuild queued last.
+- 04:10 Queue: DinoPad (#7) → SunPad (#49) → AnnePad (#7) → KartPad Mac (#336).
+- 04:13 DinoPad on #7: through bootstrap, safety check, host tools and base
+  translation, then the Mac host configure demanded restored-edition files.
+  Manifest now configures the host with restoration off and builds only the
+  two host shader tools (both verified to build; `b460bd6`).
+- 04:40 **Xcode 27 root cause for SnapPad:** RT64's CMake forces a 10.15
+  (macOS) deployment target on every Apple platform; Xcode 27 rejects it for
+  iOS, so every configure check under RT64 fails (the AvailabilityMacros.h
+  error was a red herring). One-hunk RT64 patch keeps 10.15 for macOS only.
+  With it SnapPad's full iOS configure completes (#7, `779583e`). DinoPad had
+  the same unguarded line; same patch added (#7, `c065d01`). AnnePad,
+  BearBirdPad, BananaPad and GoldenPad already carry an equivalent fix.
+- 04:42 KartPad Mac runner had died with its launching shell; folded into a new
+  queue: SunPad (running) → AnnePad → KartPad Mac → DinoPad → SnapPad.
+- 04:30 EctoPad (never released, source passes): gate rule merged (#4) → L1.
+- 04:30 SunPad passed the step that failed before (Dolphin tools on the macOS
+  27 SDK); now translating. Its module build runs `ninja -j 16` internally,
+  ignoring the PadMint job cap (noted, harmless tonight).
+- 04:35 Clean engines: full git history (all refs) passes the gate for KidPad,
+  CaesarPad, EmeraldTablet, RAtouch and DaggerPad; PeonPad passes after
+  decompressing its upstream .gz/.bz2 fixtures. Scanner positive control:
+  KartPad's flagged fixture fails. Gate rule merged for EmeraldTablet (#1) and
+  DaggerPad (#5); PeonPad #8 left open (tree fails closed on the compressed
+  fixtures). **Not touched:** CaesarPad (CI uploads IPA artifacts on PRs and
+  pushes), KidPad (release-public job on push to main), RAtouch (inherited
+  workflows run on any push and include a "latest" development-release job).
+  Pushing there could publish, so the rule is an owner item.
+- 04:37 **GoldenPad correction:** the recorded L2 blocker was wrong — the
+  pinned fork (`7c56979`) contains `us.toml` and both TLB-free patch files,
+  byte-identical to upstream `a787fe0` (an ancestor). Draft #39 adds
+  `scripts/build-personal-ipa.sh` chaining the maintained steps plus a
+  byte-order/SHA-1-checked ROM conversion (verified on the owner's V64: exact
+  TLB-free hash) and points `padforge.json` at it. Queued for a full build.
+- 04:40 Queue runners launched from a tool shell die when the call ends; the
+  surviving ones run in their own session. Relaunched that way. Order:
+  SunPad (running) → AnnePad → KartPad Mac → GoldenPad (#39) → DinoPad → SnapPad.
+- 04:43 SunPad on #49: past the macOS 27 SDK failure, translated and linked the
+  game module (29.5 min), then provisioning failed: pkg-config handed the iOS
+  core Homebrew's macOS minizip-ng, so the bundled archive was never built.
+  Host leak fixed with `-DUSE_SYSTEM_MINIZIP-NG=OFF` (`eb6a17b`; fresh configure
+  confirms bundled). Old iOS core folder renamed aside. Re-queued after GoldenPad.
+  PadMint lesson: builds should not depend on what Homebrew has installed;
+  worth a doctor warning later.
+- 05:17 AnnePad on #7 (33m42s): every stage ran through PadMint and AnnePad's
+  own app audit passed; the packager then refused because it only writes under
+  `artifacts/`. Manifest fixed (`89208c4`: package there, then export). The
+  corrected packaging run on that build produced an 84.7 MB personal IPA; gate
+  FAIL as intended → **L3** (L4 needs a clean rerun). AnnePad's iOS step runs
+  ninja with no job limit (~38 compilers). KartPad Mac build started 05:17.
+- 05:28 **KartPad Mac target complete through PadMint** (#336 at `cbf6818`):
+  11m05s, exit 0, 168 MB `KartPad.app` passes the repo's own Mac package audit,
+  gate FAIL as intended, no Wii key. KartPad now builds iOS and Mac personal
+  copies through PadMint. GoldenPad (#39) build started.
+- 05:31 **GoldenPad complete personal build through PadMint** (#39 at
+  `fd92db5`): 2m45s, exit 0, all 91 objects fresh (63 recompiled-function
+  files), primary IPA audit passed, 7.2 MB IPA, gate FAIL as intended. Repo
+  checks pass; tree passes the gate. #39 merged (`8617c3d`), manifest
+  experimental → **L4 on main** (was L1 blocked). SunPad (#49) build started.
+- 05:34 **SunPad complete personal build through PadMint** (#49 at
+  `eb6a17b`): exit 0, bundled minizip-ng, module provisioned, SunPad's own iOS
+  package audit passed, 26.8 MB IPA, gate FAIL as intended; check-repository
+  passes → **L4 on branch** (script fixes, so #49 is the owner's to merge).
+  DinoPad (#7) build started.
+- 05:34 DinoPad stopped in 10 s: its safety check pins a checksum of the whole
+  patch set, which the new RT64 patch changed. Lock and docs updated
+  (`6ed8618`); safety check clean. SnapPad stopped in 20 s: its build folder
+  had cached the failed checks from the broken Xcode 27 configure (a fresh
+  folder configures fine); stale folder renamed aside. Queue: AnnePad clean
+  rerun (running) → DinoPad → SnapPad.
+- 06:02 **AnnePad complete personal build through PadMint** (#7 at
+  `89208c4`): 26m07s, exit 0, all stages including packaging and export,
+  84.7 MB IPA, gate FAIL as intended → **L4 on branch**. DinoPad started.
+- 06:02 DinoPad reached the iOS compile, then the base-edition preparation
+  demanded the restoration dispatch map, which only the DinoMod restoration
+  step creates. It is only needed to undo restoration renames; a base-only
+  generation has none. Fixed on #7 (`b8f864a`: skip when nothing to undo,
+  still refuse renamed code without the map); base preparation verified.
+  Re-queued after SnapPad (running).
+- 06:10 **SnapPad complete personal build through PadMint** (#7 at
+  `779583e`): 7m42s, exit 0, Xcode 27 configure passes with the RT64 patch,
+  7.7 MB IPA, gate FAIL as intended. Formal level stays L0 (source-gate test
+  stub policy). Finding: SnapPad's packager prints "Public unsigned SnapPad IPA
+  audit passed" for this personal IPA — misleading label. DinoPad started.
+- 06:18 DinoPad (#7 at `b8f864a`): Xcode 27 configure passes and the base app
+  compiles ("unsigned iOS base app ready"), then the device safety audit fails:
+  the compiled-dependency (license notice) inventory only defines the restored
+  edition's build folder. Adding a base target changes license-notice data, so
+  it is left for owner review → **L3**. Queue finished; no runners remain.
+
+## Level snapshot (01:00)
+
+| Level | Repos |
+|---|---|
+| L4 (branch) | MaskPad (#9 unmerged) |
+| L2 | StarshipPad, BrawlerPad, SpaghettiPad, DevilTouch, BellPad, BearBirdPad, BarrelPad, VaultPad |
+| L1 | GoldenPad, HarkinianPad, PaperPad, BallPad, BananaPad, DinoPad, UTP |
+| L0, PR open | KartPad #336, SunPad #49, MeleePad #34, AnnePad #7, CTRPad #40, GalaxyPad #15, SnapPad #7 |
+| L0, gate policy | KartPad, GalaxyPad, SnapPad, F0X |
+
+## Repo queue
+
+1. PadMint core  2. KartPad  3. MaskPad  4. GoldenPad  5. HarkinianPad
+6. StarshipPad, BrawlerPad, F0X  7. MeleePad (review only)  8. SunPad, GalaxyPad,
+AnnePad, BearBirdPad, SnapPad, BananaPad, BarrelPad, DinoPad  9. SpaghettiPad,
+PaperPad, BellPad, BallPad, DevilTouch  10. VaultPad, UTP  11. CTRPad (private,
+PR only)  12. Clean engines  13. Supporting repos (status only)
+
+## Owner decisions pending
+
+1. **KartPad keys in two still-public releases:** v0.1.0 and v0.2.0-preview.1
+   are published; their tag source archives contain both Wii common keys.
+   Drafting them is reversible; tags/history stay downloadable either way.
+2. **Gate policy for references to game functions** (the gate has no exemptions):
+   KartPad guard skeleton + synthetic tests + log/record markers; SnapPad test
+   stub; GalaxyPad signature anchors in scripts; F0X and HarkinianPad
+   (PR #28) decompiled context lines inside patches.
+3. **iOS 15 minimum** (Xcode 27 cannot target iOS 14): MaskPad #9,
+   HarkinianPad #30, DevilTouch #6. Each builds completely on its branch.
+4. **Runtime-only public apps:** feasible in principle (S1); BlueWake, SunPad
+   and MeleePad already separate app and game module. Publishing is your call.
+5. **Make PadMint public** (public READMEs cannot point to it until then).
+6. **Gate rule for CaesarPad, KidPad and RAtouch:** add AGENTS.md yourself (or
+   with `[skip ci]`). Their CI builds/uploads IPAs or can create a "latest"
+   release on push, so nothing was pushed overnight. Full history of all six
+   clean engines passes; EmeraldTablet and DaggerPad are ready to mark Clear.
+7. **PeonPad #8** (gate rule): tree fails closed only on compressed upstream
+   fixtures that pass when unpacked. Merge, and decide whether to unpack or
+   exclude them.
+8. **Torch-LH deleted upstream:** draft PaperBoat#1 (URL only) unblocks fresh
+   clones of BananaPad and PaperPad.
+9. Existing: delete the 157 drafts; retire forks; history rewrites.
+
+## Follow-ups for PadMint itself
+
+- Several repo scripts ignore the job cap (SunPad's module build `-j16`,
+  AnnePad's iOS ninja unlimited). Done 06:30: every backend now gets
+  `CMAKE_BUILD_PARALLEL_LEVEL` = `--jobs` (test added; 49 pass); scripts
+  calling ninja/make/xcodebuild directly still need `{jobs}`.
+- Host leaks: Homebrew libraries can be picked up by iOS builds (SunPad's
+  minizip-ng). `padmint doctor` could warn about known offenders.
+- Detached-HEAD pushes: queue runners detach worktrees; commit on the branch.
+
+## Merge queue (PRs that need an owner or a bootstrapped check)
+
+KartPad #336 · MaskPad #9 · HarkinianPad #30, #28 · DevilTouch #6 ·
+BarrelPad #15 · VaultPad #6 · SunPad #49 · MeleePad #34 · AnnePad #7 ·
+SnapPad #7 · DinoPad #7 · GalaxyPad #15 · CTRPad #40 · PeonPad #8 ·
+PaperBoat #1 · BlueWake #2
