@@ -28,6 +28,10 @@ release recipes and verified host/output combinations.
 - StarshipPad's public v0.2.0 recipe still has the reproduced SDK-selection
   failure. [Source fix #22](https://github.com/chrissotraidis/starshippad/pull/22)
   has merged and passed full CI; an updated public recipe is still needed.
+- SunPad's public v0.2.0 app lacks scene startup required for its SDK 27 build
+  on iOS/iPadOS 27. [Source fix #55](https://github.com/chrissotraidis/sunpad/pull/55)
+  passed full iOS/tvOS compilation and a UIKit lifecycle probe. A verified app
+  update, physical iOS 27 acceptance and the new crash reporter's cause remain open.
 - Most iOS recipes require Apple Silicon and Xcode. Portable resource tools
   alone do not provide a complete Windows or Linux player route.
 - AgePad requires an exact supported Steam installation; an updated client was
