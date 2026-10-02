@@ -586,9 +586,10 @@ def likely_cause(lines, needed_gb=None):
         space = f" (this build needs about {needed_gb} GB)" if needed_gb else ""
         return f"the disk filled up. Free up space{space} and run PadMint again; finished steps are kept."
     if CERTIFICATES.search(text):
-        return ("a secure download failed its certificate check. Antivirus HTTPS scanning or a "
-                "company network usually causes this: turn the scanning off or use another network, "
-                "then run PadMint again.")
+        return ("a secure download failed its certificate check. Check this device's date and time "
+                "and install available certificate updates. On a managed network, ask its administrator "
+                "to check HTTPS access, or retry on another trusted network. Keep certificate "
+                "verification and security software enabled, then run PadMint again.")
     if NETWORK_ERRORS.search(text):
         hosts = re.findall(r"https?://([A-Za-z0-9.-]+)", text)
         where = hosts[-1] if hosts else "a download server"
