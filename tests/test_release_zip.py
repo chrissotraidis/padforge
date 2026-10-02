@@ -2,6 +2,8 @@ import contextlib
 import hashlib
 import importlib.util
 import io
+import posixpath
+import re
 import shutil
 import stat
 import subprocess
@@ -33,6 +35,21 @@ class ReleaseZipTests(unittest.TestCase):
         self.assertEqual(stat.S_IMODE(launcher), 0o755)
         self.assertTrue(all(stat.S_ISREG(mode) for mode in modes.values()))
         self.assertEqual(stat.S_IMODE(modes["PadMint-vX/README.md"]), 0o644)
+
+    def test_packaged_guides_have_their_local_link_destinations(self):
+        with zipfile.ZipFile(self.zip) as bundle:
+            names = set(bundle.namelist())
+            for name in sorted(names):
+                if not name.endswith(".md"):
+                    continue
+                for link in re.findall(r"\]\(([^)]+)\)", bundle.read(name).decode()):
+                    path = link.split("#", 1)[0]
+                    if not path or ":" in path:
+                        continue
+                    target = posixpath.normpath(posixpath.join(posixpath.dirname(name), path))
+                    with self.subTest(document=name, link=link):
+                        self.assertTrue(target in names or any(
+                            member.startswith(target + "/") for member in names), target)
 
     @unittest.skipUnless(shutil.which("ditto"), "macOS only: ditto is what Finder uses to unzip")
     def test_finder_style_unzip_keeps_the_launcher_executable(self):

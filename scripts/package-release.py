@@ -25,7 +25,10 @@ PYTHON_SHA256 = "d1f04d990aee1253d8569e8e5104e30fa9f5fa830899f14843448872d936a2c
 
 def payload():
     """(archive path, source path) for everything a player needs."""
-    files = [ROOT / "README.md"]
+    files = [ROOT / name for name in (
+        "README.md", "STATUS.md", "STATUS-HISTORY.md",
+        "docs/COMPATIBILITY.md", "docs/ADDING_A_GAME.md",
+    )]
     files += sorted((ROOT / "padmint").glob("*.py")) + [ROOT / "padmint/tools.lock.json"]
     files += sorted((ROOT / "catalog").glob("*.json"))
     return [(path.relative_to(ROOT).as_posix(), path) for path in files]
