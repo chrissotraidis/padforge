@@ -8,6 +8,17 @@ permissions:
   contents: read
 
 jobs:
+  phone-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -B -m unittest discover -s tests -p test_android_bootstrap.py -v
+      - run: python -B -m unittest discover -s tests -p test_next_steps.py -v
+      - run: python -B -m unittest discover -s tests -p test_game_data_folder.py -v
   packaged-player-flow:
     runs-on: windows-latest
     timeout-minutes: 15
@@ -20,6 +31,26 @@ jobs:
           python-version: '3.13'
       - name: Package and audit public downloads
         run: python scripts/package-release.py release-check
+      - name: Check portable checksum bytes and all package hashes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $raw = [IO.File]::ReadAllBytes((Join-Path $PWD 'release-check/SHA256SUMS'))
+          if ($raw -contains 13) { throw 'SHA256SUMS contains CR bytes' }
+          if ($raw.Length -eq 0 -or $raw[-1] -ne 10) { throw 'SHA256SUMS must end with LF' }
+          $lines = [Text.Encoding]::UTF8.GetString($raw).TrimEnd("`n").Split("`n")
+          if ($lines.Count -ne 3) { throw 'Expected checksums for all three packages' }
+          foreach ($line in $lines) {
+            if ($line -notmatch '^([0-9a-f]{64})  (PadMint-v[^/\\]+-(windows|macos|linux)\.zip)$') {
+              throw "Invalid checksum entry: $line"
+            }
+            $expected = $Matches[1]
+            $name = $Matches[2]
+            $actual = (Get-FileHash (Join-Path 'release-check' $name) -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actual -ne $expected) { throw "Checksum mismatch: $name" }
+            Write-Host "Checksum verified: $name $actual"
+          }
+          Write-Host 'SHA256SUMS: LF only, no CR bytes, all three package hashes match'
       - name: Check the included Python and player flows
         shell: pwsh
         run: |
@@ -29,7 +60,7 @@ jobs:
           $package = (Get-ChildItem "$env:RUNNER_TEMP/package-check" -Directory).FullName
           $tests = "$env:RUNNER_TEMP/player-checks"
           New-Item -ItemType Directory $tests | Out-Null
-          Copy-Item tests/test_start.py, tests/test_finish_submodules.py, tests/test_package.py, tests/fixtures.py $tests
+          Copy-Item tests/test_start.py, tests/test_finish_submodules.py, tests/test_host_preflight.py, tests/test_progress_output.py, tests/test_package.py, tests/fixtures.py, tests/test_next_steps.py, tests/test_game_data_folder.py $tests
           Push-Location $package
           try {
             & ./python/python.exe -m padmint --version
@@ -65,7 +96,7 @@ jobs:
           player_tests="$RUNNER_TEMP/linux-player-checks"
           mkdir -p "$RUNNER_TEMP/linux-package-check" "$player_tests"
           unzip -q "$linux_zip" -d "$RUNNER_TEMP/linux-package-check"
-          cp tests/test_start.py tests/test_finish_submodules.py tests/test_package.py tests/fixtures.py "$player_tests/"
+          cp tests/test_start.py tests/test_finish_submodules.py tests/test_host_preflight.py tests/test_progress_output.py tests/test_package.py tests/fixtures.py tests/test_next_steps.py tests/test_game_data_folder.py "$player_tests/"
           linux_package=("$RUNNER_TEMP/linux-package-check"/PadMint-v*)
           test "${#linux_package[@]}" -eq 1
           cd "${linux_package[0]}"

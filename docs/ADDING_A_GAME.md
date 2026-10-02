@@ -41,16 +41,16 @@ as a stage, shows progress, stops at the first failure and audits the result.
   environment.
 - **Job cap:** every step runs with `CMAKE_BUILD_PARALLEL_LEVEL` set to
   `--jobs`, which `cmake --build` honors. Scripts that call `ninja`, `make`
-  or `xcodebuild` directly should pass `{jobs}` themselves (SunPad and AnnePad
-  currently ignore it).
+  or `xcodebuild` directly should pass `{jobs}` themselves. Check the actual
+  backend commands; setting the environment alone does not cap those tools.
 - **Inputs:** use `"when": "build"` when a script reads the player's disc or ROM
   (then `--disc` is required and passed as `{disc}`), or `"in-app"` when the
   player chooses it after installing (then `--disc` is refused).
 - **Kinds:** `disc-translation`, `emulator-shell`, `decomp-patches`,
   `upstream-engine`, `clean-engine`.
-- **Hosts and states:** `verified` (a recorded complete build), `experimental`
-  (runnable, not yet accepted), `planned`, `unsupported`. Only verified and
-  experimental hosts run.
+- **Hosts and states:** `verified` (a recorded complete build from that host,
+  accepted on the target device), `experimental` (runnable, not yet accepted),
+  `planned`, `unsupported`. Only verified and experimental hosts run.
 - A game with its own one-command builder can use a single `command` with
   `modes` (`full`, `source-only`) and `options` instead of `steps`.
 - Run executable scripts directly so their own `#!/usr/bin/env bash` shebang
