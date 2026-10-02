@@ -12,7 +12,7 @@ fill the fixed placeholders `{repo}`, `{disc}`, `{work}`, `{output}` and
 outputs are run through `padmint audit` automatically and the result is
 stored in the attempt record. The table below still describes the backends.
 
-## Current interface
+## Explicit-checkout interface (`plan` and `build`)
 
 Only an explicitly selected local checkout at a full reviewed commit can run.
 Tracked modifications and untracked files cause rejection. This verifies the
@@ -22,7 +22,11 @@ hashing), after backend exit and before saving the final result. Changes reject
 the attempt and are recorded. This catches persistent concurrent changes, not
 edits restored between checks; it is not an immutable checkout or a sandbox.
 The caller must trust that checkout and the tools it executes. Ignored dependency
-trees are still the backend's responsibility. PadMint never fetches a backend.
+trees are still the backend's responsibility. These commands operate on the
+selected checkout. Separately, `get` downloads a catalogued game's source, and
+`make` resolves the published recipe and prepares managed source before calling
+the same runner. The recipe determines supported build hosts and output targets;
+see the [current player routes](../README.md#build-hosts-and-game-devices).
 
 An attempt gets a private output directory under the backend's ignored
 `build/padmint/`. The reusable workspace key includes a workspace-schema version,
@@ -130,7 +134,10 @@ run `89c6fe7bfc864577a09e2b2c1336cb10`. Outputs stay local and ignored.
 Helper tools built as part of the backend; no game compile, IPA packaging,
 training, installation or device operation was performed by this integration.
 
-### Remaining checks
+### Historical remaining checks, 28 September
+
+This list records the initial integration work, not current platform availability.
+Use the README and the selected release recipe for current routes.
 
 1. BlueWake owner finishes local training and hardware acceptance, stabilizes a
    clean revision and reviews nested-process cancellation and cache reuse.

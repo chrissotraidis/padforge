@@ -168,6 +168,27 @@ stays).
 **Updates:** run PadMint again for each new KartPad; it reuses your earlier
 work, so it takes a few minutes.
 
+## Build hosts and game devices
+
+The computer or phone running PadMint is the **build host**. The device you
+play on is the **output target**. Installing PadMint on Windows or Linux does
+not make every game recipe available on that host.
+
+| What you want to build | Build host | Current scope |
+|---|---|---|
+| KartPad Android game pack | Windows, Linux or macOS | Available; follow the Android computer guide above |
+| KartPad Android game pack | Android phone | Experimental; free space and phone restrictions can prevent completion |
+| KartPad iPhone/iPad app | Apple Silicon Mac with Xcode | Available |
+| KartPad iPhone/iPad app | Windows or Linux | Experimental; see the tested-host limits above |
+| Other source-build recipes listed below | Apple Silicon Mac with Xcode | Per-game prerequisites and known blockers apply; no general Windows, Linux or Android-phone build support |
+| AgePad | Mac with a matching Steam installation | Packages your supported copy without Xcode; exact compatibility profile required |
+| DevilTouch / VaultPad previews | No PadMint build needed | Download, sign and sideload; add your own data in the app |
+
+A completed build does not establish gameplay on every device. The recipe
+selected from each game's release determines which hosts and targets can run.
+An Android phone building a KartPad pack does not imply an Android version of
+every Pad game.
+
 ## Other Pad games
 
 **DevilTouch and VaultPad have a different route:** their existing public
@@ -190,7 +211,8 @@ games that ask for it inside the app) and pick the game. Each game's README
 says which file it needs and how to install the result.
 
 **Current blocker:** StarshipPad's published v0.2.0 recipe fails with an iOS SDK
-selection error. A checked fix is still a draft, not a new player download.
+selection error. The [checked fix](https://github.com/chrissotraidis/starshippad/pull/22)
+is still a draft, not a new player download.
 See [STATUS.md](STATUS.md) for the build checks and remaining limits.
 
 **AgePad** (iPad with 8 GB or more) works differently: on a Mac with Age of

@@ -126,7 +126,10 @@ first on PATH plus `ANDROID_NDK_ROOT` and `DOTNET_ROOT`.
 
 Why: a player on a clean Windows PC should not have to find and install six
 developer tools by hand, and pinning keeps every player's build identical.
-Google publishes no Linux arm64 NDK, so Linux game packs build on x86_64.
+At the time of this decision, Linux game packs built only on x86_64. That
+restriction was later removed with the pinned ARM Linux toolchain. Consult the
+current README and tools lock for supported host/target combinations; the old
+Google NDK availability observation is not a current PadMint host restriction.
 
 .NET runs with invariant globalization (`set` in the lock): the Linux run
 stopped because a plain Ubuntu has no libicu, and a system language that writes
