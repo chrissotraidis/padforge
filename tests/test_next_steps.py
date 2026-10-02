@@ -1,10 +1,14 @@
 """After a build, the player sees what to do with the file, in steps."""
+import copy
 import io
+import json
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
 
 from padmint import cli
+from padmint import manifest
 from padmint.manifest import catalog
 
 ENTRY = {"id": "game", "repo_url": "https://github.com/example/game", "player_targets": ["android"],
@@ -13,6 +17,48 @@ ENTRY = {"id": "game", "repo_url": "https://github.com/example/game", "player_ta
 
 
 class NextStepsTests(unittest.TestCase):
+    def test_phone_steps_use_the_existing_files_and_actual_output_folder(self):
+        entry = catalog()["kartpad"]
+        result = Path("/sdcard/Download/My builds/KartPad-v0.7.3-android-personal.so")
+        stream = io.StringIO()
+        with mock.patch.object(cli, "on_android", return_value=True):
+            cli.next_steps(entry, "android", result, stream)
+        text = stream.getvalue()
+        self.assertIn("already on this phone", text)
+        self.assertIn(str(result.parent), text)
+        self.assertIn(result.name, text)
+        self.assertIn("Import Game next to Mario Kart Wii", text)
+        self.assertIn("Game Data & Saves", text)
+        self.assertIn("Import from Extracted Game Data Folder", text)
+        self.assertIn("KartPad game data", text)
+        self.assertNotIn("Copy ", text)
+        self.assertNotIn("USB cable", text)
+
+    def test_desktop_kartpad_steps_still_explain_the_transfer(self):
+        stream = io.StringIO()
+        with mock.patch.object(cli, "on_android", return_value=False):
+            cli.next_steps(catalog()["kartpad"], "android", Path("/out/pack.so"), stream)
+        text = stream.getvalue()
+        self.assertIn("Copy pack.so to the phone or tablet", text)
+        self.assertIn("USB cable", text)
+        self.assertNotIn("already on this phone", text)
+
+    def test_phone_without_special_steps_keeps_the_existing_instructions(self):
+        stream = io.StringIO()
+        with mock.patch.object(cli, "on_android", return_value=True):
+            cli.next_steps(ENTRY, "android", Path("/out/pack.so"), stream)
+        self.assertIn("  1. Copy pack.so to the phone.", stream.getvalue())
+
+    def test_catalog_rejects_malformed_phone_steps(self):
+        entry = copy.deepcopy(ENTRY)
+        entry["free_space_gb"] = 1
+        with tempfile.TemporaryDirectory() as folder, mock.patch.object(manifest, "CATALOG", Path(folder)):
+            for instructions in ("not a list", [1], None):
+                entry["player_next"]["android"]["phone_steps"] = instructions
+                (Path(folder) / "game.json").write_text(json.dumps(entry))
+                with self.subTest(instructions=instructions), self.assertRaisesRegex(ValueError, "phone_steps"):
+                    catalog()
+
     def test_steps_name_the_finished_file_and_end_with_the_guide(self):
         stream = io.StringIO()
         cli.next_steps(ENTRY, "android", Path("/out/Game-v1-android-personal.so"), stream)

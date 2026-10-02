@@ -791,8 +791,9 @@ def save_game_data(built, out, name, stream=None, import_label=None):
           file=stream, flush=True)
     copy_files(tools._long(data), tools._long(partial))
     partial.replace(target)
+    transfer = "It is already on this phone;" if on_android() else "Copy it to your device and"
     print(f"Your {name} game data folder: {target}\n"
-          f"  New to {name}? Copy it to your device and choose it with "
+          f"  New to {name}? {transfer} choose it with "
           f"{import_label or 'Import from Extracted Folder'}. "
           "It needs no key.", file=stream)
     return target
@@ -958,9 +959,12 @@ def next_steps(entry, platform_name, result, stream):
     if not steps or result is None:
         print(f"Next: {guide}", file=stream)
         return
+    instructions = steps["steps"]
+    if platform_name == "android" and on_android():
+        instructions = steps.get("phone_steps") or instructions
     print("\nWhat to do next:", file=stream)
-    for number, step in enumerate(steps["steps"], 1):
-        print(f"  {number}. {step.format(file=result.name)}", file=stream)
+    for number, step in enumerate(instructions, 1):
+        print(f"  {number}. {step.format(file=result.name, folder=result.parent)}", file=stream)
     if steps.get("note"):
         print(steps["note"], file=stream)
     print(f"Full guide: {guide}", file=stream)

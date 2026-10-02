@@ -8,6 +8,17 @@ permissions:
   contents: read
 
 jobs:
+  phone-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -B -m unittest discover -s tests -p test_android_bootstrap.py -v
+      - run: python -B -m unittest discover -s tests -p test_next_steps.py -v
+      - run: python -B -m unittest discover -s tests -p test_game_data_folder.py -v
   packaged-player-flow:
     runs-on: windows-latest
     timeout-minutes: 15
@@ -49,7 +60,7 @@ jobs:
           $package = (Get-ChildItem "$env:RUNNER_TEMP/package-check" -Directory).FullName
           $tests = "$env:RUNNER_TEMP/player-checks"
           New-Item -ItemType Directory $tests | Out-Null
-          Copy-Item tests/test_start.py, tests/test_finish_submodules.py, tests/test_host_preflight.py, tests/test_progress_output.py, tests/test_package.py, tests/fixtures.py $tests
+          Copy-Item tests/test_start.py, tests/test_finish_submodules.py, tests/test_host_preflight.py, tests/test_progress_output.py, tests/test_package.py, tests/fixtures.py, tests/test_next_steps.py, tests/test_game_data_folder.py $tests
           Push-Location $package
           try {
             & ./python/python.exe -m padmint --version
@@ -85,7 +96,7 @@ jobs:
           player_tests="$RUNNER_TEMP/linux-player-checks"
           mkdir -p "$RUNNER_TEMP/linux-package-check" "$player_tests"
           unzip -q "$linux_zip" -d "$RUNNER_TEMP/linux-package-check"
-          cp tests/test_start.py tests/test_finish_submodules.py tests/test_host_preflight.py tests/test_progress_output.py tests/test_package.py tests/fixtures.py "$player_tests/"
+          cp tests/test_start.py tests/test_finish_submodules.py tests/test_host_preflight.py tests/test_progress_output.py tests/test_package.py tests/fixtures.py tests/test_next_steps.py tests/test_game_data_folder.py "$player_tests/"
           linux_package=("$RUNNER_TEMP/linux-package-check"/PadMint-v*)
           test "${#linux_package[@]}" -eq 1
           cd "${linux_package[0]}"
