@@ -258,9 +258,12 @@ Only download PadMint from its
 [releases page](https://github.com/chrissotraidis/padmint/releases/latest).
 
 **It says a download was blocked, or it stops early.**
-PadMint names the server it couldn't reach. A VPN, firewall or antivirus web
-filter is the usual cause: turn it off for the build or try another network,
-then run PadMint again. Finished downloads are kept.
+PadMint names the server it couldn't reach. Check your internet connection
+and whether that server is accessible. On a managed network, ask its
+administrator to check access, or retry on another trusted network. For a
+certificate error, check the device's date and time and available certificate
+updates. Keep certificate verification and security software enabled.
+Run PadMint again after resolving the error; finished downloads are kept.
 
 **It says my file is the wrong version.**
 KartPad needs the European (PAL) disc, game ID RMCP01.
