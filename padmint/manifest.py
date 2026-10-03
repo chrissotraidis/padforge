@@ -134,6 +134,14 @@ def validate_manifest(data):
                 _member(module["into"])
             except ModuleError as error:
                 _require(False, f"{where}.{error}")
+        if target.get("output") == "folder":
+            # A program with its files (BlueWake.exe and its DLLs): the backend leaves the
+            # finished folder at "folder", and PadMint hands that whole folder to the player.
+            _require(isinstance(target.get("folder"), str) and target["folder"],
+                     f"{where}: a folder output names the finished folder in \"folder\"")
+            _argv([target["folder"]], f"{where}.folder")
+        else:
+            _require("folder" not in target, f"{where}.folder is only for \"output\": \"folder\"")
         modes = target.get("modes", {"full": []})
         _require(isinstance(modes, dict) and "full" in modes, f"{where}.modes must include full")
         for mode, extra in modes.items():
@@ -199,8 +207,8 @@ def catalog():
         if revision is not None and not re.fullmatch(r"[0-9a-f]{40}", str(revision)):
             raise ValueError(f"catalog/{path.name}: reviewed_revision must be a full commit or null")
         targets = entry.get("player_targets", [])
-        if not isinstance(targets, list) or not set(targets) <= {"android", "ios", "macos"}:
-            raise ValueError(f"catalog/{path.name}: player_targets lists android, ios or macos")
+        if not isinstance(targets, list) or not set(targets) <= {"android", "ios", "macos", "windows"}:
+            raise ValueError(f"catalog/{path.name}: player_targets lists android, ios, macos or windows")
         if entry.get("player_game_file", "build") not in ("build", "in-app"):
             raise ValueError(f"catalog/{path.name}: player_game_file is build or in-app")
         if not isinstance(entry.get("ios_off_mac", False), bool) \

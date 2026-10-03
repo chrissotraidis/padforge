@@ -44,6 +44,8 @@ MESSAGES = {
                 "pt": "iPhone ou iPad (precisa deste Mac)"},
     "ios_off_mac": {"en": "iPhone or iPad (experimental)", "es": "iPhone o iPad (experimental)",
                     "pt": "iPhone ou iPad (experimental)"},
+    "windows_here": {"en": "This Windows PC (experimental)", "es": "Este PC con Windows (experimental)",
+                     "pt": "Este PC com Windows (experimental)"},
     "drag_game_file": {
         "en": "Drag your own {name} game file into this window, then press Enter: ",
         "es": "Arrastra tu propio archivo del juego {name} a esta ventana y pulsa Enter: ",
@@ -130,6 +132,7 @@ MESSAGES = {
     "platform_android": {"en": "Android", "es": "Android", "pt": "Android"},
     "platform_ios": {"en": "iPhone and iPad", "es": "iPhone y iPad", "pt": "iPhone e iPad"},
     "platform_macos": {"en": "Mac", "es": "Mac", "pt": "Mac"},
+    "platform_windows": {"en": "Windows", "es": "Windows", "pt": "Windows"},
     "your_copy": {"en": "Your {name} for {platform}: {path}", "es": "Tu {name} para {platform}: {path}",
                   "pt": "Seu {name} para {platform}: {path}"},
     "keep_private": {

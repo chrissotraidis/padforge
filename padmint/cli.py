@@ -37,6 +37,12 @@ def git(repo, *args):
 
 
 def digest(path):
+    """SHA-256 of a file, or of a folder: its files' relative paths and contents, in order."""
+    if path.is_dir():
+        result = hashlib.sha256()
+        for file in sorted(item for item in path.rglob("*") if item.is_file()):
+            result.update(file.relative_to(path).as_posix().encode() + b"\0" + digest(file).encode() + b"\n")
+        return result.hexdigest()
     result = hashlib.sha256()
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
@@ -417,7 +423,8 @@ def execute(args, repo, disc):
         work = root / key / "backend"
         attempt = root / key / "runs" / uuid.uuid4().hex
         attempt.mkdir(parents=True, mode=0o700)
-        output = attempt / f"personal.{target.get('output', 'ipa')}"
+        folder_output = target.get("output") == "folder"
+        output = attempt / ("personal" if folder_output else f"personal.{target.get('output', 'ipa')}")
         started = time.monotonic()
         # Other versions of the same game count too, so an update still gets an estimate.
         siblings = sorted(repo.parent.glob(f"{args.game}-*/build/padmint")) if repo.parent.name == "games" else []
@@ -498,8 +505,15 @@ def execute(args, repo, disc):
                 ios_module.insert(Path(app_path(args)), module_file, module_spec["into"], output, llvm,
                                   work / "padmint-ios-module")
                 print(f"Added your game module to the app: {module_spec['into']}", flush=True)
+            if code == 0 and folder_output and not args.source_only:
+                finished = Path(expand([target["folder"]], placeholder_values(args, repo, disc, work, output))[0])
+                if finished.is_dir():
+                    # Moved, not copied: the folder holds a copy of the disc, so a second copy
+                    # would double the space it takes. The backend makes it again next time.
+                    shutil.move(str(finished), str(output))
             if code == 0 and not args.source_only:
-                if not output.is_file() or output.stat().st_size == 0:
+                if not (output.is_dir() and any(output.iterdir()) if folder_output
+                        else output.is_file() and output.stat().st_size > 0):
                     raise ValueError("Backend exited successfully but produced no output")
                 record["package_validation"] = check_output(target.get("check", "none"), output,
                                                             args.revision, identity["disc_sha256"])
@@ -783,7 +797,15 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
     out.mkdir(parents=True, exist_ok=True)
     safe_version = re.sub(r"[^A-Za-z0-9._-]", "_", version)  # a branch name such as codex/x has a slash
     result = out / f"{manifest['name']}-v{safe_version}-{platform_name}-personal{args.output_path.suffix}"
-    shutil.copyfile(args.output_path, result)
+    if args.output_path.is_dir():
+        if result.exists():
+            # An update: write the new files over the old folder, so anything the player
+            # added to it stays.
+            copy_files(tools._long(args.output_path), tools._long(result))
+        else:
+            shutil.move(str(args.output_path), str(result))
+    else:
+        shutil.copyfile(args.output_path, result)
     platform_label = t(f"platform_{platform_name}") if f"platform_{platform_name}" in MESSAGES else platform_name
     print(t("your_copy", name=manifest["name"], platform=platform_label, path=result))
     if results is not None:
@@ -857,8 +879,9 @@ def label(tool):
 def check_program(tool):
     """(ok, detail) for a requirements.tools entry: on PATH, its version check runs without an
     error (xcrun is always there, but xcrun metal fails until the Metal Toolchain is installed),
-    and new enough if it names a minimum."""
-    path = shutil.which(tool["name"])
+    and new enough if it names a minimum. The name may be a path with %VARIABLES% (Visual
+    Studio's vswhere.exe is never on PATH)."""
+    path = shutil.which(os.path.expandvars(tool["name"]))
     if path is None:
         return False, tool.get("note", "not found on PATH")
     if "version_args" not in tool:
@@ -873,9 +896,9 @@ def check_program(tool):
         return False, tool.get("note") or f"{detail} (exit {result.returncode})"
     if "min_version" not in tool:
         return True, detail
-    found = version_tuple(detail)
+    found = version_tuple(text[0]) if text else None  # no answer is not a version
     return (found is not None and found >= version_tuple(str(tool["min_version"])),
-            f"{detail} (need {tool['min_version']}+)")
+            f"{detail} (need {tool['min_version']}+)" if text else tool.get("note") or "not installed")
 
 
 def published_recipe(game, release=None):
@@ -1096,14 +1119,17 @@ def game_from_file(disc, games, stream):
 def player_games():
     """[(game, name, platforms)] a player can make on this computer. iPhone builds need Xcode
     on Apple Silicon, except games marked ios_off_mac, which also build on Windows and Linux
-    computers. An Intel Mac and a phone make Android copies."""
+    computers. An Intel Mac and a phone make Android copies. A Windows copy is made on the
+    Windows PC it runs on."""
     host = host_id()
     apple_silicon = host == "macos-arm64"
     computer_off_mac = host.startswith(("windows-", "linux-")) and not on_android()
+    here = {"ios": None, "windows": host.startswith("windows-")}
     games = []
     for game, entry in sorted(catalog().items()):
         ios_here = apple_silicon or (computer_off_mac and entry.get("ios_off_mac", False))
-        platforms = [name for name in entry.get("player_targets", []) if name != "ios" or ios_here]
+        here["ios"] = ios_here
+        platforms = [name for name in entry.get("player_targets", []) if here.get(name, True)]
         if platforms:
             name = (entry.get("manifest") or {}).get("name") or entry.get("name", game)
             games.append((game, name, platforms))
@@ -1112,7 +1138,8 @@ def player_games():
 
 def platform_label(platform_name, lang=None):
     """How the menu names a device: an iPhone copy needs this Mac, or is experimental elsewhere."""
-    key = {"android": "android", "ios": "ios_mac" if host_id() == "macos-arm64" else "ios_off_mac"}
+    key = {"android": "android", "ios": "ios_mac" if host_id() == "macos-arm64" else "ios_off_mac",
+           "windows": "windows_here"}
     if platform_name not in key:
         return platform_name
     return phrase(key[platform_name], lang) if lang else t(key[platform_name])
@@ -1446,7 +1473,7 @@ def build_parser():
     get_parser.add_argument("--ref", help="Branch or tag (default: the repository's default branch)")
     make_parser = commands.add_parser("make", help="Make your own copy of a game from your game file")
     make_parser.add_argument("game")
-    make_parser.add_argument("platform", help="android, ios or macos")
+    make_parser.add_argument("platform", help="android, ios, macos or windows")
     make_parser.add_argument("--disc", type=Path, help="Your own game file (when the build reads it)")
     make_parser.add_argument("--out", type=Path, default=Path.cwd(), help="Where to save the result")
     make_parser.add_argument("--jobs", type=int, choices=range(1, 17),

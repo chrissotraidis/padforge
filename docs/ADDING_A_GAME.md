@@ -53,6 +53,18 @@ as a stage, shows progress, stops at the first failure and audits the result.
   `planned`, `unsupported`. Only verified and experimental hosts run.
 - A game with its own one-command builder can use a single `command` with
   `modes` (`full`, `source-only`) and `options` instead of `steps`.
+- **A program folder** (a Windows game: the .exe with its DLLs and data): set
+  `"output": "folder"` and name where the backend leaves the finished folder,
+  `"folder": "{work}/ExamplePad"`. PadMint checks it, moves it into the build
+  record and gives the player the whole folder. A `windows` player target is
+  offered only on Windows PCs: the copy runs on the PC that makes it.
+- **Programs the player installs** that are not on PATH can be named by path with
+  `%VARIABLES%`. Visual Studio, for example, through its `vswhere.exe`:
+  `{"name": "%ProgramFiles(x86)%/Microsoft Visual Studio/Installer/vswhere.exe",
+  "version_args": ["-latest", "-products", "*", "-requires", "<component>",
+  "-property", "catalog_productDisplayVersion"], "min_version": "17",
+  "player": true, "hosts": ["windows-x86_64", "windows-arm64"], "note": "..."}`.
+  An empty answer counts as not installed.
 - Run executable scripts directly so their own `#!/usr/bin/env bash` shebang
   applies. On macOS `/bin/bash` is bash 3.2, which some scripts do not support.
 - If a step needs submodules, add a first step
