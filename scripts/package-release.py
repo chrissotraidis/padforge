@@ -30,6 +30,8 @@ def payload():
         "docs/COMPATIBILITY.md", "docs/ADDING_A_GAME.md",
     )]
     files += sorted((ROOT / "padmint").glob("*.py")) + [ROOT / "padmint/tools.lock.json"]
+    # Headers the universal iPhone module pipeline adds to the open-source SDK.
+    files += sorted((ROOT / "padmint/ios-sdk/include").glob("*.h"))
     files += sorted((ROOT / "catalog").glob("*.json"))
     return [(path.relative_to(ROOT).as_posix(), path) for path in files]
 

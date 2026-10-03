@@ -225,6 +225,25 @@ file installs nothing, and tar downloads unpack on Windows.
 
 ## S1. iPhone/iPad module without Xcode or Apple's SDK: plausible, partly verified
 
+Update 3 Oct 2026: shared by every game, see D13.
+
+## D13. One iPhone module pipeline for every game (3 Oct 2026)
+
+D12's open-source SDK assembly moves from KartPad's builder into PadMint
+(`padmint/ios_module.py`, GPL-3.0-or-later like the KartPad code it came from, same
+author). A recipe declares `ios_module`; PadMint prepares the SDK and toolchain,
+the game compiles its library, and PadMint checks the library's imports against the
+published app and inserts it. The same path runs on Windows, Linux and Apple Silicon
+Macs: Macs need no Xcode for it. The open-source archives are identical on every
+computer, so their lock entries are marked `any_host` and only `ios_module` recipes
+use them on a Mac; existing recipes download exactly what they did before.
+
+Why: Apple's SDK may only be used on Apple computers, so a published app without game
+code plus a game library built from open-source parts is the only legally clean way to
+make iPhone apps on other computers. One shared implementation replaces per-game copies
+(KartPad's, SpaghettiPad's draft), so every game moved onto it inherits fixes. CI runs
+`scripts/ios-module-probe.py` on native Windows, Linux and macOS runners.
+
 Update 30 Sep 2026: done for KartPad, see D12.
 
 Test (BlueWake, private scratch, nothing committed): one real translated chunk

@@ -23,7 +23,7 @@ import time
 import urllib.parse
 import uuid
 
-from . import __version__, awake, game_file, gate, tools
+from . import __version__, awake, game_file, gate, ios_module, tools
 from .say import MESSAGES, localized, t
 from .manifest import (RUNNABLE_STATES, NeedsNewerPadMint, catalog, expand, host_id, load_manifest,
                        manifest_for, manifest_sha256, needs_build_input, on_android,
@@ -233,13 +233,13 @@ def run_process(argv, cwd, log_path, event_path, emit, before_spawn=None, append
 
 
 def run_steps(steps, argvs, cwd, log_path, event_path, emit, before_each, values=None, tool_names=(),
-              target_name=None):
+              target_name=None, any_host=False):
     """Run a manifest's ordered steps; PadMint emits the stage events itself."""
     event_path.parent.mkdir(parents=True, exist_ok=True)
     code, cancelled = 0, False
     for step, argv in zip(steps, argvs):
         stage = step["stage"]
-        env = backend_env((values or {}).get("jobs"), tool_names, target_name)
+        env = backend_env((values or {}).get("jobs"), tool_names, target_name, any_host)
         if step.get("env"):
             env.update({key: expand([value], values or {})[0] for key, value in step["env"].items()})
         argv = with_python_path(argv, env)
@@ -257,7 +257,8 @@ def run_steps(steps, argvs, cwd, log_path, event_path, emit, before_each, values
 def placeholder_values(args, repo, disc, work, output):
     return {"repo": str(repo), "disc": str(disc) if disc else "", "work": str(work),
             "output": str(output), "jobs": str(args.jobs), "app": app_path(args),
-            "python": sys.executable}
+            "python": sys.executable, "ios_sdk": getattr(args, "ios_sdk", ""),
+            "ios_toolchain": getattr(args, "ios_toolchain", "")}
 
 
 def with_python_path(argv, env):
@@ -295,14 +296,14 @@ def inherited_env(target_name=None):
     return env, removed
 
 
-def backend_env(jobs, tool_names=(), target_name=None):
+def backend_env(jobs, tool_names=(), target_name=None, any_host=False):
     """Environment for backend processes: PadMint's tools first on PATH, and the
     job cap for `cmake --build`. PADMINT_CACHE is a folder shared by every
     checkout of every game version, for downloads a backend can reuse after an
     update (it must still check them, as for any cache). For iPhone and Apple TV
     targets the inherited SDKROOT, CPATH and LIBRARY_PATH are left out."""
     base, _removed = inherited_env(target_name)
-    env = tools.environment(tool_names, host_id(), base) if tool_names else base
+    env = tools.environment(tool_names, host_id(), base, any_host) if tool_names else base
     if jobs:
         env.setdefault("CMAKE_BUILD_PARALLEL_LEVEL", str(jobs))
     env.setdefault("PADMINT_CACHE", str(tools.tools_root().parent / "cache"))
@@ -464,19 +465,39 @@ def execute(args, repo, disc):
             record["checkout_check"] = phase + "-passed"
 
         try:
+            module_spec = None if args.source_only else target.get("ios_module")
+            if module_spec:
+                # The universal iPhone pipeline: PadMint's open-source SDK for the steps,
+                # then PadMint checks the module and puts it in the published app.
+                if not app_path(args):
+                    raise ValueError("an iPhone game module needs the published app (--app)")
+                print("Preparing the iPhone SDK from open-source parts…", flush=True)
+                module_env = backend_env(args.jobs, target.get("tools", []), target_name, any_host=True)
+                prepared = ios_module.prepare(work / "padmint-ios-sdk", Path(app_path(args)), module_env)
+                args.ios_sdk, args.ios_toolchain = str(prepared["sdk"]), str(prepared["toolchain"])
             argv = command(args, repo, disc, work, output)
             events = work / "logs/progress.jsonl"
             if "steps" in target:
                 code, cancelled = run_steps(target["steps"], argv, repo, attempt / "backend.log",
                                             events, emit, lambda: recheck("before-launch"),
                                             values=placeholder_values(args, repo, disc, work, output),
-                                            tool_names=target.get("tools", []), target_name=target_name)
+                                            tool_names=target.get("tools", []), target_name=target_name,
+                                            any_host=bool(module_spec))
             else:
                 code, cancelled = run_process(argv, repo, attempt / "backend.log", events, emit,
                                               before_spawn=lambda: recheck("before-launch"),
                                               append=True,  # after PadMint's own notes
-                                              env=backend_env(args.jobs, target.get("tools", []), target_name))
+                                              env=backend_env(args.jobs, target.get("tools", []), target_name,
+                                                              bool(module_spec)))
             recheck("after-exit")
+            if code == 0 and module_spec:
+                module_file = Path(expand([module_spec["file"]],
+                                          placeholder_values(args, repo, disc, work, output))[0])
+                llvm = ios_module.llvm_root(module_env)
+                ios_module.check_imports(llvm, module_file, prepared["executable"])
+                ios_module.insert(Path(app_path(args)), module_file, module_spec["into"], output, llvm,
+                                  work / "padmint-ios-module")
+                print(f"Added your game module to the app: {module_spec['into']}", flush=True)
             if code == 0 and not args.source_only:
                 if not output.is_file() or output.stat().st_size == 0:
                     raise ValueError("Backend exited successfully but produced no output")
@@ -742,7 +763,7 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
     if accepted:
         print(f"Your game file: {accepted}", flush=True)
     print(t("step_tools"), flush=True)
-    tools.install(target.get("tools", []), host_id())
+    tools.install(target.get("tools", []), host_id(), any_host=bool(target.get("ios_module")))
     version = (read_game_version(source) or {}).get("version") or ref.lstrip("v")
     if target.get("published_app") and app is None:
         name = target["published_app"].format(version=version)
@@ -1413,7 +1434,7 @@ def main(argv=None):
             target = manifest["targets"].get(args.target)
             if target is None:
                 raise ValueError(f"{manifest['name']} has no {args.target} target")
-            tools.install(target.get("tools", []), host_id())
+            tools.install(target.get("tools", []), host_id(), any_host=bool(target.get("ios_module")))
             print(f"Tools ready in {tools.tools_root()}")
             return 0
         if args.action == "get":

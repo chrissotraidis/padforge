@@ -274,6 +274,8 @@
             "LLVM-22.1.8-macOS-ARM64/bin/llvm-readelf",
             "LLVM-22.1.8-macOS-ARM64/bin/llvm-readobj",
             "LLVM-22.1.8-macOS-ARM64/bin/llvm-cxxfilt",
+            "LLVM-22.1.8-macOS-ARM64/bin/ld64.lld",
+            "LLVM-22.1.8-macOS-ARM64/bin/llvm-install-name-tool",
             "LLVM-22.1.8-macOS-ARM64/lib/clang/22/include/"
           ]
         },
@@ -387,6 +389,7 @@
     "libcxx": {
       "version": "21.1.8",
       "only_where_listed": true,
+      "any_host": true,
       "license": "Apache-2.0 WITH LLVM-exception",
       "note": "iPhone game packs on Windows and Linux: libc++ headers, with LLVM and Apple's open-source headers.",
       "env": {
@@ -478,6 +481,7 @@
     "apple-libc": {
       "version": "1752.120.2",
       "only_where_listed": true,
+      "any_host": true,
       "license": "APSL-2.0",
       "note": "Apple open-source Libc-1752.120.2 headers for iPhone game packs on Windows and Linux.",
       "env": {
@@ -529,6 +533,7 @@
     "apple-xnu": {
       "version": "12377.121.6",
       "only_where_listed": true,
+      "any_host": true,
       "license": "APSL-2.0",
       "note": "Apple open-source xnu-12377.121.6 headers for iPhone game packs on Windows and Linux.",
       "env": {
@@ -596,6 +601,7 @@
     "apple-libpthread": {
       "version": "539.100.4",
       "only_where_listed": true,
+      "any_host": true,
       "license": "APSL-2.0",
       "note": "Apple open-source libpthread-539.100.4 headers for iPhone game packs on Windows and Linux.",
       "env": {
@@ -643,6 +649,7 @@
     "apple-libmalloc": {
       "version": "812.100.31",
       "only_where_listed": true,
+      "any_host": true,
       "license": "APSL-2.0",
       "note": "Apple open-source libmalloc-812.100.31 headers for iPhone game packs on Windows and Linux.",
       "env": {
@@ -690,6 +697,7 @@
     "apple-libplatform": {
       "version": "375.120.2",
       "only_where_listed": true,
+      "any_host": true,
       "license": "APSL-2.0",
       "note": "Apple open-source libplatform-375.120.2 headers for iPhone game packs on Windows and Linux.",
       "env": {
@@ -741,6 +749,7 @@
     "apple-availability": {
       "version": "157.2",
       "only_where_listed": true,
+      "any_host": true,
       "license": "APSL-2.0",
       "note": "Apple open-source AvailabilityVersions-157.2 headers for iPhone game packs on Windows and Linux.",
       "env": {

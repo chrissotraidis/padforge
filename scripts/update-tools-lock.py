@@ -168,7 +168,9 @@ def main():
                              "Windows and Linux: compiles iPhone game packs (with libcxx).",
                      "env": {"PADMINT_LLVM_ROOT": top}, "hosts": {
         "linux-arm64": llvm_download(LLVM, top, extra=IOS_LLVM_TOOLS),
-        "macos-arm64": llvm_download(LLVM_MAC, mac, version=LLVM_MAC, env={"PADMINT_LLVM_ROOT": mac}),
+        # ld64.lld and llvm-install-name-tool: the universal iPhone module pipeline on Apple Silicon.
+        "macos-arm64": llvm_download(LLVM_MAC, mac, extra=IOS_LLVM_TOOLS, version=LLVM_MAC,
+                                     env={"PADMINT_LLVM_ROOT": mac}),
         "macos-x86_64": llvm_download(LLVM_INTEL_MAC, intel_mac, version=LLVM_INTEL_MAC,
                                       env={"PADMINT_LLVM_ROOT": intel_mac})}}
     for host, name in LLVM_OFF_MAC.items():
@@ -181,7 +183,9 @@ def main():
     libcxx = github_file(github_assets("llvm/llvm-project", f"llvmorg-{LLVM}"), f"{top}.tar.xz",
                          archive="tar.xz", members=[f"{top}/include/", f"{top}/vendor/llvm/", f"{top}/LICENSE.TXT"])
     libcxx["with"] = ["llvm", *APPLE]
-    tools["libcxx"] = {"version": LLVM, "only_where_listed": True, "license": "Apache-2.0 WITH LLVM-exception",
+    # any_host: the same source files on every computer, so ios_module recipes use them on Macs too.
+    tools["libcxx"] = {"version": LLVM, "only_where_listed": True, "any_host": True,
+                       "license": "Apache-2.0 WITH LLVM-exception",
                        "note": "iPhone game packs on Windows and Linux: libc++ headers, with LLVM and "
                                "Apple's open-source headers.",
                        "env": {"PADMINT_LIBCXX": top}, "hosts": {host: libcxx for host in OFF_MAC}}
@@ -193,7 +197,8 @@ def main():
         entry = {"url": url, "sha256": hashlib.sha256(data).hexdigest(), "size": len(data), "archive": "tar.gz"}
         if members:
             entry["members"] = [f"{top}/{member}" for member in members]
-        tools[name] = {"version": tag.split("-", 1)[1], "only_where_listed": True, "license": "APSL-2.0",
+        tools[name] = {"version": tag.split("-", 1)[1], "only_where_listed": True, "any_host": True,
+                       "license": "APSL-2.0",
                        "note": f"Apple open-source {tag} headers for iPhone game packs on Windows and Linux.",
                        "env": {f"PADMINT_{name.upper().replace('-', '_')}": top},
                        "hosts": {host: entry for host in OFF_MAC}}
