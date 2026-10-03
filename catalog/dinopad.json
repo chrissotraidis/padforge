@@ -3,6 +3,7 @@
   "id": "dinopad",
   "repo_url": "https://github.com/chrissotraidis/dinopad",
   "name": "DinoPad",
+  "game": "Dinosaur Planet (N64 prototype)",
   "player_targets": [
     "ios"
   ],

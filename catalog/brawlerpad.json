@@ -3,6 +3,7 @@
   "id": "brawlerpad",
   "repo_url": "https://github.com/chrissotraidis/brawlerpad",
   "name": "BrawlerPad",
+  "game": "Super Smash Bros. (N64)",
   "player_targets": [
     "ios"
   ],

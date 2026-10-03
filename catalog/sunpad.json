@@ -3,6 +3,7 @@
   "id": "sunpad",
   "repo_url": "https://github.com/chrissotraidis/sunpad",
   "name": "SunPad",
+  "game": "Super Mario Sunshine (GameCube)",
   "player_targets": [
     "ios"
   ],

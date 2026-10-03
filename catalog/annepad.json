@@ -3,6 +3,7 @@
   "id": "annepad",
   "repo_url": "https://github.com/chrissotraidis/annepad",
   "name": "AnnePad",
+  "game": "Pokémon Stadium (N64)",
   "player_targets": [
     "ios"
   ],

@@ -3,6 +3,7 @@
   "id": "paperpad",
   "repo_url": "https://github.com/chrissotraidis/paperpad",
   "name": "PaperPad",
+  "game": "Paper Mario (N64)",
   "player_targets": [
     "ios"
   ],

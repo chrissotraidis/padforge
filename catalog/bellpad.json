@@ -3,6 +3,7 @@
   "id": "bellpad",
   "repo_url": "https://github.com/chrissotraidis/bellpad",
   "name": "BellPad",
+  "game": "Animal Crossing (GameCube)",
   "player_targets": [
     "ios"
   ],

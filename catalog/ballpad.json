@@ -3,6 +3,7 @@
   "id": "ballpad",
   "repo_url": "https://github.com/chrissotraidis/ballpad",
   "name": "BallPad",
+  "game": "Super Mario Strikers (GameCube)",
   "player_targets": [
     "ios"
   ],

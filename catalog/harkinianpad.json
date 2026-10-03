@@ -3,6 +3,7 @@
   "id": "harkinianpad",
   "repo_url": "https://github.com/chrissotraidis/harkinianpad",
   "name": "HarkinianPad",
+  "game": "The Legend of Zelda: Ocarina of Time (N64)",
   "player_targets": [
     "ios"
   ],

@@ -44,6 +44,19 @@ class WindowTests(unittest.TestCase):
         with urllib.request.urlopen(request, timeout=10) as response:
             return response.status, response.read()
 
+    def test_the_plan_lists_downloads_for_an_offered_game_only(self):
+        headers = {"X-PadMint-Token": "secret-token"}
+        status, body = self.request("/api/plan?game=kartpad&platform=android", headers=headers)
+        plan = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertEqual(plan["repo"], "https://github.com/chrissotraidis/kartpad")
+        self.assertIn("android-ndk", [tool["name"] for tool in plan["tools"]])
+        self.assertTrue(all(tool["source"] for tool in plan["tools"]))
+        self.assertIn(".so", plan["output"])
+        with self.assertRaises(urllib.error.HTTPError) as context:
+            self.request("/api/plan?game=kartpad&platform=ios", headers=headers)
+        self.assertEqual(context.exception.code, 400)
+
     def test_token_and_local_host_are_required(self):
         for headers in ({}, {"X-PadMint-Token": "secret-token", "Host": "attacker.example"}):
             with self.assertRaises(urllib.error.HTTPError) as context:
@@ -159,3 +172,38 @@ class OpenWindowTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PhaseTests(unittest.TestCase):
+    """make writes what it is doing to PADMINT_EVENTS; the page shows it as a checklist."""
+
+    def test_events_become_phases_tools_and_the_current_stage(self):
+        from padmint.ui import phases
+        events = [json.dumps(e) for e in (
+            {"phase": "release", "state": "running"}, {"phase": "release", "state": "done", "version": "v0.7.8"},
+            {"phase": "source", "state": "done", "folder": "/x"},
+            {"phase": "tools", "state": "running"},
+            {"phase": "tool", "name": "android-ndk", "state": "downloading", "percent": 40, "source": "dl.google.com"},
+            {"phase": "tool", "name": "android-ndk", "state": "ready"},
+            {"phase": "build", "state": "running"},
+            {"phase": "stage", "stage": "compile", "completed": 3, "total": 9})] + ["not json"]
+        found, tool_list, stage = phases(events, None)
+        self.assertEqual([(p["id"], p["state"]) for p in found],
+                         [("release", "done"), ("source", "done"), ("tools", "running"), ("build", "running")])
+        self.assertEqual(found[0]["version"], "v0.7.8")
+        self.assertEqual(tool_list, [{"name": "android-ndk", "state": "ready", "percent": 40, "source": "dl.google.com"}])
+        self.assertEqual(stage["completed"], 3)
+        failed, _tools, _stage = phases(events, 1)
+        self.assertEqual(failed[-1]["state"], "failed")
+        cancelled, _tools, _stage = phases(events, 130)
+        self.assertEqual(cancelled[-1]["state"], "cancelled")
+
+    def test_make_reports_only_when_the_window_asks(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "events.jsonl"
+            with mock.patch.dict("os.environ", {"PADMINT_EVENTS": str(path)}):
+                cli.report("release", state="running")
+            self.assertEqual(json.loads(path.read_text())["phase"], "release")
+            with mock.patch.dict("os.environ", {}, clear=True):
+                cli.report("release", state="done")  # no window: nothing written, no error
+            self.assertEqual(len(path.read_text().splitlines()), 1)

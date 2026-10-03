@@ -3,6 +3,7 @@
   "id": "goldenpad",
   "repo_url": "https://github.com/chrissotraidis/goldenpad",
   "name": "GoldenPad",
+  "game": "GoldenEye 007 (N64)",
   "player_targets": [
     "ios"
   ],

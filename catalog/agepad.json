@@ -3,6 +3,7 @@
   "id": "agepad",
   "repo_url": "https://github.com/chrissotraidis/agepad",
   "name": "AgePad",
+  "game": "Age of Empires II: Definitive Edition (Mac, Steam)",
   "player_targets": [
     "ios"
   ],

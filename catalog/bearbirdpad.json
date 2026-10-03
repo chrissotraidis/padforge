@@ -3,6 +3,7 @@
   "id": "bearbirdpad",
   "repo_url": "https://github.com/chrissotraidis/bearbirdpad",
   "name": "BearBirdPad",
+  "game": "Banjo-Kazooie (N64)",
   "player_targets": [
     "ios"
   ],

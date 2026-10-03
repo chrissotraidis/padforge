@@ -3,6 +3,7 @@
   "id": "bluewake",
   "repo_url": "https://github.com/chrissotraidis/bluewake",
   "name": "BlueWake",
+  "game": "The Legend of Zelda: The Wind Waker (GameCube)",
   "player_targets": [
     "ios"
   ],

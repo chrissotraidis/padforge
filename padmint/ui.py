@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 import webbrowser
 
-from . import __version__, cli
+from . import __version__, cli, tools
 from .manifest import catalog
 from .say import LANGUAGES, MESSAGES, language, localized, phrase
 
@@ -40,6 +40,10 @@ def player_data(lang):
         needs_file = entry.get("player_game_file", "build") != "in-app"
         files = cli.game_files(folder, entry.get("manifest")) if needs_file else []
         games.append({"id": game, "name": name, "needs_file": needs_file,
+                      "about": entry.get("game") or (entry.get("manifest") or {}).get("game", ""),
+                      "formats": sorted({f.upper() for item in (entry.get("manifest") or {}).get("inputs", [])
+                                         for f in item.get("formats", [])}),
+                      "ids": entry.get("game_ids") or [],
                       "platforms": [{"id": p, "label": cli.platform_label(p, lang)} for p in platforms],
                       "files": [str(path) for path in files[:8]],
                       "issues": entry["repo_url"] + "/issues"})
@@ -51,6 +55,57 @@ def player_data(lang):
     return {"lang": lang, "version": __version__, "folder": str(folder),
             "saved_in": phrase("saved_in", lang, folder=folder), "games": games, "downloads": apps,
             "text": strings(lang), "picker": not cli.on_android(), "reveal": not cli.on_android()}
+
+
+def plan(game, platform_name, lang):
+    """What a build will do on this computer, before it starts: what it downloads and from
+    where, how big, what the player installs first, and where the copy goes. Read from the
+    catalog's copy of the game's recipe, so sizes are close, not exact."""
+    entry = catalog()[game]
+    manifest = entry.get("manifest") or {}
+    target = (manifest.get("targets") or {}).get(platform_name) or {}
+    host, table = cli.host_id(), tools.lock()
+    any_host = bool(target.get("ios_module"))
+    items = []
+    for name in tools._with_companions([n for n in target.get("tools", []) if n in table], host, table, any_host):
+        download = tools.host_entry(table[name], host, any_host)
+        if download:
+            items.append({"name": name, "version": tools.version(table[name], host), "size": download.get("size"),
+                          "source": urlparse(download["url"]).hostname, "here": tools.installed(name, host)})
+    needs = [{"label": cli.label(tool), "ok": cli.check_program(tool)[0], "note": tool.get("note", "")}
+             for tool in cli.player_requirements(manifest)]
+    name = manifest.get("name") or entry.get("name", game)
+    key = f"w_output_{platform_name}"
+    return {"repo": entry["repo_url"], "tools": items, "tools_folder": str(tools.tools_root()),
+            "app": bool(target.get("published_app")), "space_gb": entry.get("free_space_gb"),
+            "folder": str(cli.player_folder()), "needs": needs,
+            "output": phrase(key, lang, name=name) if key in MESSAGES else ""}
+
+
+PHASES = ("release", "source", "tools", "app", "build", "save")
+
+
+def phases(events, code):
+    """The build's phases from make's events file, as the page shows them."""
+    found, tool_list, stage = {}, {}, None
+    for line in events:
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        kind = event.pop("phase", None)
+        if kind in PHASES:
+            found.setdefault(kind, {}).update(event)
+        elif kind == "tool" and event.get("name"):
+            tool_list.setdefault(event["name"], {}).update(event)
+        elif kind == "stage":
+            stage = event
+    if code is not None and code != 0:
+        for value in found.values():
+            if value.get("state") == "running":
+                value["state"] = "cancelled" if code == 130 else "failed"
+    result = [dict(found[name], id=name) for name in PHASES if name in found]
+    return result, list(tool_list.values()), stage
 
 
 def pick_file(title, folder):
@@ -107,7 +162,7 @@ class Builds:
 
     def __init__(self):
         self.lock = threading.Lock()
-        self.process = self.log = self.job = None
+        self.process = self.log = self.job = self.events = None
 
     def start(self, game, platform_name, disc, lang):
         with self.lock:
@@ -119,7 +174,9 @@ class Builds:
                     "--out", str(cli.player_folder()), "--result-file", str(folder / "result.json")]
             if disc:
                 argv += ["--disc", str(disc)]
-            env = dict(os.environ, PADMINT_LANG=lang, PYTHONIOENCODING="utf-8", PYTHONUNBUFFERED="1")
+            self.events = folder / "events.jsonl"
+            env = dict(os.environ, PADMINT_LANG=lang, PYTHONIOENCODING="utf-8", PYTHONUNBUFFERED="1",
+                       PADMINT_EVENTS=str(self.events))
             # Its own process group, so Cancel (Ctrl-Break on Windows) reaches only the build.
             group = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt"
                      else {"start_new_session": True})
@@ -127,6 +184,7 @@ class Builds:
                 self.process = subprocess.Popen(argv, cwd=ROOT, env=env, stdout=stream,
                                                 stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, **group)
             self.job = {"game": game, "platform": platform_name, "lang": lang, "folder": folder,
+                        "device": cli.platform_label(platform_name, lang),
                         "started": time.time(), "result": None}
 
     def status(self):
@@ -142,8 +200,12 @@ class Builds:
         now = next((line.strip() for line in reversed(lines)
                     if line.strip() and "build_progress:" not in line), "")
         state = {None: "running", 0: "done", 130: "cancelled"}.get(code, "failed")
+        events = (self.events.read_text("utf-8", "replace").splitlines()
+                  if self.events and self.events.exists() else [])
+        found, tool_list, stage = phases(events, code)
         reply = {"state": state, "step": "done" if code == 0 else step, "now": now[-200:], "game": job["game"],
-                 "elapsed": int(time.time() - job["started"]), "tail": lines[-60:], "exit_code": code}
+                 "device": job.get("device", ""), "elapsed": int(time.time() - job["started"]), "tail": lines[-60:],
+                 "lines": len(lines), "exit_code": code, "phases": found, "tools": tool_list, "stage": stage}
         if code == 0:
             reply["result"] = self.result()
         return reply
@@ -156,8 +218,12 @@ class Builds:
             except (OSError, ValueError, KeyError):
                 built = None
             steps, note, guide = cli.next_step_text(catalog()[job["game"]], job["platform"], built, job["lang"])
+            entry = catalog()[job["game"]]
+            name = (entry.get("manifest") or {}).get("name") or entry.get("name", job["game"])
+            key = f"w_output_{job['platform']}"
             job["result"] = {"file": str(built) if built else None, "steps": steps, "note": note,
-                             "guide": guide, "private": phrase("keep_private", job["lang"])}
+                             "guide": guide, "private": phrase("keep_private", job["lang"]),
+                             "about": phrase(key, job["lang"], name=name) if key in MESSAGES else ""}
         return job["result"]
 
     def cancel(self):
@@ -206,6 +272,13 @@ def make_handler(token, builds):
                 return self.reply(200, player_data(self.lang()))
             if route == "/api/build":
                 return self.reply(200, builds.status())
+            if route == "/api/plan":
+                query = parse_qs(urlparse(self.path).query)
+                game, platform_name = query.get("game", [""])[0], query.get("platform", [""])[0]
+                if not any(id_ == game and platform_name in platforms
+                           for id_, _name, platforms in cli.player_games()):
+                    return self.reply(400, {"error": "That game cannot be made for that device on this computer"})
+                return self.reply(200, plan(game, platform_name, self.lang()))
             return self.reply(404, {"error": "not found"})
 
         def do_POST(self):
@@ -265,97 +338,179 @@ def serve(port=0, open_browser=True):
 PAGE = r"""<!doctype html><html><head><meta charset="utf-8"><title>PadMint</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-:root{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;color-scheme:light dark;--accent:#1f8a5b}
-body{max-width:720px;margin:2rem auto;padding:0 1.2rem;line-height:1.5}
-header{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
-h1{margin:0}h2{font-size:1.1rem;margin:1.6rem 0 .5rem}p.note{color:GrayText;margin:.3rem 0}
-select,input{padding:.5rem;font:inherit;box-sizing:border-box}#game{width:100%}
-button{padding:.55rem 1rem;font:inherit;border-radius:6px;border:1px solid rgba(127,127,127,.5);cursor:pointer}
-button.main{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
-button:disabled{opacity:.5;cursor:default}.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
-.files button{display:block;width:100%;text-align:left;margin:.25rem 0;overflow-wrap:anywhere}
-.device label{display:block;padding:.4rem 0}.ok{color:var(--accent)}.bad{color:#c62828}
-pre{background:rgba(127,127,127,.12);padding:.8rem;white-space:pre-wrap;max-height:20rem;overflow:auto;font-size:.85rem}
-ol li{margin:.4rem 0;overflow-wrap:anywhere}.hidden{display:none}#now{overflow-wrap:anywhere}
-</style></head><body>
-<header><h1>PadMint</h1><label><span data-t="language"></span>
-<select id="lang"><option value="en">English</option><option value="es">Español</option><option value="pt">Português</option></select></label></header>
-<p class="note" data-t="intro"></p>
+:root{--bg:#0f1714;--panel:#16211d;--panel2:#1c2a25;--line:#2a3c35;--text:#e8f1ec;--muted:#9db3a9;--mint:#3ddc97;--mint2:#1fa572;--bad:#ff7a7a;--warn:#f5c56b;
+ font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f3f7f5;--panel:#fff;--panel2:#eef5f1;--line:#d6e3dc;--text:#14211c;--muted:#5a6f66;--mint:#14945f;--mint2:#0f7a4e;--bad:#c62828;--warn:#9a6700;color-scheme:light}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);line-height:1.5}
+a{color:var(--mint)}.wrap{max-width:860px;margin:0 auto;padding:1.4rem 1.2rem 3rem}
+header{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.7rem}.brand h1{margin:0;font-size:1.6rem;letter-spacing:-.02em}
+.brand .v{color:var(--muted);font-size:.85rem}.mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--mint),var(--mint2));display:grid;place-items:center}
+.mark svg{width:22px;height:22px}
+select,input{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:.55rem .7rem}
+.hero{margin:1.4rem 0 1rem}.hero p{margin:.2rem 0 .8rem;font-size:1.08rem}
+.chips{display:flex;gap:.5rem;flex-wrap:wrap}.chip{font-size:.85rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.2rem .7rem}
+.chip:before{content:"✓ ";color:var(--mint)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;margin:1rem 0}
+.card h2{margin:0 0 .7rem;font-size:1.1rem}.muted{color:var(--muted)}.small{font-size:.88rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.6rem}
+.pick{text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:.7rem .8rem;color:var(--text);cursor:pointer;font:inherit}
+.pick:hover{border-color:var(--mint)}.pick.on{border-color:var(--mint);box-shadow:0 0 0 2px color-mix(in srgb,var(--mint) 35%,transparent)}
+.pick b{display:block}.pick span{display:block;color:var(--muted);font-size:.82rem;margin-top:.15rem}
+.tags{margin-top:.4rem;display:flex;gap:.3rem;flex-wrap:wrap}.tag{font-size:.72rem;border-radius:6px;padding:.05rem .4rem;background:color-mix(in srgb,var(--mint) 16%,transparent);color:var(--mint)}
+.sub{margin:1rem 0 .5rem;font-size:.9rem;color:var(--muted);font-weight:600}
+button.btn{font:inherit;border-radius:10px;padding:.6rem 1.1rem;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+button.btn:hover{border-color:var(--mint)}button.main{background:var(--mint);border-color:var(--mint);color:#06281a;font-weight:700;font-size:1.05rem;padding:.75rem 1.4rem}
+button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.file{display:flex;justify-content:space-between;gap:.6rem;width:100%;margin:.3rem 0}.file b{overflow-wrap:anywhere}
+.state{margin:.6rem 0 0;font-weight:600}.ok{color:var(--mint)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+details summary{cursor:pointer;color:var(--muted)}
+.plan ol{margin:.2rem 0 .4rem;padding-left:1.3rem}.plan li{margin:.35rem 0;overflow-wrap:anywhere}
+.tools{list-style:none;padding:0;margin:.3rem 0}.tools li{display:flex;justify-content:space-between;gap:.8rem;border-bottom:1px dashed var(--line);padding:.25rem 0;font-size:.9rem}
+.out{background:var(--panel2);border-radius:10px;padding:.6rem .8rem;margin:.6rem 0}
+.hidden{display:none!important}
+.steps{list-style:none;margin:0;padding:0}.steps li{display:grid;grid-template-columns:1.8rem 1fr;gap:.5rem;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.ico{width:1.4rem;height:1.4rem;border-radius:50%;display:grid;place-items:center;font-size:.8rem;border:2px solid var(--line);margin-top:.1rem}
+.done .ico{background:var(--mint);border-color:var(--mint);color:#06281a}.running .ico{border-color:var(--mint);border-top-color:transparent;animation:spin 1s linear infinite}
+.failed .ico{border-color:var(--bad);color:var(--bad)}.cancelled .ico{color:var(--muted)}@keyframes spin{to{transform:rotate(360deg)}}
+.pending{color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.78rem}.detail{font-size:.86rem;color:var(--muted);overflow-wrap:anywhere}
+.bar{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:.35rem 0 .1rem}.bar i{display:block;height:100%;background:var(--mint);width:0}
+pre{background:#0a0f0d;color:#cfe3d8;border-radius:10px;padding:.8rem;white-space:pre-wrap;max-height:22rem;overflow:auto;font-size:.8rem;margin:.6rem 0}
+.big{font-size:1.25rem;margin:0}.next li{margin:.5rem 0;overflow-wrap:anywhere}.banner{border-left:4px solid var(--mint)}.banner.badb{border-left-color:var(--bad)}
+footer{margin-top:2rem;color:var(--muted);font-size:.82rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between}
+</style></head><body><div class="wrap">
+<header><div class="brand"><div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#06281a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-5-3-8-7-8-11a8 8 0 0 1 16 0c0 4-3 8-8 11z"/><path d="M12 21V9"/><path d="M12 13l3-3"/></svg></div>
+<div><h1>PadMint</h1><div class="v" id="ver"></div></div></div>
+<select id="lang" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="pt">Português</option></select></header>
+
+<section class="hero"><p data-t="intro"></p><div class="chips"><span class="chip" data-t="trust_local"></span><span class="chip" data-t="trust_upload"></span><span class="chip" data-t="trust_open"></span></div></section>
+
 <main id="form">
-<h2 data-t="game"></h2><select id="game"></select>
-<section id="fileBox"><h2 data-t="file"></h2>
-<div class="row"><button id="choose" data-t="choose"></button></div>
-<div id="foundBox"><p class="note" id="found"></p><div class="files" id="files"></div></div>
-<p class="note" data-t="type"></p>
-<div class="row"><input id="path" style="flex:1"><button id="use" data-t="use"></button></div>
-<p id="fileState"></p></section>
-<p id="inApp" class="note"></p>
-<section id="dlBox" class="hidden"><p id="dlIntro"></p><ol id="dlSteps"></ol><p id="dlGuide"></p></section>
-<section id="deviceBox"><h2 data-t="device"></h2><div class="device" id="devices"></div></section>
-<section id="finish"><p class="note" id="savedIn"></p><p class="note" data-t="time"></p>
-<div class="row"><button class="main" id="make" data-t="make" disabled></button></div><p id="makeError" class="bad"></p></section>
+<section class="card"><div class="row" style="justify-content:space-between"><h2 data-t="step1"></h2><input id="search" style="max-width:220px"><button class="btn hidden" id="changeGame" data-t="change"></button></div>
+<div class="sub" data-t="builds"></div><div class="grid" id="games"></div>
+<div id="dlHead" class="sub" data-t="no_build"></div><div class="grid" id="apps"></div></section>
+
+<section class="card hidden" id="dlBox"><h2 id="dlName"></h2><p id="dlIntro"></p><ol class="next" id="dlSteps"></ol><p class="small" id="dlGuide"></p></section>
+
+<section class="card hidden" id="fileBox"><h2 data-t="step2"></h2><p id="fileHint" class="small"></p>
+<div class="row"><button class="btn" id="choose" data-t="choose"></button></div>
+<div id="foundBox"><p class="muted small" id="found"></p><div id="files"></div></div>
+<details id="typeBox"><summary data-t="type_toggle"></summary><p class="muted small" data-t="type"></p>
+<div class="row"><input id="path" style="flex:1;min-width:240px"><button class="btn" id="use" data-t="use"></button></div></details>
+<p class="state" id="fileState"></p></section>
+<p id="inApp" class="muted hidden"></p>
+
+<section class="card hidden" id="deviceBox"><h2 data-t="step3"></h2><div class="grid" id="devices"></div></section>
+
+<section class="card plan hidden" id="planBox"><h2 data-t="plan_title"></h2><div id="plan"></div>
+<div class="row" style="margin-top:.8rem"><button class="btn main" id="make" data-t="make" disabled></button></div>
+<p class="bad" id="makeError"></p></section>
 </main>
+
 <main id="progress" class="hidden">
-<h2 id="step"></h2><p><b data-t="elapsed"></b>: <span id="elapsed"></span></p>
-<p id="nowRow"><b data-t="now"></b>: <span id="now"></span></p>
-<div id="finished"></div>
-<div class="row"><button id="cancel" data-t="cancel"></button><button id="again" class="hidden" data-t="again"></button></div>
-<details id="detailsBox"><summary data-t="details"></summary><pre id="tail"></pre>
-<button id="copy" data-t="copy"></button></details>
+<section class="card banner" id="headCard"><p class="big" id="making"></p><p class="muted small"><span data-t="elapsed"></span>: <b id="elapsed"></b></p></section>
+<section class="card"><ul class="steps" id="phases"></ul>
+<div class="row" style="margin-top:.8rem"><button class="btn" id="cancel" data-t="cancel"></button><span class="muted small" id="cancelNote" data-t="cancel_note"></span>
+<button class="btn hidden" id="again" data-t="again"></button></div></section>
+<section class="card hidden" id="finished"></section>
+<section class="card"><details id="logBox"><summary><span data-t="log"></span> <span class="muted" id="lineCount"></span></summary>
+<pre id="tail"></pre><button class="btn" id="copy" data-t="copy_log"></button></details></section>
 </main>
+<footer><span data-t="local_note"></span><span><a href="https://github.com/chrissotraidis/padmint" target="_blank" data-t="source"></a> · <a id="reportLink" href="https://github.com/chrissotraidis/padmint/issues" target="_blank" data-t="report"></a></span></footer>
+</div>
 <script>
 const T="__TOKEN__",D=__DATA__,S=D.text,H={"Content-Type":"application/json","X-PadMint-Token":T};
-const $=id=>document.getElementById(id);let file=null,reading=false;
-for(const el of document.querySelectorAll("[data-t]"))el.textContent=S[el.dataset.t];
-document.documentElement.lang=D.lang;$("lang").value=D.lang;$("savedIn").textContent=D.saved_in;
+const $=id=>document.getElementById(id);let file=null,reading=false,sel=null,dev=null,shown=false;
+const fill=(k,v)=>Object.entries(v||{}).reduce((s,[a,b])=>s.split("{"+a+"}").join(b),S[k]||"");
+for(const e of document.querySelectorAll("[data-t]"))e.textContent=S[e.dataset.t]||"";
+document.documentElement.lang=D.lang;$("lang").value=D.lang;$("ver").textContent="v"+D.version;$("search").placeholder=S.search;
 $("choose").classList.toggle("hidden",!D.picker);
 $("lang").onchange=()=>{location.search="?token="+T+"&lang="+$("lang").value};
 async function post(p,b){const r=await fetch(p,{method:"POST",headers:H,body:JSON.stringify(Object.assign({lang:D.lang},b||{}))});return r.json()}
-const game=()=>D.games.find(g=>g.id==$("game").value);
-const app=()=>D.downloads.find(a=>a.id==$("game").value);
 const base=p=>p.split(/[\\/]/).pop();
-function el(tag,text,cls){const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e}
-function ready(){const g=game();$("make").disabled=!g||reading||(g.needs_file&&!file)||!document.querySelector("input[name=device]:checked")}
-function showGame(){const g=game(),a=app();file=null;$("fileState").textContent="";$("path").value="";
+function el(tag,text,cls){const e=document.createElement(tag);if(text!=null&&text!=="")e.textContent=text;if(cls)e.className=cls;return e}
+const gb=b=>b?(b>=1e9?(b/1e9).toFixed(1)+" GB":Math.max(1,Math.round(b/1e6))+" MB"):"";
+const game=()=>D.games.find(g=>g.id==sel),app=()=>D.downloads.find(a=>a.id==sel);
+function cards(){const q=$("search").value.trim().toLowerCase(),m=x=>sel?x.id==sel:(!q||(x.name+" "+(x.about||"")).toLowerCase().includes(q));
+ $("search").classList.toggle("hidden",!!sel);$("changeGame").classList.toggle("hidden",!sel);
+ for(const e of document.querySelectorAll(".sub"))e.classList.toggle("hidden",!!sel);
+ $("games").replaceChildren(...D.games.filter(m).map(g=>{const b=el("button",null,"pick"+(g.id==sel?" on":""));b.append(el("b",g.name));if(g.about)b.append(el("span",g.about));
+  const t=el("div",null,"tags");for(const p of g.platforms)t.append(el("span",p.label,"tag"));b.append(t);b.onclick=()=>choose(g.id);return b}));
+ const as=D.downloads.filter(m);$("dlHead").classList.toggle("hidden",!as.length||!!sel);
+ $("apps").replaceChildren(...as.map(a=>{const b=el("button",null,"pick"+(a.id==sel?" on":""));b.append(el("b",a.name));b.onclick=()=>choose(a.id);return b}))}
+$("search").oninput=cards;$("changeGame").onclick=()=>{sel=null;file=null;dev=null;for(const id of ["fileBox","deviceBox","planBox","dlBox","inApp"])$(id).classList.add("hidden");cards()};
+function choose(id){sel=id;file=null;dev=null;$("fileState").textContent="";$("path").value="";cards();const g=game(),a=app();
  $("dlBox").classList.toggle("hidden",!a);
- if(a){$("dlIntro").textContent=a.intro;$("dlSteps").replaceChildren(...a.steps.map(s=>el("li",s)));
-  const l=el("a",a.guide);l.href=a.guide;l.target="_blank";$("dlGuide").replaceChildren(S.guide+": ",l)}
- for(const id of ["fileBox","inApp","deviceBox","finish"])$(id).classList.toggle("hidden",!g);if(!g)return ready();
- $("fileBox").classList.toggle("hidden",!g.needs_file);$("inApp").textContent=g.needs_file?"":S.file_in_app.replace("{name}",g.name);
- $("foundBox").classList.toggle("hidden",!g.files.length);$("found").textContent=S.found.replace("{folder}",D.folder);$("files").innerHTML="";
- for(const f of g.files){const b=el("button",base(f));b.title=f;b.onclick=()=>useFile(f);$("files").append(b)}
- $("devices").innerHTML="";for(const p of g.platforms){const l=el("label"),r=el("input");
-  r.type="radio";r.name="device";r.value=p.id;r.checked=g.platforms.length==1;r.onchange=ready;l.append(r," "+p.label);$("devices").append(l)}ready()}
-async function useFile(path){if(!path)return;$("path").value=path;reading=true;file=null;ready();$("fileState").className="";
- $("fileState").textContent="…";const r=await post("/api/file",{game:game().id,path});reading=false;
- if(r.problem||r.error){$("fileState").className="bad";$("fileState").textContent=r.problem||r.error}
- else{file=path;$("fileState").className="ok";$("fileState").textContent=S.file_ok.replace("{file}",base(path))}ready()}
-$("choose").onclick=async()=>{const r=await post("/api/pick");if(r.path)useFile(r.path);else if(!r.available)$("path").focus()};
+ if(a){$("dlName").textContent=a.name;$("dlIntro").textContent=a.intro;$("dlSteps").replaceChildren(...a.steps.map(linked));
+  const l=el("a",a.guide);l.href=a.guide;l.target="_blank";$("dlGuide").replaceChildren(S.guide+": ",l);$("dlBox").scrollIntoView({behavior:"smooth"})}
+ for(const id of ["fileBox","deviceBox","planBox"])$(id).classList.add("hidden");$("inApp").classList.add("hidden");if(!g)return;
+ if(g.needs_file){$("fileBox").classList.remove("hidden");
+  const h=$("fileHint");h.replaceChildren(el("b",fill("file_hint",{game:g.about||g.name})));
+  if(g.formats.length)h.append(" ",el("span",fill("file_formats",{formats:g.formats.join(", ")}),"muted"));
+  if(g.ids.length)h.append(" · ",el("span",fill("file_ids",{ids:g.ids.join(", ")}),"muted"));$("foundBox").classList.toggle("hidden",!g.files.length);$("found").textContent=fill("found",{folder:D.folder});
+  $("files").replaceChildren(...g.files.map(f=>{const b=el("button",null,"btn file");b.append(el("b",base(f)),el("span","→","muted"));b.title=f;b.onclick=()=>useFile(f);return b}))}
+ else{$("inApp").textContent=fill("file_in_app",{name:g.name});$("inApp").classList.remove("hidden")}
+ $("deviceBox").classList.remove("hidden");$("devices").replaceChildren(...g.platforms.map(p=>{const b=el("button",null,"pick");b.append(el("b",p.label));b.onclick=()=>pickDevice(p.id);b.dataset.id=p.id;return b}));
+ if(g.platforms.length==1)pickDevice(g.platforms[0].id);($("fileBox").classList.contains("hidden")?$("deviceBox"):$("fileBox")).scrollIntoView({behavior:"smooth"});ready()}
+async function pickDevice(id){dev=id;for(const b of $("devices").children)b.classList.toggle("on",b.dataset.id==id);$("planBox").classList.remove("hidden");$("plan").replaceChildren(el("p","…","muted"));
+ const r=await (await fetch("/api/plan?game="+sel+"&platform="+id+"&lang="+D.lang,{headers:H})).json();if(dev!=id)return;showPlan(r);ready()}
+let blocked=false;
+function showPlan(p){const g=game(),box=$("plan");box.replaceChildren();if(p.error){box.append(el("p",p.error,"bad"));return}
+ if(p.output)box.append(el("div",p.output,"out"));
+ blocked=p.needs.some(n=>!n.ok);
+ if(p.needs.length){box.append(el("p",S.plan_needs,"state"));const u=el("ul",null,"tools");for(const n of p.needs){const li=el("li");li.append(el("span",n.label),el("span",n.ok?S.needs_ok:S.needs_missing,n.ok?"ok":"bad"));u.append(li);if(!n.ok)u.append(el("li",n.note,"detail"))}box.append(u)}
+ const o=el("ol");const repo=p.repo.replace("https://","");o.append(el("li",fill("plan_source",{name:g.name,repo})));
+ const li=el("li",fill("plan_tools",{folder:p.tools_folder}));const u=el("ul",null,"tools");
+ for(const t of p.tools){const r=el("li");r.append(el("span",t.name+" "+t.version+" · "+fill("from",{host:t.source})),el("span",t.here?S.tool_here:gb(t.size),t.here?"ok":"muted"));u.append(r)}
+ li.append(u);o.append(li);if(p.app)o.append(el("li",fill("plan_app",{name:g.name})));
+ o.append(el("li",S.plan_build),el("li",fill("plan_save",{folder:p.folder})));box.append(o);
+ if(p.space_gb)box.append(el("p",fill("plan_space",{gb:p.space_gb}),"muted small"))}
+function ready(){const g=game();$("make").disabled=!g||!dev||reading||blocked||(g.needs_file&&!file)}
+async function useFile(path){if(!path)return;$("path").value=path;reading=true;file=null;ready();$("fileState").className="state";
+ $("fileState").textContent="…";const r=await post("/api/file",{game:sel,path});reading=false;
+ if(r.problem||r.error){$("fileState").className="state bad";$("fileState").textContent=r.problem||r.error}
+ else{file=path;$("fileState").className="state ok";$("fileState").textContent="✓ "+fill("file_ok",{file:base(path)})}ready()}
+$("choose").onclick=async()=>{const r=await post("/api/pick");if(r.path)useFile(r.path);else if(!r.available){$("typeBox").open=true;$("path").focus()}};
 $("use").onclick=()=>useFile($("path").value.trim().replace(/^["']|["']$/g,""));
-$("make").onclick=async()=>{const d=document.querySelector("input[name=device]:checked");$("make").disabled=true;
- const r=await post("/api/make",{game:game().id,platform:d.value,path:file});if(r.error){$("makeError").textContent=r.error;ready();return}show(r);poll()};
+$("make").onclick=async()=>{$("make").disabled=true;const r=await post("/api/make",{game:sel,platform:dev,path:file});
+ if(r.error){$("makeError").textContent=r.error;ready();return}show(r);poll()};
 $("cancel").onclick=async()=>{$("cancel").disabled=true;await post("/api/cancel")};
 $("again").onclick=()=>{location.search="?token="+T+"&lang="+D.lang};
 $("copy").onclick=async()=>{const text="PadMint "+D.version+" ("+navigator.platform+")\n"+$("tail").textContent;
  try{await navigator.clipboard.writeText(text);$("copy").textContent=S.copied}catch(e){getSelection().selectAllChildren($("tail"))}};
 const clock=s=>[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map((n,i)=>i?String(n).padStart(2,"0"):n).join(":");
-let shown=false;
+function linked(text){const li=el("li");for(const part of text.split(/(https:\/\/[^\s)]*[^\s).,;:])/)){if(/^https:\/\//.test(part)){const a=el("a",part);a.href=part;a.target="_blank";li.append(a)}else li.append(part)}return li}
+function bar(pct){const b=el("div",null,"bar"),i=el("i");i.style.width=Math.max(0,Math.min(100,pct))+"%";b.append(i);return b}
+function phaseRow(p,r,g){const li=el("li",null,p.state||"pending"),ico=el("div",p.state=="done"?"✓":p.state=="failed"?"✕":p.state=="cancelled"?"–":"","ico"),body=el("div");
+ const name=g?g.name:r.game;body.append(el("div",fill("ph_"+p.id,{name})));
+ const repo=(p.repo||"").replace("https://","");
+ if(p.id=="release"&&p.version)body.append(el("div",fill("version_from",{version:p.version,repo}),"detail"));
+ if(p.id=="source"&&p.folder)body.append(el("div",p.folder,"detail"));
+ if(p.id=="tools"){for(const t of r.tools){const d=el("div",null,"detail");d.append(t.name+" "+(t.version||"")+" · "+fill("from",{host:t.source||""})+" · "+(t.state=="ready"?"✓":t.state=="unpacking"?S.unpacking:(t.percent||0)+"% "+gb(t.size)));
+   body.append(d);if(t.state=="downloading")body.append(bar(t.percent||0))}}
+ if(p.id=="app"&&p.name)body.append(el("div",p.name,"detail"));
+ if(p.id=="build"&&r.stage&&p.state=="running"){const s=r.stage;body.append(el("div",fill("stage",{stage:s.stage})+(s.total?" · "+s.completed+" / "+s.total+(s.unit?" "+s.unit:""):""),"detail"));if(s.total)body.append(bar(100*s.completed/s.total))}
+ if(p.id=="build"&&p.state=="running"&&r.now)body.append(el("div",r.now.slice(-160),"detail mono"));
+ if(p.id=="save"&&p.file)body.append(el("div",p.file,"detail ok"));
+ li.append(ico,body);return li}
 function show(r){if(r.state=="idle")return;$("form").classList.add("hidden");$("progress").classList.remove("hidden");
- $("step").textContent=r.state=="cancelled"?S.cancelled:{tools:S.step_tools,build:S.step_build,done:S.step_done}[r.step];
- $("elapsed").textContent=clock(r.elapsed);$("now").textContent=r.now||S.starting;$("tail").textContent=r.tail.join("\n");
- const over=r.state!="running";$("cancel").classList.toggle("hidden",over);$("again").classList.toggle("hidden",!over);$("nowRow").classList.toggle("hidden",over);
- if(!over||shown)return;shown=true;const f=$("finished"),g=D.games.find(x=>x.id==r.game)||{issues:""};
- if(r.state=="failed"){const p=el("p",S.failed+" ","bad"),a=el("a",g.issues);a.href=g.issues;a.target="_blank";p.append(a);f.append(p);$("detailsBox").open=true}
- if(r.state=="done"&&r.result){const x=r.result;
-  if(x.file){f.append(el("p",x.file,"ok"));if(D.reveal){const b=el("button",S.show);b.onclick=()=>post("/api/reveal");f.append(b)}}
-  if(x.steps.length){const o=el("ol");for(const s of x.steps)o.append(el("li",s));f.append(el("h2",S.next),o)}
-  if(x.note)f.append(el("p",x.note));
-  const p=el("p",S.guide+": "),a=el("a",x.guide);a.href=x.guide;a.target="_blank";p.append(a);f.append(p,el("p",x.private,"note"))}}
-async function poll(){const r=await (await fetch("/api/build",{headers:H})).json();show(r);if(r.state=="running")setTimeout(poll,2000)}
-if(!D.games.length&&!D.downloads.length){$("form").replaceChildren(el("p",S.none,"bad"))}
-else{const pick=el("option",S.pick_game);pick.value="";$("game").append(pick);
- for(const g of D.games){const o=el("option",g.name);o.value=g.id;$("game").append(o)}
- if(D.downloads.length){const grp=el("optgroup");grp.label=S.no_build;
-  for(const a of D.downloads){const o=el("option",a.name);o.value=a.id;grp.append(o)}$("game").append(grp)}
- $("game").onchange=showGame;showGame();poll()}
-</script></body></html>"""
+ const g=D.games.find(x=>x.id==r.game);$("making").textContent=r.state=="done"?S.done_title:r.state=="failed"?S.failed_title:r.state=="cancelled"?S.cancelled:fill("making",{name:g?g.name:r.game,device:r.device||""});
+ $("headCard").classList.toggle("badb",r.state=="failed");$("elapsed").textContent=clock(r.elapsed);
+ const ids=["release","source","tools","app","build","save"],have={};for(const p of r.phases||[])have[p.id]=p;
+ const list=ids.filter(id=>have[id]||(id!="app"&&r.state=="running")).map(id=>have[id]||{id,state:"pending"});
+ $("phases").replaceChildren(...list.map(p=>phaseRow(p,r,g)));
+ const pre=$("tail"),stick=pre.scrollTop+pre.clientHeight>=pre.scrollHeight-20;pre.textContent=r.tail.length?r.tail.join("\n"):S.log_empty;if(stick)pre.scrollTop=pre.scrollHeight;$("lineCount").textContent=r.lines?"("+r.lines+")":"";$("copy").disabled=!r.tail.length;
+ const over=r.state!="running";$("cancel").classList.toggle("hidden",over);$("cancelNote").classList.toggle("hidden",over);$("again").classList.toggle("hidden",!over);
+ if(!over||shown)return;shown=true;const f=$("finished");f.classList.remove("hidden");if(g)$("reportLink").href=g.issues;
+ if(r.state=="failed"){const p=el("p",S.failed+" ","bad"),a=el("a",g?g.issues:"");a.href=g?g.issues:"";a.target="_blank";p.append(a);f.append(p);$("logBox").open=true}
+ if(r.state=="cancelled")f.classList.add("hidden");
+ if(r.state=="done"&&r.result){const x=r.result;$("headCard").after(f);
+  f.append(el("h2",S.what_you_got));if(x.about)f.append(el("p",x.about));
+  if(x.file){const row=el("div",null,"row out");row.append(el("span",x.file,"mono ok"));if(D.reveal){const b=el("button",S.show,"btn");b.onclick=()=>post("/api/reveal");row.append(b)}f.append(row)}
+  if(x.steps.length){const o=el("ol",null,"next");for(const s of x.steps)o.append(linked(s));f.append(el("h2",S.next),o)}
+  if(x.note)f.append(el("p",x.note,"muted"));
+  const p=el("p",S.guide+": ","small"),a=el("a",x.guide);a.href=x.guide;a.target="_blank";p.append(a);f.append(p,el("p",x.private,"warn small"))}}
+async function poll(){const r=await (await fetch("/api/build",{headers:H})).json();show(r);if(r.state=="running")setTimeout(poll,1500)}
+if(!D.games.length&&!D.downloads.length){$("form").replaceChildren(el("p",S.none,"bad"))}else{cards();poll()}
+</script></body></html>
+"""
