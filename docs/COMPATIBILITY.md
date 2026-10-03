@@ -1,6 +1,7 @@
 # Build compatibility
 
-Public recipe snapshot: **3 October 2026**, checked with PadMint **v0.2.9**.
+Public recipe snapshot: **3 October 2026**, checked with PadMint **v0.2.9**; KartPad's rows
+were rechecked against its v0.7.4 recipe with PadMint **v0.3.1**.
 The table describes the recipe shipped with each game's latest public release.
 It does not promote a declared host to tested gameplay support. See
 [catalog-wide compatibility work](https://github.com/chrissotraidis/padmint/issues/75)
@@ -37,9 +38,9 @@ guided setup offers its Android and iOS targets only.
 | [DinoPad v0.2.0](https://github.com/chrissotraidis/dinopad/releases/tag/v0.2.0) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
 | [GoldenPad v0.2.2](https://github.com/chrissotraidis/goldenpad/releases/tag/v0.2.2) | iOS IPA | Experimental | Planned / Unavailable | Planned / Unavailable |
 | [HarkinianPad v0.2.0](https://github.com/chrissotraidis/harkinianpad/releases/tag/v0.2.0) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
-| [KartPad v0.7.3](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.3) | iOS IPA | Experimental | Experimental / Experimental | Experimental / Experimental |
-| [KartPad v0.7.3](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.3) | macOS app | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
-| [KartPad v0.7.3](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.3) | Android game pack | Experimental | Experimental / Experimental | Experimental / Experimental |
+| [KartPad v0.7.4](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.4) | iOS IPA | Experimental | Experimental / Experimental | Experimental / Experimental |
+| [KartPad v0.7.4](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.4) | macOS app | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
+| [KartPad v0.7.4](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.4) | Android game pack | Experimental | Experimental / Experimental | Experimental / Experimental |
 | [MaskPad v0.2.0](https://github.com/chrissotraidis/maskpad/releases/tag/v0.2.0) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
 | [MeleePad v0.2.1](https://github.com/chrissotraidis/meleepad/releases/tag/v0.2.1) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
 | [PaperPad v0.2.1](https://github.com/chrissotraidis/paperpad/releases/tag/v0.2.1) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
@@ -57,11 +58,28 @@ does not establish Android/Termux acceptance.
 **Intel Mac:** KartPad's Android recipe declares it experimental. The other
 Mac build routes in this snapshot require Apple Silicon.
 
-**Direct previews:** [DevilTouch](https://github.com/chrissotraidis/deviltouch/releases/tag/v1.5.5-preview.1)
-and [VaultPad](https://github.com/chrissotraidis/vaultpad/releases/tag/v0.1.0-preview.1)
-use existing unsigned previews with your own data added in the app. They do
-not require a PadMint build; VaultPad is iPad-only. **SnapPad** downloads
-remain paused and no public PadMint recipe is available.
+**No build needed:** CaesarPad, DaggerPad, DevilTouch, Emerald Tablet, KidPad,
+PeonPad and VaultPad publish apps without game files; PadMint lists them with
+download and data-import steps. **SnapPad** downloads remain paused and no public
+PadMint recipe is available.
+
+## Recorded KartPad builds on x64
+
+On 3 October, public PadMint **v0.3.1** made both KartPad **v0.7.4** outputs on
+**Ubuntu 24.04 x86-64** (a Docker container under Rosetta on an Apple Silicon Mac,
+so every PadMint-downloaded x64 tool really ran), from a fresh PadMint home and the
+Europe **RMCP01 revision 0** WBFS, with six build jobs:
+
+| Output | Result |
+|---|---|
+| Android game pack | Completed in about 18 minutes: AArch64, 16 KB-aligned, with the 2,043-file game data folder |
+| iPhone/iPad IPA | Completed in about 32 minutes; PadMint's IPA check passed |
+| That Android pack, played | Added with **Help → Replace Game Pack** in KartPad 0.7.4 on an Android 16 emulator; Luigi Circuit raced at about 60 FPS |
+
+A Windows 11 on ARM VM cannot stand in for a Windows x64 PC: PadMint's bundled
+x64 Python still reports ARM64 there, so it builds the ARM64 way. **Native Windows
+x64 and Intel Mac builds remain unverified**, and the IPA was not installed on a
+device in this check.
 
 ## Recorded Android pack builds
 
