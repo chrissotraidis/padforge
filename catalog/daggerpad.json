@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "daggerpad",
+  "name": "DaggerPad",
+  "repo_url": "https://github.com/chrissotraidis/daggerpad",
+  "reviewed_revision": null,
+  "player_help": "https://github.com/chrissotraidis/daggerpad#get-started",
+  "notes": "No build needed: the published app contains no game data and the player adds their own files in the app. Listed while the Public Repo Audit Tracker row allows its existing public release.",
+  "download": {
+    "steps": [
+      "Download the DaggerPad IPA from https://github.com/chrissotraidis/daggerpad/releases and check it against the SHA-256 file beside it.",
+      "Install it with AltStore Classic, SideStore or Sideloadly, signed with your own Apple ID.",
+      "Put a ZIP of your own Daggerfall game files, named daggerfall.zip, in Files. Open DaggerPad, tap Import and pick it, then tap Play when setup finishes."
+    ],
+    "translations": {
+      "es": {
+        "steps": [
+          "Descarga la IPA de DaggerPad desde https://github.com/chrissotraidis/daggerpad/releases y compruébalo con el archivo SHA-256 que lo acompaña.",
+          "Instálala con AltStore Classic, SideStore o Sideloadly, firmada con tu propio Apple ID.",
+          "Pon un ZIP de tus propios archivos de Daggerfall, llamado daggerfall.zip, en Archivos. Abre DaggerPad, toca Import y elígelo; al terminar, toca Play."
+        ]
+      },
+      "pt": {
+        "steps": [
+          "Baixe o IPA do DaggerPad em https://github.com/chrissotraidis/daggerpad/releases e confira-o com o arquivo SHA-256 ao lado dele.",
+          "Instale-o com AltStore Classic, SideStore ou Sideloadly, assinado com o seu próprio Apple ID.",
+          "Coloque um ZIP dos seus próprios arquivos do Daggerfall, chamado daggerfall.zip, no app Arquivos. Abra o DaggerPad, toque em Import e escolha-o; ao terminar, toque em Play."
+        ]
+      }
+    }
+  },
+  "manifest": null
+}

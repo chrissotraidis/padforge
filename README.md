@@ -137,20 +137,20 @@ more.
 
 4. Tap **Allow** if Android asks about access to your files. Wait for setup to
    finish; the first run downloads tools before it asks you to choose a file.
-5. PadMint lists the game files in **Download**, for example `1. Mario Kart Wii.rvz`.
-   When it asks for a number, type `1` for that example and press Enter.
-   This is the number beside the **filename**, not a disc ID like `RMCP01`.
-   If there is no list yet, do not type a number. Wait for setup to finish.
-   Keep Termux open with the screen on until it says your game is ready.
+5. PadMint opens in the phone's browser. Choose **KartPad**, tap your disc image
+   in the list of game files found in **Download**, and tap **Make my copy**.
+   The page shows each step. Keep Termux open in the background, with the screen
+   on, until the page says your copy is ready.
 6. In KartPad, tap **Import Game** (or **Play Game**) on the Mario Kart Wii
    card. At **Add your game pack**, tap **Choose file** and select the
    `KartPad-v…-android-personal.so` in Download. Then, at **Game Data & Saves**,
    tap **Import from Extracted Game Data Folder…**, choose the `KartPad game data`
    folder in Download and tap **Done**. Tap **Play Game**.
 
-**Typed a number and nothing happened?** PadMint needs to be showing its file
-list and number prompt first. If Termux shows only a `$` prompt, type `padmint`
-and press Enter to start it. If setup stopped with an error, share that error
+**No page opened?** If Termux shows only a `$` prompt, type `padmint` and press
+Enter. To answer in Termux instead, type `padmint start`: it lists the game
+files in **Download** with numbers; type the number beside the **filename**
+(not a disc ID like `RMCP01`). If setup stopped with an error, share that error
 text in a [PadMint issue](https://github.com/chrissotraidis/padmint/issues).
 
 Next time, type `padmint` in Termux. If Android stops the build ("Process
@@ -210,13 +210,13 @@ public recipe versions and the evidence behind the current limitations.
 
 ## Other Pad games
 
-**DevilTouch and VaultPad have a different route:** their existing public
-previews can be downloaded without running PadMint. Use the
-[DevilTouch preview](https://github.com/chrissotraidis/deviltouch/releases/tag/v1.5.5-preview.1)
-or [VaultPad preview](https://github.com/chrissotraidis/vaultpad/releases/tag/v0.1.0-preview.1),
-check the included checksum, then sign and sideload the unsigned IPA. Add your
-own game data inside the app. VaultPad is iPad-only. These are preview releases,
-not App Store builds; use the explicit preview links above.
+**No build needed:** **CaesarPad**, **DaggerPad**, **DevilTouch**, **Emerald
+Tablet**, **KidPad**, **PeonPad** and **VaultPad** publish apps that contain no
+game files, so there is nothing to build. Choose one in PadMint (under **No build
+needed**) or run `padmint list` to see the steps: download the IPA from the
+game's releases page, check its checksum, sign and sideload it with your own
+Apple ID, then add your own game files inside the app. These are preview
+releases, not App Store builds.
 
 **SnapPad:** public downloads remain paused. Its `see repo` catalog entry is
 not an available PadMint build recipe or a playable download.

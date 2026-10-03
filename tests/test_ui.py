@@ -55,6 +55,11 @@ class WindowTests(unittest.TestCase):
         self.assertEqual([game["id"] for game in data["games"]], ["kartpad"])
         self.assertEqual(data["games"][0]["platforms"][0]["label"], "Teléfono o tableta Android")
         self.assertEqual(data["text"]["make"], "Crear mi copia")
+        devil = next(app for app in data["downloads"] if app["id"] == "deviltouch")
+        self.assertTrue(devil["intro"].startswith("No hace falta crear DevilTouch"))
+        self.assertTrue(devil["steps"][0].startswith("Descarga la IPA de DevilTouch desde https://"))
+        self.assertIn("DIABDAT.MPQ", devil["steps"][-1])
+        self.assertTrue(devil["steps"][-1].startswith("Abre DevilTouch"))
 
     def test_page_carries_its_data_safely(self):
         _status, body = self.request("/?token=secret-token&lang=pt")
@@ -79,7 +84,8 @@ class WindowTests(unittest.TestCase):
             (folder / "result.json").write_text(json.dumps({"file": str(built)}))
             self.builds.log = folder / "output.log"
             self.builds.log.write_text(phrase("step_tools", "es") + "\n" + phrase("step_build", "es", jobs=4)
-                                       + "\n[12s] backend_event: translate stage_started\n", "utf-8")
+                                       + "\n[12s] backend_event: translate stage_started\n"
+                                       + "[27s] build_progress: running; see backend.log\n", "utf-8")
             self.builds.job = {"game": "kartpad", "platform": "android", "lang": "es", "folder": folder,
                                "started": time.time(), "result": None}
             self.builds.process = FinishedProcess(None)
@@ -103,7 +109,7 @@ class WindowTests(unittest.TestCase):
 
 
 class OpenWindowTests(unittest.TestCase):
-    def test_double_clicked_padmint_opens_the_window_but_scripts_and_phones_get_the_terminal(self):
+    def test_double_clicked_padmint_opens_the_window_but_scripts_get_the_terminal(self):
         tty = mock.Mock(isatty=lambda: True)
         with mock.patch.object(cli.sys, "stdin", tty), mock.patch.object(cli, "on_android", return_value=False), \
                 mock.patch.object(cli.sys, "platform", "win32"):
@@ -113,8 +119,13 @@ class OpenWindowTests(unittest.TestCase):
                 mock.patch.object(cli.sys, "platform", "linux"):
             self.assertFalse(cli.wants_window({}))
             self.assertTrue(cli.wants_window({"DISPLAY": ":0"}))
-        with mock.patch.object(cli.sys, "stdin", tty), mock.patch.object(cli, "on_android", return_value=True):
-            self.assertFalse(cli.wants_window({"DISPLAY": ":0"}))
+        # A phone opens the window in its browser through Termux's termux-open-url, when it has one.
+        with tempfile.NamedTemporaryFile() as opener, mock.patch.object(cli.sys, "stdin", tty), \
+                mock.patch.object(cli, "on_android", return_value=True):
+            with mock.patch.object(cli, "TERMUX_OPEN_URL", Path(opener.name)):
+                self.assertTrue(cli.wants_window({}))
+            with mock.patch.object(cli, "TERMUX_OPEN_URL", Path(opener.name + ".missing")):
+                self.assertFalse(cli.wants_window({}))
         with mock.patch.object(cli.sys, "stdin", mock.Mock(isatty=lambda: False)), \
                 mock.patch.object(cli, "on_android", return_value=False):
             self.assertFalse(cli.wants_window({"DISPLAY": ":0"}))

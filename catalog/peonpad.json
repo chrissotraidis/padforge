@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "peonpad",
+  "name": "PeonPad",
+  "repo_url": "https://github.com/chrissotraidis/peonpad",
+  "reviewed_revision": null,
+  "player_help": "https://github.com/chrissotraidis/peonpad/blob/main/docs/INSTALL_IPA.md",
+  "notes": "No build needed: the published app contains no game data and the player adds their own files in the app. Listed while the Public Repo Audit Tracker row allows its existing public release.",
+  "download": {
+    "steps": [
+      "Download the PeonPad IPA from https://github.com/chrissotraidis/peonpad/releases and check it against the SHA-256 file beside it.",
+      "Install it with AltStore Classic, SideStore or Sideloadly, signed with your own Apple ID.",
+      "Copy your own Warcraft II data, extracted with Wargus, to Files › On My iPad › PeonPad › data.Wargus, then open PeonPad."
+    ],
+    "translations": {
+      "es": {
+        "steps": [
+          "Descarga la IPA de PeonPad desde https://github.com/chrissotraidis/peonpad/releases y compruébalo con el archivo SHA-256 que lo acompaña.",
+          "Instálala con AltStore Classic, SideStore o Sideloadly, firmada con tu propio Apple ID.",
+          "Copia tus propios datos de Warcraft II, extraídos con Wargus, a Archivos › En mi iPad › PeonPad › data.Wargus y abre PeonPad."
+        ]
+      },
+      "pt": {
+        "steps": [
+          "Baixe o IPA do PeonPad em https://github.com/chrissotraidis/peonpad/releases e confira-o com o arquivo SHA-256 ao lado dele.",
+          "Instale-o com AltStore Classic, SideStore ou Sideloadly, assinado com o seu próprio Apple ID.",
+          "Copie seus próprios dados do Warcraft II, extraídos com o Wargus, para Arquivos › No meu iPad › PeonPad › data.Wargus e abra o PeonPad."
+        ]
+      }
+    }
+  },
+  "manifest": null
+}

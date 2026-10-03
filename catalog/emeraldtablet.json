@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "emeraldtablet",
+  "name": "Emerald Tablet",
+  "repo_url": "https://github.com/chrissotraidis/emeraldtablet",
+  "reviewed_revision": null,
+  "player_help": "https://github.com/chrissotraidis/emeraldtablet#get-started",
+  "notes": "No build needed: the published app contains no game data and the player adds their own files in the app. Listed while the Public Repo Audit Tracker row allows its existing public release.",
+  "download": {
+    "steps": [
+      "Download the Emerald Tablet IPA from https://github.com/chrissotraidis/emeraldtablet/releases and check it against the SHA-256 file beside it.",
+      "Install it with AltStore Classic, SideStore or Sideloadly, signed with your own Apple ID.",
+      "Open Emerald Tablet. At Game Data Required, choose your own Pharaoh + Cleopatra installation folder and keep the app open while it copies."
+    ],
+    "translations": {
+      "es": {
+        "steps": [
+          "Descarga la IPA de Emerald Tablet desde https://github.com/chrissotraidis/emeraldtablet/releases y compruébalo con el archivo SHA-256 que lo acompaña.",
+          "Instálala con AltStore Classic, SideStore o Sideloadly, firmada con tu propio Apple ID.",
+          "Abre Emerald Tablet. En Game Data Required, elige tu propia carpeta de instalación de Pharaoh + Cleopatra y deja la app abierta mientras la copia."
+        ]
+      },
+      "pt": {
+        "steps": [
+          "Baixe o IPA do Emerald Tablet em https://github.com/chrissotraidis/emeraldtablet/releases e confira-o com o arquivo SHA-256 ao lado dele.",
+          "Instale-o com AltStore Classic, SideStore ou Sideloadly, assinado com o seu próprio Apple ID.",
+          "Abra o Emerald Tablet. Em Game Data Required, escolha sua própria pasta de instalação do Pharaoh + Cleopatra e deixe o app aberto enquanto ele copia."
+        ]
+      }
+    }
+  },
+  "manifest": null
+}
