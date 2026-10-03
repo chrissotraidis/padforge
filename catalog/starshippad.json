@@ -3,6 +3,7 @@
   "id": "starshippad",
   "repo_url": "https://github.com/chrissotraidis/starshippad",
   "name": "StarshipPad",
+  "game": "Star Fox 64 (N64)",
   "player_targets": [
     "ios"
   ],

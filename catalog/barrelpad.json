@@ -3,6 +3,7 @@
   "id": "barrelpad",
   "repo_url": "https://github.com/chrissotraidis/barrelpad",
   "name": "BarrelPad",
+  "game": "Golden Balloon port (N64)",
   "player_targets": [
     "ios"
   ],

@@ -3,6 +3,7 @@
   "id": "bananapad",
   "repo_url": "https://github.com/chrissotraidis/bananapad",
   "name": "BananaPad",
+  "game": "Donkey Kong 64 (N64)",
   "player_targets": [
     "ios"
   ],

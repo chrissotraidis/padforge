@@ -312,5 +312,6 @@
       "public_binaries": false,
       "reason": "Personal builds contain translated game code; public releases are source only."
     }
-  }
+  },
+  "game": "Mario Kart Wii (Wii)"
 }

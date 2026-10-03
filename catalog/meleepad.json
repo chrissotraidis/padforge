@@ -3,6 +3,7 @@
   "id": "meleepad",
   "repo_url": "https://github.com/chrissotraidis/meleepad",
   "name": "MeleePad",
+  "game": "Super Smash Bros. Melee (GameCube)",
   "player_targets": [
     "ios"
   ],

@@ -3,6 +3,7 @@
   "id": "maskpad",
   "repo_url": "https://github.com/chrissotraidis/maskpad",
   "name": "MaskPad",
+  "game": "The Legend of Zelda: Majora's Mask (N64)",
   "player_targets": [
     "ios"
   ],

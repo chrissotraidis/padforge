@@ -444,6 +444,9 @@ def execute(args, repo, disc):
                        or fields.get("status") or fields.get("reason") or "")
             print(f"[{record['build_elapsed_seconds']}s] {event}: {message}".strip(), flush=True)
             stage = backend.get("stage")
+            if stage:
+                report("stage", stage=stage, event=backend.get("event"), completed=backend.get("completed"),
+                       total=backend.get("total"), unit=backend.get("unit"))
             if backend.get("event") == "stage_started" and stage in left and stage not in announced:
                 announced.add(stage)
                 print(f"  {time_left(left[stage])} (from your last build)", flush=True)
@@ -743,19 +746,35 @@ def player_target(manifest, platform_name):
     return target
 
 
+def report(phase, **fields):
+    """One line in the window's events file (PADMINT_EVENTS): what PadMint is doing, so the
+    page can show it as it happens. The terminal output does not change."""
+    path = os.environ.get("PADMINT_EVENTS")
+    if not path:
+        return
+    try:
+        with open(path, "a", encoding="utf-8") as stream:
+            stream.write(json.dumps(dict(phase=phase, time=round(time.time(), 1), **fields)) + "\n")
+    except OSError:
+        pass
+
+
 def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results=None):
     entry = catalog().get(game)
     if entry is None:
         raise ValueError(f"unknown game {game}; see padmint list")
     release = None
+    report("release", state="running", repo=entry["repo_url"])
     if ref is None:
         # Only small release metadata/recipe downloads precede this check. Pin
         # the source and app assets to that same tag, even if Latest changes.
         release = latest_release(entry["repo_url"])
         manifest, _source = published_recipe(game, release=release)
         player_target(manifest, platform_name)
+    report("release", state="done", repo=entry["repo_url"], version=release[0] if release else ref)
     home = tools.tools_root().parent
     source, ref, assets = release_source(game, ref, release=release)
+    report("source", state="done", repo=entry["repo_url"], version=ref, folder=str(source))
     manifest, _source = manifest_for(game, source)
     # Explicit refs skip release preflight/network lookup; both paths must
     # trust the actual selected checkout's recipe before installing tools.
@@ -777,23 +796,32 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
     if accepted:
         print(f"Your game file: {accepted}", flush=True)
     print(t("step_tools"), flush=True)
-    tools.install(target.get("tools", []), host_id(), any_host=bool(target.get("ios_module")))
+    report("tools", state="running", folder=str(tools.tools_root()))
+    tools.install(target.get("tools", []), host_id(), any_host=bool(target.get("ios_module")),
+                  report=lambda **fields: report("tool", **fields))
+    report("tools", state="done", folder=str(tools.tools_root()))
     version = (read_game_version(source) or {}).get("version") or ref.lstrip("v")
     if target.get("published_app") and app is None:
         name = target["published_app"].format(version=version)
         print(t("published_app", name=name), flush=True)
+        report("app", state="running", name=name, repo=entry["repo_url"])
         app = published_app(name, assets, home / "apps" / game)
+        report("app", state="done", name=name, repo=entry["repo_url"])
     jobs = jobs or default_jobs()
     print(t("step_build", jobs=jobs), flush=True)
+    report("build", state="running", jobs=jobs)
     args = argparse.Namespace(game=game, repo=source, revision=git(source, "rev-parse", "HEAD"),
                               disc=disc, target=platform_name, workspace_root=None, jobs=jobs,
                               source_only=False, no_mods=False, app=app)
     finish_submodules(source)
     code = execute(args, source, disc)
     if code != 0:
+        report("build", state="cancelled" if code == 130 else "failed")
         if code != 130:
             print(t("build_stopped", url=f"{entry['repo_url']}/issues"), file=sys.stderr)
         return code
+    report("build", state="done")
+    report("save", state="running", folder=str(out))
     out.mkdir(parents=True, exist_ok=True)
     safe_version = re.sub(r"[^A-Za-z0-9._-]", "_", version)  # a branch name such as codex/x has a slash
     result = out / f"{manifest['name']}-v{safe_version}-{platform_name}-personal{args.output_path.suffix}"
@@ -812,6 +840,7 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
         results.append(result)
     save_game_data(args.output_path, out, manifest["name"],
                    import_label=(entry.get("game_data_import") or {}).get(platform_name))
+    report("save", state="done", folder=str(out), file=str(result))
     print(t("keep_private"))
     return 0
 
@@ -1376,6 +1405,7 @@ def release_source(game, ref=None, release=None):
     source = home / "games" / f"{game}-{re.sub(r'[^A-Za-z0-9._-]', '_', ref)}"
     if not source_complete(source):
         check_free_space(home, entry.get("free_space_gb", 0))
+        report("source", state="running", repo=entry["repo_url"], version=ref)
         fetch_source(game, source, ref)
     return source, ref, assets
 

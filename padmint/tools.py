@@ -107,7 +107,7 @@ def _installed(folder, entry=None):
         return False
 
 
-def _download(entry, destination, stream, label=""):
+def _download(entry, destination, stream, label="", report=None):
     algo = next(key for key in DIGESTS if key in entry)
     digest = hashlib.new(algo)
     partial = destination.with_name(destination.name + ".partial")
@@ -125,6 +125,8 @@ def _download(entry, destination, stream, label=""):
                 # Big tools (the Android NDK is over 1 GB) show progress every 10%.
                 if total > 50 << 20 and done * 10 // total > shown:
                     shown = done * 10 // total
+                    if report:
+                        report(percent=shown * 10)
                     print(t("percent", percent=shown * 10, size=f"{total / (1 << 30):.1f}"),
                           file=stream, flush=True)
         except OSError as error:
@@ -331,8 +333,10 @@ def _with_companions(names, host, table, any_host=False):
     return result
 
 
-def install(names, host, stream=None, any_host=False):
-    """Install the named tools for this host; already-installed tools are kept."""
+def install(names, host, stream=None, any_host=False, report=None):
+    """Install the named tools for this host; already-installed tools are kept. report, if
+    given, hears each tool's progress (the PadMint window shows it)."""
+    report = report or (lambda **_fields: None)
     stream = stream or sys.stdout
     table = lock()
     for name in _with_companions(names, host, table, any_host):
@@ -351,7 +355,10 @@ def install(names, host, stream=None, any_host=False):
                     "then run PadMint again.")
             raise RuntimeError(f"{name} {tool['version']} has no download for {host}")
         folder = _folder(name, tool, host)
+        about = dict(name=name, version=version(tool, host), size=entry.get("size"),
+                     source=urllib.parse.urlsplit(entry["url"]).hostname)
         if _installed(folder, entry):
+            report(state="ready", **about)
             print(t("tool_ready", name=name, version=version(tool, host)), file=stream)
             _report_link(link_system_library(name, host, folder), stream)
             continue
@@ -360,11 +367,14 @@ def install(names, host, stream=None, any_host=False):
             shutil.rmtree(_long(staging))
         staging.mkdir(parents=True)
         archive = staging / "download"
-        _download(entry, archive, stream, f"{name} {version(tool, host)}")
+        report(state="downloading", percent=0, **about)
+        _download(entry, archive, stream, f"{name} {version(tool, host)}",
+                  report=lambda percent: report(state="downloading", percent=percent, **about))
         kind = entry["archive"]
         if kind != "file" and archive.stat().st_size > 50 << 20:
             # Unpacking the 0.8 GB Android NDK prints nothing for minutes on Windows.
             print(t("unpacking", name=name), file=stream, flush=True)
+            report(state="unpacking", **about)
         if kind == "zip":
             _extract_zip(archive, staging, entry.get("members"))
             archive.unlink()
@@ -380,6 +390,7 @@ def install(names, host, stream=None, any_host=False):
             shutil.rmtree(_long(folder))
         staging.replace(folder)
         _marker(folder).write_text(json.dumps(entry) + "\n")
+        report(state="ready", **about)
         print(t("tool_got", name=name, version=version(tool, host)), file=stream)
         _report_link(link_system_library(name, host, folder), stream)
 

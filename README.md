@@ -14,10 +14,35 @@
   <a href="https://discord.gg/xwHfUD2bxW"><img alt="Ask in the KartPad Discord" src="https://img.shields.io/badge/Discord-ask%20for%20help-5865F2?logo=discord&amp;logoColor=white"></a>
 </p>
 
-**Why you need it:** the KartPad app contains no game code. The game part is
-made from your own copy of the game, on your own device. PadMint does that:
-you give it your disc image, it builds your copy and tells you what to do with
-it.
+**Why you need it:** the Pad apps contain no game code. The game part is made
+from your own copy of the game, on your own device. PadMint does that: you give
+it your disc image, it builds your copy and tells you what to do with it.
+
+**What PadMint does on your computer**, step by step, and the page shows each
+one as it happens:
+
+1. Finds the game's latest release on GitHub and downloads its source code.
+2. Downloads the free build tools that game needs (for KartPad on Android:
+   Google's Android NDK, about 1 GB, plus CMake, Ninja and .NET), once, into
+   a `.padmint` folder in your home folder. Each download is checked against a
+   pinned checksum.
+3. Downloads the game's published app, which has no game code in it.
+4. Builds your copy on this computer from your disc image.
+5. Saves the result in your Downloads folder.
+
+Your disc image never leaves your computer, and PadMint uploads nothing. Before
+you start, the page lists every download, where it comes from and how big it
+is, and how much free space the build needs.
+
+**What you get, and what to do with it:**
+
+| You make it for | PadMint gives you | Then |
+|---|---|---|
+| Android | `KartPad-v…-android-personal.so` (your **game pack**) and a `KartPad game data` folder | Install KartPad's APK from its release page and add both inside the app |
+| iPhone or iPad | `KartPad-v…-ios-personal.ipa` (the complete app, with your game inside) and a `KartPad game data` folder | Install the `-personal.ipa` with Sideloadly, AltStore or SideStore, then import the folder in the app |
+
+The `…-ios-unsigned.ipa` on a game's release page is PadMint's starting point,
+not something to install by itself: it has no game code, so it can't play.
 
 ## Start here
 
@@ -65,21 +90,24 @@ the **Language** menu at the top.
 
 In the PadMint page:
 
-1. Under **Game**, choose **KartPad**.
-2. Click **Choose file…** and pick your disc image. Disc images already in
-   Downloads are listed, so you can also click one of those.
-3. Under **Make it for**, choose **Android phone or tablet**. That is where you
-   will play, whichever computer you use.
-4. Click **Make my copy**.
+1. Under **1. Choose a game**, click **KartPad**.
+2. Under **2. Your own game file**, click **Choose file…** and pick your disc
+   image. Disc images already in Downloads are listed, so you can also click one
+   of those. PadMint checks the file at once and says **Ready** or what is wrong.
+3. Under **3. Make it for**, choose **Android phone or tablet**. That is where
+   you will play, whichever computer you use.
+4. Read **What PadMint will do on this computer**: the downloads, where they
+   come from, their sizes and the free space needed. Then click **Make my copy**.
 
-The page shows which of the three steps PadMint is on and how long it has been
-working. Keep the page and the PadMint window open, and keep the computer
+The page then shows a checklist: finding the release, downloading the source,
+each tool with its progress, the build with its current step, and saving your
+copy. Keep the page and the PadMint window open, and keep the computer
 plugged in; PadMint keeps it awake while it builds. The first build downloads
 tools and sources and can take an hour or longer, especially on Windows on ARM.
 Finished work is cached, so later runs can be quicker; a game update may need a
 full rebuild. When it finishes, the page lists exactly what to do next. If it
-stops, it says why, and **Copy details** copies what to post when asking for
-help. See the [recorded build results](docs/COMPATIBILITY.md#recorded-android-pack-builds)
+stops, it says why; open **Technical log** and use **Copy log for a bug report**
+when asking for help. See the [recorded build results](docs/COMPATIBILITY.md#recorded-android-pack-builds)
 for the exact hosts and versions checked.
 
 Prefer the terminal? Start PadMint with `start` (for example `PadMint.cmd start`

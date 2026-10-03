@@ -3,6 +3,7 @@
   "id": "spaghettipad",
   "repo_url": "https://github.com/chrissotraidis/spaghettipad",
   "name": "SpaghettiPad",
+  "game": "Mario Kart 64 (N64)",
   "player_targets": [
     "ios"
   ],
