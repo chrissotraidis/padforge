@@ -839,7 +839,14 @@ def version_tuple(text):
 
 def player_requirements(manifest):
     """Programs the recipe says the player installs themselves (requirements.tools with "player")."""
-    return [tool for tool in manifest.get("requirements", {}).get("tools", []) if tool.get("player")]
+    return [tool for tool in host_requirements(manifest) if tool.get("player")]
+
+
+def host_requirements(manifest):
+    """The recipe's requirements.tools that apply on this computer: all, except those whose
+    "hosts" name other build hosts."""
+    return [tool for tool in manifest.get("requirements", {}).get("tools", [])
+            if host_id() in tool.get("hosts", [host_id()])]
 
 
 def label(tool):
@@ -942,7 +949,7 @@ def doctor(game, target_name, repo=None, stream=None):
         report(free >= needed, "free disk space", f"{free:.0f} GB free, {needed} GB needed")
         print(f"{problems} item(s) to fix" if problems else "Ready", file=stream)
         return 1 if problems else 0
-    for tool in manifest.get("requirements", {}).get("tools", []):
+    for tool in host_requirements(manifest):
         ok, detail = check_program(tool)
         report(ok, label(tool), detail)
     needed = manifest.get("requirements", {}).get("disk_gb", 0)
