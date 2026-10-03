@@ -24,7 +24,7 @@ import urllib.parse
 import uuid
 
 from . import __version__, awake, game_file, gate, ios_module, tools
-from .say import MESSAGES, localized, t
+from .say import MESSAGES, localized, phrase, t
 from .manifest import (RUNNABLE_STATES, NeedsNewerPadMint, catalog, expand, host_id, load_manifest,
                        manifest_for, manifest_sha256, needs_build_input, on_android,
                        repository_manifest)
@@ -968,21 +968,30 @@ PLATFORM_NAMES = {"android": "Android", "ios": "iPhone and iPad", "macos": "Mac"
 PHONE_DOWNLOADS = Path("/sdcard/Download")
 
 
-def next_steps(entry, platform_name, result, stream):
-    """After a build: the few steps that get this file into the game, in the player's words."""
+def next_step_text(entry, platform_name, result, lang=None):
+    """(steps, note, guide): the few steps that get this file into the game, in the player's words."""
     guide = entry.get("player_help") or f"{entry['repo_url']}#get-{entry['id']}"
     steps = (entry.get("player_next") or {}).get(platform_name)
     if not steps or result is None:
+        return [], None, guide
+    instructions = localized(steps, "steps", lang)
+    if platform_name == "android" and on_android():
+        instructions = localized(steps, "phone_steps", lang) or instructions
+    return ([step.format(file=result.name, folder=result.parent) for step in instructions],
+            localized(steps, "note", lang), guide)
+
+
+def next_steps(entry, platform_name, result, stream):
+    """After a build: the few steps that get this file into the game, in the player's words."""
+    instructions, note, guide = next_step_text(entry, platform_name, result)
+    if not instructions:
         print(t("next_link", guide=guide), file=stream)
         return
-    instructions = localized(steps, "steps")
-    if platform_name == "android" and on_android():
-        instructions = localized(steps, "phone_steps") or instructions
     print(t("step_next"), file=stream)
     for number, step in enumerate(instructions, 1):
-        print(f"  {number}. {step.format(file=result.name, folder=result.parent)}", file=stream)
-    if localized(steps, "note"):
-        print(localized(steps, "note"), file=stream)
+        print(f"  {number}. {step}", file=stream)
+    if note:
+        print(note, file=stream)
     print(t("full_guide", guide=guide), file=stream)
 
 
@@ -1074,14 +1083,10 @@ def game_from_file(disc, games, stream):
     return [id_ for id_, _ in matches]
 
 
-def start(ask=input, stream=None):
-    """The guided path for players: as few questions as possible. When several games are
-    offered and the player's file names exactly one of them, the game is not asked for.
-    The copy is saved to Downloads (padmint make --out chooses another folder)."""
-    stream = stream or sys.stdout
-    print(t("intro", version=__version__), file=stream)
-    # iPhone builds need Xcode on Apple Silicon, except games marked ios_off_mac, which also
-    # build on Windows and Linux computers. An Intel Mac and a phone make Android copies.
+def player_games():
+    """[(game, name, platforms)] a player can make on this computer. iPhone builds need Xcode
+    on Apple Silicon, except games marked ios_off_mac, which also build on Windows and Linux
+    computers. An Intel Mac and a phone make Android copies."""
     host = host_id()
     apple_silicon = host == "macos-arm64"
     computer_off_mac = host.startswith(("windows-", "linux-")) and not on_android()
@@ -1092,6 +1097,35 @@ def start(ask=input, stream=None):
         if platforms:
             name = (entry.get("manifest") or {}).get("name") or entry.get("name", game)
             games.append((game, name, platforms))
+    return games
+
+
+def platform_label(platform_name, lang=None):
+    """How the menu names a device: an iPhone copy needs this Mac, or is experimental elsewhere."""
+    key = {"android": "android", "ios": "ios_mac" if host_id() == "macos-arm64" else "ios_off_mac"}
+    if platform_name not in key:
+        return platform_name
+    return phrase(key[platform_name], lang) if lang else t(key[platform_name])
+
+
+def wants_window(environ=None):
+    """PadMint opened by double-click shows its window in the web browser. A phone, a script,
+    a Linux computer without a desktop, or PADMINT_TERMINAL=1 gets the terminal questions."""
+    environ = os.environ if environ is None else environ
+    if environ.get("PADMINT_TERMINAL") or on_android() or not sys.stdin or not sys.stdin.isatty():
+        return False
+    if sys.platform.startswith("linux") and not (environ.get("DISPLAY") or environ.get("WAYLAND_DISPLAY")):
+        return False
+    return True
+
+
+def start(ask=input, stream=None):
+    """The guided path for players: as few questions as possible. When several games are
+    offered and the player's file names exactly one of them, the game is not asked for.
+    The copy is saved to Downloads (padmint make --out chooses another folder)."""
+    stream = stream or sys.stdout
+    print(t("intro", version=__version__), file=stream)
+    games = player_games()
     if not games:
         raise ValueError("no game can be made on this computer yet")
     disc = game = None
@@ -1115,8 +1149,7 @@ def start(ask=input, stream=None):
     if game is None:
         game = choose(t("game"), [(game, name) for game, name, _ in offered], ask, stream)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
-    labels = {"android": t("android"), "ios": t("ios_mac") if apple_silicon else t("ios_off_mac")}
-    target = choose(t("make_it_for"), [(p, labels.get(p, p)) for p in platforms], ask, stream)
+    target = choose(t("make_it_for"), [(p, platform_label(p)) for p in platforms], ask, stream)
     if catalog()[game].get("player_game_file", "build") == "in-app":
         disc = None
         print(f"{name} asks for your own game file inside the app, after you install it.", file=stream)
@@ -1355,11 +1388,11 @@ def build_parser():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--version", action="version", version=f"PadMint {__version__}")
     commands = parser.add_subparsers(dest="action")
-    commands.add_parser("start", help="Guided: pick a game, your game file and a folder (the default)")
+    commands.add_parser("start", help="Guided, in this terminal: pick a game, your game file and a device")
     commands.add_parser("list", help="Show supported games and platforms")
     history_parser = commands.add_parser("history", help="Summarize recorded builds in a checkout")
     history_parser.add_argument("--repo", type=Path, required=True)
-    ui_parser = commands.add_parser("ui", help="Open the local browser interface")
+    ui_parser = commands.add_parser("ui", help="Open the PadMint window in your web browser (the default)")
     ui_parser.add_argument("--port", type=int, default=0)
     ui_parser.add_argument("--no-open", action="store_true", help="Print the address without opening a browser")
     doctor_parser = commands.add_parser("doctor", help="Check this computer for a game's requirements")
@@ -1383,6 +1416,7 @@ def build_parser():
                              help="Parallel compile jobs (default: from this computer's cores and memory)")
     make_parser.add_argument("--ref", help=argparse.SUPPRESS)
     make_parser.add_argument("--app", type=Path, help=argparse.SUPPRESS)
+    make_parser.add_argument("--result-file", type=Path, help=argparse.SUPPRESS)  # the window reads it
     manifest_parser = commands.add_parser("check-manifest", help="Validate a padmint.json file")
     manifest_parser.add_argument("path", type=Path)
     audit_parser = commands.add_parser("audit", help="Run the release gate on files or folders")
@@ -1409,6 +1443,9 @@ def build_parser():
 def main(argv=None):
     args = build_parser().parse_args(argv)
     try:
+        if args.action is None and wants_window():
+            from .ui import serve
+            return serve()
         if args.action in (None, "start"):
             return start()
         if args.action == "list":
@@ -1443,8 +1480,12 @@ def main(argv=None):
             disc = args.disc.expanduser().resolve() if args.disc else None
             if disc is not None and not disc.is_file():
                 raise ValueError(f"game file not found: {disc}")
-            return make(args.game, args.platform, disc, args.out.expanduser().resolve(), args.ref,
-                        args.app.expanduser().resolve() if args.app else None, args.jobs)
+            results = []
+            code = make(args.game, args.platform, disc, args.out.expanduser().resolve(), args.ref,
+                        args.app.expanduser().resolve() if args.app else None, args.jobs, results)
+            if args.result_file and code == 0 and results:
+                atomic_json(args.result_file, {"file": str(results[-1])})
+            return code
         if args.action == "check-manifest":
             path = (repository_manifest(args.path) or args.path / "padmint.json"
                     if args.path.is_dir() else args.path)
