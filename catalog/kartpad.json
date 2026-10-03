@@ -6,6 +6,18 @@
     "android",
     "ios"
   ],
+  "ready_to_play": {
+    "url": "https://github.com/chrissotraidis/kartpad/releases/latest",
+    "text": "KartPad has ready-to-play downloads for Android, iPhone, iPad and Mac: install one and add your own game data. You don't need PadMint for that. Use PadMint if you'd rather build your own copy, or to make the KartPad game data folder from your disc.",
+    "translations": {
+      "es": {
+        "text": "KartPad tiene descargas listas para jugar en Android, iPhone, iPad y Mac: instala una y añade tus propios datos del juego. Para eso no necesitas PadMint. Usa PadMint si prefieres crear tu propia copia, o para crear la carpeta KartPad game data a partir de tu disco."
+      },
+      "pt": {
+        "text": "O KartPad tem downloads prontos para jogar no Android, iPhone, iPad e Mac: instale um e adicione seus próprios dados do jogo. Para isso você não precisa do PadMint. Use o PadMint se preferir criar a sua própria cópia, ou para criar a pasta KartPad game data a partir do seu disco."
+      }
+    }
+  },
   "game_ids": [
     "RMCP01"
   ],
@@ -16,48 +28,42 @@
   "player_next": {
     "android": {
       "steps": [
-        "Install KartPad on your phone or tablet from https://github.com/chrissotraidis/kartpad/releases/latest (it updates an older KartPad and keeps your saves; don't uninstall first).",
-        "Copy {file} and the KartPad game data folder, both in {folder}, to the phone or tablet (USB cable, cloud drive or Quick Share).",
-        "Open KartPad and tap Import Game next to Mario Kart Wii (Play Game if you played before). When it asks for your game pack, tap Choose file and pick {file}.",
-        "First time only: on the Game Data & Saves screen, tap Import from Extracted Game Data Folder, pick the KartPad game data folder, then tap Done. If KartPad doesn't ask for game data, it already has it."
+        "Install KartPad-v…-android.apk from https://github.com/chrissotraidis/kartpad/releases/latest. It already has the game code, so you don't need {file}. It updates an older KartPad and keeps your saves; don't uninstall first.",
+        "Copy the KartPad game data folder from {folder} to the phone or tablet (USB cable, cloud drive or Quick Share).",
+        "Open KartPad and tap Import Game on the Mario Kart Wii card. At Game Data & Saves, tap Import from Extracted Game Data Folder, pick the KartPad game data folder, tap Use this folder and Allow, then Done. If you played before, your game data is already there: tap Play Game."
       ],
       "phone_steps": [
-        "Your game pack and KartPad game data folder are already on this phone in {folder}. No computer or file transfer is needed.",
-        "Install KartPad from https://github.com/chrissotraidis/kartpad/releases/latest if needed. Update over an older KartPad to keep your saves; don't uninstall first.",
-        "Open KartPad and tap Import Game next to Mario Kart Wii. When it asks for your game pack, tap Choose file and select {file} in {folder}.",
-        "On the Game Data & Saves screen, tap Import from Extracted Game Data Folder and select the KartPad game data folder in {folder}. Tap Use this folder, then Allow. When the import finishes, tap Done."
+        "Install KartPad-v…-android.apk from https://github.com/chrissotraidis/kartpad/releases/latest. It already has the game code, so you don't need {file}. Update over an older KartPad to keep your saves; don't uninstall first.",
+        "Your KartPad game data folder is already on this phone, in {folder}. No computer or file transfer is needed.",
+        "Open KartPad and tap Import Game on the Mario Kart Wii card. At Game Data & Saves, tap Import from Extracted Game Data Folder and select the KartPad game data folder in {folder}. Tap Use this folder, then Allow. When the import finishes, tap Done."
       ],
-      "note": "Most KartPad updates keep this game pack working: the app asks for a new one only when an update needs it.",
+      "note": "KartPad 0.7.9 and newer for Android include the game code. On Android, PadMint's part is the KartPad game data folder.",
       "translations": {
         "es": {
           "steps": [
-            "Instala KartPad en tu teléfono o tableta desde https://github.com/chrissotraidis/kartpad/releases/latest (actualiza un KartPad anterior y conserva tus partidas; no lo desinstales antes).",
-            "Copia {file} y la carpeta KartPad game data, ambas en {folder}, al teléfono o tableta (cable USB, nube o Quick Share).",
-            "Abre KartPad y toca Import Game junto a Mario Kart Wii (Play Game si ya jugaste antes). Cuando pida tu game pack, toca Choose file y elige {file}.",
-            "Solo la primera vez: en la pantalla Game Data & Saves, toca Import from Extracted Game Data Folder, elige la carpeta KartPad game data y toca Done. Si KartPad no pide los datos del juego, ya los tiene."
+            "Instala KartPad-v…-android.apk desde https://github.com/chrissotraidis/kartpad/releases/latest. Ya trae el código del juego, así que no necesitas {file}. Actualiza un KartPad anterior y conserva tus partidas; no lo desinstales antes.",
+            "Copia la carpeta KartPad game data de {folder} al teléfono o tableta (cable USB, nube o Quick Share).",
+            "Abre KartPad y toca Import Game en la tarjeta de Mario Kart Wii. En Game Data & Saves, toca Import from Extracted Game Data Folder, elige la carpeta KartPad game data, toca Use this folder y Allow, y luego Done. Si ya jugaste antes, tus datos del juego ya están: toca Play Game."
           ],
           "phone_steps": [
-            "Tu game pack y la carpeta KartPad game data ya están en este teléfono, en {folder}. No necesitas computadora ni copiar archivos.",
-            "Instala KartPad desde https://github.com/chrissotraidis/kartpad/releases/latest si hace falta. Actualiza sobre un KartPad anterior para conservar tus partidas; no lo desinstales antes.",
-            "Abre KartPad y toca Import Game junto a Mario Kart Wii. Cuando pida tu game pack, toca Choose file y elige {file} en {folder}.",
-            "En la pantalla Game Data & Saves, toca Import from Extracted Game Data Folder y elige la carpeta KartPad game data en {folder}. Toca Use this folder y luego Allow. Cuando termine la importación, toca Done."
+            "Instala KartPad-v…-android.apk desde https://github.com/chrissotraidis/kartpad/releases/latest. Ya trae el código del juego, así que no necesitas {file}. Actualiza sobre un KartPad anterior para conservar tus partidas; no lo desinstales antes.",
+            "Tu carpeta KartPad game data ya está en este teléfono, en {folder}. No necesitas computadora ni copiar archivos.",
+            "Abre KartPad y toca Import Game en la tarjeta de Mario Kart Wii. En Game Data & Saves, toca Import from Extracted Game Data Folder y elige la carpeta KartPad game data en {folder}. Toca Use this folder y luego Allow. Cuando termine la importación, toca Done."
           ],
-          "note": "La mayoría de las actualizaciones de KartPad siguen funcionando con este game pack: la app pide uno nuevo solo cuando una actualización lo necesita."
+          "note": "KartPad 0.7.9 y posteriores para Android traen el código del juego. En Android, lo que aporta PadMint es la carpeta KartPad game data."
         },
         "pt": {
           "steps": [
-            "Instale o KartPad no seu celular ou tablet a partir de https://github.com/chrissotraidis/kartpad/releases/latest (ele atualiza um KartPad anterior e mantém seus saves; não desinstale antes).",
-            "Copie {file} e a pasta KartPad game data, ambas em {folder}, para o celular ou tablet (cabo USB, nuvem ou Quick Share).",
-            "Abra o KartPad e toque em Import Game ao lado de Mario Kart Wii (Play Game se você já jogou antes). Quando ele pedir seu game pack, toque em Choose file e escolha {file}.",
-            "Só na primeira vez: na tela Game Data & Saves, toque em Import from Extracted Game Data Folder, escolha a pasta KartPad game data e toque em Done. Se o KartPad não pedir os dados do jogo, ele já os tem."
+            "Instale o KartPad-v…-android.apk a partir de https://github.com/chrissotraidis/kartpad/releases/latest. Ele já traz o código do jogo, então você não precisa de {file}. Ele atualiza um KartPad anterior e mantém seus saves; não desinstale antes.",
+            "Copie a pasta KartPad game data de {folder} para o celular ou tablet (cabo USB, nuvem ou Quick Share).",
+            "Abra o KartPad e toque em Import Game no cartão de Mario Kart Wii. Em Game Data & Saves, toque em Import from Extracted Game Data Folder, escolha a pasta KartPad game data, toque em Use this folder e Allow, e depois em Done. Se você já jogou antes, seus dados do jogo já estão lá: toque em Play Game."
           ],
           "phone_steps": [
-            "Seu game pack e a pasta KartPad game data já estão neste celular, em {folder}. Não precisa de computador nem de copiar arquivos.",
-            "Instale o KartPad a partir de https://github.com/chrissotraidis/kartpad/releases/latest se necessário. Atualize sobre um KartPad anterior para manter seus saves; não desinstale antes.",
-            "Abra o KartPad e toque em Import Game ao lado de Mario Kart Wii. Quando ele pedir seu game pack, toque em Choose file e escolha {file} em {folder}.",
-            "Na tela Game Data & Saves, toque em Import from Extracted Game Data Folder e escolha a pasta KartPad game data em {folder}. Toque em Use this folder e depois em Allow. Quando a importação terminar, toque em Done."
+            "Instale o KartPad-v…-android.apk a partir de https://github.com/chrissotraidis/kartpad/releases/latest. Ele já traz o código do jogo, então você não precisa de {file}. Atualize sobre um KartPad anterior para manter seus saves; não desinstale antes.",
+            "Sua pasta KartPad game data já está neste celular, em {folder}. Não precisa de computador nem de copiar arquivos.",
+            "Abra o KartPad e toque em Import Game no cartão de Mario Kart Wii. Em Game Data & Saves, toque em Import from Extracted Game Data Folder e escolha a pasta KartPad game data em {folder}. Toque em Use this folder e depois em Allow. Quando a importação terminar, toque em Done."
           ],
-          "note": "A maioria das atualizações do KartPad continua funcionando com este game pack: o app pede um novo só quando uma atualização precisa."
+          "note": "O KartPad 0.7.9 e mais novos para Android trazem o código do jogo. No Android, a parte do PadMint é a pasta KartPad game data."
         }
       }
     },

@@ -14,9 +14,20 @@
   <a href="https://discord.gg/xwHfUD2bxW"><img alt="Ask in the KartPad Discord" src="https://img.shields.io/badge/Discord-ask%20for%20help-5865F2?logo=discord&amp;logoColor=white"></a>
 </p>
 
-**Why you need it:** the Pad apps contain no game code. The game part is made
-from your own copy of the game, on your own device. PadMint does that: you give
-it your disc image, it builds your copy and tells you what to do with it.
+> **Playing KartPad?** KartPad has ready-to-play downloads again for Android,
+> iPhone, iPad and Mac. Get them from the
+> [latest KartPad](https://github.com/chrissotraidis/kartpad/releases/latest)
+> and follow [KartPad's guide](https://github.com/chrissotraidis/kartpad#get-kartpad):
+> you don't need PadMint. PadMint stays available if you'd rather build your
+> own copy, or to make the `KartPad game data` folder from your disc.
+>
+> **Playing BlueWake on Windows?** Download the ready-to-play Windows build from
+> [BlueWake's releases](https://github.com/chrissotraidis/bluewake/releases/latest).
+> PadMint makes BlueWake for Mac, iPhone and iPad.
+
+**Why you need it:** the other Pad apps contain no game code. The game part is
+made from your own copy of the game, on your own device. PadMint does that: you
+give it your disc image, it builds your copy and tells you what to do with it.
 
 **What PadMint does on your computer**, step by step, and the page shows each
 one as it happens:
@@ -38,7 +49,7 @@ is, and how much free space the build needs.
 
 | You make it for | PadMint gives you | Then |
 |---|---|---|
-| Android | `KartPad-v…-android-personal.so` (your **game pack**) and a `KartPad game data` folder | Install KartPad's APK from its release page and add both inside the app |
+| Android | a `KartPad game data` folder (and a `KartPad-v…-android-personal.so` game pack, which KartPad 0.7.9 and newer don't need) | Install KartPad's APK from its release page (it has the game code) and import the folder in the app |
 | iPhone or iPad | `KartPad-v…-ios-personal.ipa` (the complete app, with your game inside) and a `KartPad game data` folder | Install the `-personal.ipa` with Sideloadly, AltStore or SideStore, then import the folder in the app |
 
 The `…-ios-unsigned.ipa` on a game's release page is PadMint's starting point,
@@ -119,8 +130,8 @@ gets these questions automatically.
 
 | | What it is |
 |---|---|
-| `KartPad-v…-android-personal.so` | your **game pack**: the game code, made from your disc |
 | `KartPad game data` folder | the game's tracks, music and menus |
+| `KartPad-v…-android-personal.so` | a **game pack**: the game code, made from your disc. KartPad 0.7.9 and newer already include it, so you can ignore this file |
 
 Both are made from your disc: keep them to yourself.
 
@@ -129,22 +140,26 @@ Both are made from your disc: keep them to yourself.
 1. Install the `KartPad-v…-android.apk` from the
    [latest KartPad](https://github.com/chrissotraidis/kartpad/releases/latest).
    It updates an older KartPad and keeps your saves; don't uninstall first.
-2. Copy the `.so` file **and** the `KartPad game data` folder to the phone
-   (USB cable, Google Drive, Quick Share).
-3. Open KartPad and tap the button on the Mario Kart Wii card (**Import Game**,
-   or **Play Game** if you played before). At **Add your game pack**, tap
-   **Choose file** and pick the `.so`.
-4. At **Game Data & Saves**, tap **Import from Extracted Game Data Folder…**,
-   pick the `KartPad game data` folder, then tap **Done**.
-5. Tap **Play Game**. For Retro Rewind, tap **Set Up Game** on its card.
+   It already has the game code.
+2. Copy the `KartPad game data` folder to the phone (USB cable, Google Drive,
+   Quick Share).
+3. Open KartPad and tap **Import Game** on the Mario Kart Wii card. At
+   **Game Data & Saves**, tap **Import from Extracted Game Data Folder…**, pick
+   the `KartPad game data` folder, tap **Use this folder** and **Allow**, then
+   **Done**.
+4. Tap **Play Game**. For Retro Rewind, tap **Set Up Game** on its card.
 
-**Updates:** install the new APK and keep playing; your game pack keeps
-working. If an update ever needs a new one, KartPad says **This KartPad needs a
-new game pack**: run PadMint again and choose the new `.so`.
+**Updates:** install the new APK over your KartPad and keep playing; your saves
+and game data stay. You don't need PadMint again.
 
 ## Android, phone only (experimental)
 
-A 64-bit Android phone or tablet can make its own game pack. It has only been
+**For KartPad, install its ready-to-play APK instead**
+([latest KartPad](https://github.com/chrissotraidis/kartpad/releases/latest)).
+This route is only for making the `KartPad game data` folder on the phone,
+without a computer or Dolphin.
+
+A 64-bit Android phone or tablet can run PadMint. It has only been
 tried on a phone-sized emulator so far. It needs about
 8 GB of memory, 25 GB free, Wi-Fi for about 6 GB of downloads, and an hour or
 more. **Most phones are easier with a computer:** if you have any Windows, Mac or
@@ -176,11 +191,11 @@ anything, if it is not 64-bit or lacks the memory or space.
    in the list of game files found in **Download**, and tap **Make my copy**.
    The page shows each step. Keep Termux open in the background, with the screen
    on, until the page says your copy is ready.
-6. In KartPad, tap **Import Game** (or **Play Game**) on the Mario Kart Wii
-   card. At **Add your game pack**, tap **Choose file** and select the
-   `KartPad-v…-android-personal.so` in Download. Then, at **Game Data & Saves**,
-   tap **Import from Extracted Game Data Folder…**, choose the `KartPad game data`
-   folder in Download and tap **Done**. Tap **Play Game**.
+6. Install the `KartPad-v…-android.apk` from the
+   [latest KartPad](https://github.com/chrissotraidis/kartpad/releases/latest).
+   In KartPad, tap **Import Game** on the Mario Kart Wii card. At **Game Data &
+   Saves**, tap **Import from Extracted Game Data Folder…**, choose the
+   `KartPad game data` folder in Download and tap **Done**. Tap **Play Game**.
 
 **No page opened?** If Termux shows only a `$` prompt, type `padmint` and press
 Enter. To answer in Termux instead, type `padmint start`: it lists the game
@@ -227,8 +242,8 @@ not make every game recipe available on that host.
 
 | What you want to build | Build host | Current scope |
 |---|---|---|
-| KartPad Android game pack | Windows, Linux or macOS | Available; follow the Android computer guide above |
-| KartPad Android game pack | Android phone | Experimental; free space and phone restrictions can prevent completion |
+| KartPad for Android (game data folder; the APK has the game code) | Windows, Linux or macOS | Available; follow the Android computer guide above |
+| KartPad for Android (game data folder) | Android phone | Experimental; free space and phone restrictions can prevent completion |
 | KartPad iPhone/iPad app | Apple Silicon Mac with Xcode | Available |
 | KartPad iPhone/iPad app | Windows or Linux | Experimental; see the tested-host limits above |
 | Other source-build recipes listed below | Apple Silicon Mac with Xcode | Per-game prerequisites and known blockers apply; no general Windows, Linux or Android-phone build support |
@@ -286,16 +301,16 @@ the iPad; see [Get AgePad](https://github.com/chrissotraidis/agepad#get-agepad).
 
 ## Questions
 
-**I used to import my disc image straight into KartPad. Why PadMint now?**
-The app no longer includes game code, so the game pack has to be made from
-your disc on your device. For the tracks and music, PadMint's `KartPad game
-data` folder is easiest. Importing a disc image in the app still works, but
-it needs your own Wii key file (`common-key.bin`); the folder doesn't.
+**Do I need PadMint for KartPad?**
+No. From KartPad 0.7.9, its Android, iPhone, iPad and Mac downloads are ready to
+play: install one and add your own game data. PadMint is the option for building
+your own copy. It also makes the `KartPad game data` folder from your disc, which
+is the easiest way to add game data: importing a disc image in the app works
+too, but needs your own Wii key file (`common-key.bin`); the folder doesn't.
 
 **Do I run PadMint again for every KartPad update?**
-Android: no, just install the new APK. KartPad tells you if a new game pack is
-ever needed. iPhone and iPad: yes; build time depends on how much cached work
-the new release can reuse.
+No. Install the new KartPad over the old one; your saves and game data stay. If
+you build your own iPhone copy with PadMint, run it again for each new KartPad.
 
 **I don't have a computer.**
 On Android, try [Android, phone only](#android-phone-only-experimental), or use

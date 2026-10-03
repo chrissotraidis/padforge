@@ -1279,6 +1279,9 @@ def start(ask=input, stream=None):
         game = choose(t("game"), [(game, name) for game, name, _ in offered] + extra, ask, stream)
         if game in dict(downloads()):
             return download_steps(game, stream)
+    if catalog()[game].get("ready_to_play"):
+        ready = catalog()[game]["ready_to_play"]
+        print(f"\n{localized(ready, 'text')}\n  {ready['url']}\n", file=stream, flush=True)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
     target = choose(t("make_it_for"), [(p, platform_label(p)) for p in platforms], ask, stream)
     if catalog()[game].get("player_game_file", "build") == "in-app":

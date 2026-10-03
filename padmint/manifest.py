@@ -245,6 +245,13 @@ def catalog():
                 raise ValueError(f"catalog/{path.name}: download needs a name, no player_targets "
                                  "and lists of steps")
         # Games offered to players must say how much space their first build needs, or doctor
+        # Games that also publish ready-to-play downloads: where they are and one line saying so.
+        ready = entry.get("ready_to_play")
+        if ready is not None and (not isinstance(ready, dict) or not targets
+                                  or not str(ready.get("url", "")).startswith("https://")
+                                  or not all(isinstance(text.get("text", ready.get("text")), str)
+                                             for text in [ready] + list((ready.get("translations") or {}).values()))):
+            raise ValueError(f"catalog/{path.name}: ready_to_play needs player_targets, an https url and text")
         # reports "0 GB needed" and make's early check does nothing.
         space = entry.get("free_space_gb", 0 if not targets else None)
         if not isinstance(space, int) or isinstance(space, bool) or space < 0 or (targets and space < 1):

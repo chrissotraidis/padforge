@@ -21,6 +21,21 @@ STEP="starting"
 
 say() { STEP=$1; printf '\n== %s\n' "$1"; }
 
+# Most people who reach this script want KartPad, which has a ready-to-play APK again.
+kartpad_note() {
+  say "Playing KartPad?"
+  echo "KartPad has a ready-to-play Android app again. Install KartPad-v...-android.apk from"
+  echo "  https://github.com/chrissotraidis/kartpad/releases/latest"
+  echo "and you don't need this setup at all."
+  echo ""
+  echo "This setup installs PadMint on this phone, to build your own copy or to make the"
+  echo "KartPad game data folder from your disc. It needs about 25 GB free."
+  # A pause to read this on a phone's screen; scripts and tests carry on.
+  [ -t 1 ] || return 0
+  echo "Continuing in 20 seconds. To stop, tap CTRL, then C."
+  sleep 20
+}
+
 # A plain ending instead of a wall of tool output.
 fail() {
   trap - EXIT
@@ -69,6 +84,7 @@ main() {
   esac
   trap stopped EXIT
 
+  kartpad_note
   say "Checking this phone"
   phone_check
   echo "Ready: 64-bit, enough space and memory."
