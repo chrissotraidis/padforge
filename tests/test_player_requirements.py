@@ -35,6 +35,19 @@ class ManifestFieldTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "needs a note"):
             validate_manifest(recipe({"name": "sdl2-config", "player": True}))
 
+    def test_a_requirement_can_apply_to_some_build_hosts_only(self):
+        # BlueWake: Xcode on a Mac, a C compiler on Linux, the same recipe.
+        xcode = {"name": "xcodebuild", "player": True, "note": "Install Xcode", "hosts": ["macos-arm64"]}
+        compiler = {"name": "cc", "player": True, "note": "sudo apt install build-essential",
+                    "hosts": ["linux-x86_64", "linux-arm64"]}
+        data = recipe(xcode, compiler, DEVELOPER)
+        validate_manifest(data)
+        for host, expected in (("macos-arm64", ["xcodebuild"]), ("linux-arm64", ["cc"]), ("windows-x86_64", [])):
+            with mock.patch.object(cli, "host_id", return_value=host):
+                self.assertEqual([tool["name"] for tool in cli.player_requirements(data)], expected)
+        with self.assertRaisesRegex(ValueError, "hosts must be a list"):
+            validate_manifest(recipe(dict(xcode, hosts="macos-arm64")))
+
 
 class DoctorTests(unittest.TestCase):
     def doctor(self, data, missing):

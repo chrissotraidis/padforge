@@ -159,6 +159,10 @@ def validate_manifest(data):
                  f"tool {tool['name']}.label must be text")
         _require(not tool.get("player") or (isinstance(tool.get("note"), str) and tool["note"].strip()),
                  f"tool {tool['name']} is for players, so it needs a note saying how to install it")
+        # hosts: the build hosts it is needed on (Xcode on a Mac, a C compiler on Linux).
+        _require("hosts" not in tool or (isinstance(tool["hosts"], list) and tool["hosts"]
+                                         and all(isinstance(host, str) for host in tool["hosts"])),
+                 f"tool {tool['name']}.hosts must be a list of build hosts")
     disk = requirements.get("disk_gb", 0)
     _require(isinstance(disk, (int, float)) and disk >= 0, "requirements.disk_gb must be a number")
     publication = data.get("publication")
