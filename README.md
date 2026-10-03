@@ -57,6 +57,9 @@ and unzip it.
   choose **Done**, then **System Settings → Privacy & Security → Open Anyway**.
 - **Linux:** run `sh padmint.sh` in the folder (needs Python 3.9+ and Git).
 
+PadMint speaks English, Spanish and Portuguese, following your computer's
+language. To choose one, set `PADMINT_LANG` to `en`, `es` or `pt` before starting it.
+
 ### 2. Drag in your disc image
 
 Drag your disc image into the PadMint window and press Enter:

@@ -77,7 +77,9 @@ EOF
   cat > "$PREFIX/bin/padmint" <<EOF
 #!/data/data/com.termux/files/usr/bin/sh
 # PadMint in its Ubuntu inside Termux (set up by padmint-android.sh).
-exec proot-distro login $BOX --work-dir /root/padmint -- python3 -m padmint "\$@"
+# Ubuntu does not see the phone's language: pass it on (PADMINT_LANG overrides it).
+lang=\${PADMINT_LANG:-\$(getprop persist.sys.locale 2>/dev/null)}
+exec proot-distro login $BOX --work-dir /root/padmint -e "PADMINT_LANG=\$lang" -- python3 -m padmint "\$@"
 EOF
   chmod 755 "$PREFIX/bin/padmint"
   echo "Next time, type: padmint"

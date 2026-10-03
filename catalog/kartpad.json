@@ -17,8 +17,9 @@
     "android": {
       "steps": [
         "Install KartPad on your phone or tablet from https://github.com/chrissotraidis/kartpad/releases/latest (it updates an older KartPad and keeps your saves; don't uninstall first).",
-        "Copy {file} to the phone or tablet (USB cable, cloud drive or Quick Share).",
-        "Open KartPad and tap Mario Kart Wii. When it asks for your game pack, choose Choose file and pick {file}."
+        "Copy {file} and the KartPad game data folder, both in {folder}, to the phone or tablet (USB cable, cloud drive or Quick Share).",
+        "Open KartPad and tap Import Game next to Mario Kart Wii (Play Game if you played before). When it asks for your game pack, tap Choose file and pick {file}.",
+        "First time only: on the Game Data & Saves screen, tap Import from Extracted Game Data Folder, pick the KartPad game data folder, then tap Done. If KartPad doesn't ask for game data, it already has it."
       ],
       "phone_steps": [
         "Your game pack and KartPad game data folder are already on this phone in {folder}. No computer or file transfer is needed.",
@@ -26,13 +27,62 @@
         "Open KartPad and tap Import Game next to Mario Kart Wii. When it asks for your game pack, tap Choose file and select {file} in {folder}.",
         "On the Game Data & Saves screen, tap Import from Extracted Game Data Folder and select the KartPad game data folder in {folder}. Tap Use this folder, then Allow. When the import finishes, tap Done."
       ],
-      "note": "Most KartPad updates keep this game pack working: the app asks for a new one only when an update needs it."
+      "note": "Most KartPad updates keep this game pack working: the app asks for a new one only when an update needs it.",
+      "translations": {
+        "es": {
+          "steps": [
+            "Instala KartPad en tu teléfono o tableta desde https://github.com/chrissotraidis/kartpad/releases/latest (actualiza un KartPad anterior y conserva tus partidas; no lo desinstales antes).",
+            "Copia {file} y la carpeta KartPad game data, ambas en {folder}, al teléfono o tableta (cable USB, nube o Quick Share).",
+            "Abre KartPad y toca Import Game junto a Mario Kart Wii (Play Game si ya jugaste antes). Cuando pida tu game pack, toca Choose file y elige {file}.",
+            "Solo la primera vez: en la pantalla Game Data & Saves, toca Import from Extracted Game Data Folder, elige la carpeta KartPad game data y toca Done. Si KartPad no pide los datos del juego, ya los tiene."
+          ],
+          "phone_steps": [
+            "Tu game pack y la carpeta KartPad game data ya están en este teléfono, en {folder}. No necesitas computadora ni copiar archivos.",
+            "Instala KartPad desde https://github.com/chrissotraidis/kartpad/releases/latest si hace falta. Actualiza sobre un KartPad anterior para conservar tus partidas; no lo desinstales antes.",
+            "Abre KartPad y toca Import Game junto a Mario Kart Wii. Cuando pida tu game pack, toca Choose file y elige {file} en {folder}.",
+            "En la pantalla Game Data & Saves, toca Import from Extracted Game Data Folder y elige la carpeta KartPad game data en {folder}. Toca Use this folder y luego Allow. Cuando termine la importación, toca Done."
+          ],
+          "note": "La mayoría de las actualizaciones de KartPad siguen funcionando con este game pack: la app pide uno nuevo solo cuando una actualización lo necesita."
+        },
+        "pt": {
+          "steps": [
+            "Instale o KartPad no seu celular ou tablet a partir de https://github.com/chrissotraidis/kartpad/releases/latest (ele atualiza um KartPad anterior e mantém seus saves; não desinstale antes).",
+            "Copie {file} e a pasta KartPad game data, ambas em {folder}, para o celular ou tablet (cabo USB, nuvem ou Quick Share).",
+            "Abra o KartPad e toque em Import Game ao lado de Mario Kart Wii (Play Game se você já jogou antes). Quando ele pedir seu game pack, toque em Choose file e escolha {file}.",
+            "Só na primeira vez: na tela Game Data & Saves, toque em Import from Extracted Game Data Folder, escolha a pasta KartPad game data e toque em Done. Se o KartPad não pedir os dados do jogo, ele já os tem."
+          ],
+          "phone_steps": [
+            "Seu game pack e a pasta KartPad game data já estão neste celular, em {folder}. Não precisa de computador nem de copiar arquivos.",
+            "Instale o KartPad a partir de https://github.com/chrissotraidis/kartpad/releases/latest se necessário. Atualize sobre um KartPad anterior para manter seus saves; não desinstale antes.",
+            "Abra o KartPad e toque em Import Game ao lado de Mario Kart Wii. Quando ele pedir seu game pack, toque em Choose file e escolha {file} em {folder}.",
+            "Na tela Game Data & Saves, toque em Import from Extracted Game Data Folder e escolha a pasta KartPad game data em {folder}. Toque em Use this folder e depois em Allow. Quando a importação terminar, toque em Done."
+          ],
+          "note": "A maioria das atualizações do KartPad continua funcionando com este game pack: o app pede um novo só quando uma atualização precisa."
+        }
+      }
     },
     "ios": {
       "steps": [
         "Install {file} on your iPhone or iPad with AltStore, SideStore or Sideloadly.",
-        "Updating? Install it over your existing KartPad with the same tool and Apple ID to keep your saves."
-      ]
+        "Updating? Install it over your existing KartPad with the same tool and Apple ID to keep your saves. Your game data stays too: if KartPad doesn't ask for it, you're ready to play.",
+        "First time only: put the KartPad game data folder from {folder} on the device (iCloud Drive, a USB drive or a cloud drive app). In KartPad, tap Import Game next to Mario Kart Wii, then Import from Extracted Folder…, and pick that folder."
+      ],
+      "translations": {
+        "es": {
+          "steps": [
+            "Instala {file} en tu iPhone o iPad con AltStore, SideStore o Sideloadly.",
+            "¿Actualizas? Instálalo sobre tu KartPad actual con la misma herramienta y el mismo Apple ID para conservar tus partidas. Tus datos del juego también se conservan: si KartPad no los pide, ya puedes jugar.",
+            "Solo la primera vez: pon la carpeta KartPad game data de {folder} en el dispositivo (iCloud Drive, una memoria USB o una app de nube). En KartPad, toca Import Game junto a Mario Kart Wii, luego Import from Extracted Folder…, y elige esa carpeta."
+          ]
+        },
+        "pt": {
+          "steps": [
+            "Instale {file} no seu iPhone ou iPad com AltStore, SideStore ou Sideloadly.",
+            "Atualizando? Instale sobre o seu KartPad atual com a mesma ferramenta e o mesmo Apple ID para manter seus saves. Seus dados do jogo também ficam: se o KartPad não pedir, já pode jogar.",
+            "Só na primeira vez: coloque a pasta KartPad game data de {folder} no aparelho (iCloud Drive, um pendrive ou um app de nuvem). No KartPad, toque em Import Game ao lado de Mario Kart Wii, depois em Import from Extracted Folder…, e escolha essa pasta."
+          ]
+        }
+      }
     }
   },
   "game_data_import": {

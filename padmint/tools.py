@@ -19,6 +19,7 @@ import zipfile
 from pathlib import Path
 
 from .manifest import on_android
+from .say import t
 
 LOCK = Path(__file__).with_name("tools.lock.json")
 DIGESTS = ("sha512", "sha256", "sha1")
@@ -106,11 +107,13 @@ def _installed(folder, entry=None):
         return False
 
 
-def _download(entry, destination, stream):
+def _download(entry, destination, stream, label=""):
     algo = next(key for key in DIGESTS if key in entry)
     digest = hashlib.new(algo)
     partial = destination.with_name(destination.name + ".partial")
-    print(f"  downloading {entry['url']}", file=stream, flush=True)
+    name, _, version_text = (label or "a tool").partition(" ")
+    host = urllib.parse.urlsplit(entry["url"]).hostname or entry["url"]
+    print(t("downloading", name=name, version=version_text, host=host), file=stream, flush=True)
     with open_url(entry["url"]) as response, partial.open("wb") as handle:
         total = int(response.headers.get("Content-Length") or 0)
         done, shown = 0, 0
@@ -122,7 +125,8 @@ def _download(entry, destination, stream):
                 # Big tools (the Android NDK is over 1 GB) show progress every 10%.
                 if total > 50 << 20 and done * 10 // total > shown:
                     shown = done * 10 // total
-                    print(f"    {shown * 10}% of {total / (1 << 30):.1f} GB", file=stream, flush=True)
+                    print(t("percent", percent=shown * 10, size=f"{total / (1 << 30):.1f}"),
+                          file=stream, flush=True)
         except OSError as error:
             raise RuntimeError(download_problem(entry["url"], error)) from error
     if digest.hexdigest() != entry[algo].lower():
@@ -337,7 +341,7 @@ def install(names, host, stream=None):
             raise RuntimeError(f"{name} {tool['version']} has no download for {host}")
         folder = _folder(name, tool, host)
         if _installed(folder, entry):
-            print(f"ok   {name} {version(tool, host)}", file=stream)
+            print(t("tool_ready", name=name, version=version(tool, host)), file=stream)
             _report_link(link_system_library(name, host, folder), stream)
             continue
         staging = folder.with_name(folder.name + ".partial")
@@ -345,8 +349,11 @@ def install(names, host, stream=None):
             shutil.rmtree(_long(staging))
         staging.mkdir(parents=True)
         archive = staging / "download"
-        _download(entry, archive, stream)
+        _download(entry, archive, stream, f"{name} {version(tool, host)}")
         kind = entry["archive"]
+        if kind != "file" and archive.stat().st_size > 50 << 20:
+            # Unpacking the 0.8 GB Android NDK prints nothing for minutes on Windows.
+            print(t("unpacking", name=name), file=stream, flush=True)
         if kind == "zip":
             _extract_zip(archive, staging, entry.get("members"))
             archive.unlink()
@@ -362,7 +369,7 @@ def install(names, host, stream=None):
             shutil.rmtree(_long(folder))
         staging.replace(folder)
         _marker(folder).write_text(json.dumps(entry) + "\n")
-        print(f"got  {name} {version(tool, host)}", file=stream)
+        print(t("tool_got", name=name, version=version(tool, host)), file=stream)
         _report_link(link_system_library(name, host, folder), stream)
 
 
