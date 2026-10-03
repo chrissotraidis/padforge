@@ -29,10 +29,13 @@ def payload():
         "README.md", "STATUS.md", "STATUS-HISTORY.md",
         "docs/COMPATIBILITY.md", "docs/ADDING_A_GAME.md",
     )]
-    files += sorted((ROOT / "padmint").glob("*.py")) + [ROOT / "padmint/tools.lock.json"]
+    # Sorted by name as text: Windows compares paths ignoring case, which would
+    # put TargetConditionals.h elsewhere and change the ZIP's bytes.
+    by_name = lambda path: path.name  # noqa: E731
+    files += sorted((ROOT / "padmint").glob("*.py"), key=by_name) + [ROOT / "padmint/tools.lock.json"]
     # Headers the universal iPhone module pipeline adds to the open-source SDK.
-    files += sorted((ROOT / "padmint/ios-sdk/include").glob("*.h"))
-    files += sorted((ROOT / "catalog").glob("*.json"))
+    files += sorted((ROOT / "padmint/ios-sdk/include").glob("*.h"), key=by_name)
+    files += sorted((ROOT / "catalog").glob("*.json"), key=by_name)
     return [(path.relative_to(ROOT).as_posix(), path) for path in files]
 
 
