@@ -74,7 +74,7 @@ Games are grouped by family: one game proves a family, and the rest follow it.
 | Game | Status | Smallest next step |
 |---|---|---|
 | KartPad | Android pack builds on Mac, Windows and Linux; the Mac-built v0.7.7 pack and a Linux x64 v0.7.4 pack raced on an Android 16 emulator. iPhone off a Mac is experimental | Physical Android and x64 Windows acceptance |
-| BlueWake | iPhone module built on Linux x64 through PadMint's open-source SDK and inserted into the v0.1.0 app, IPA check passed ([draft #42](https://github.com/chrissotraidis/bluewake/pull/42)); Windows through PadMint in progress ([draft #46](https://github.com/chrissotraidis/bluewake/pull/46)) | Finish the Mac and Windows VM runs, then a release once its README pause and tracker row agree |
+| BlueWake | iPhone module built on Linux x64 through PadMint's open-source SDK and inserted into the v0.1.0 app, IPA check passed ([draft #42](https://github.com/chrissotraidis/bluewake/pull/42)). **Windows** is published as ready-to-play builds on BlueWake's own releases, outside PadMint; PadMint's Windows route ([draft #46](https://github.com/chrissotraidis/bluewake/pull/46)) stays experimental and unused | Finish the Mac run of #42; Mac, iPhone and iPad keep using PadMint |
 | SunPad | Disc extraction and translation work on Linux (needs the `cpp-ipc` submodule); the module compile is not wired to PadMint | Same recipe change as BlueWake #42; releases wait on its tracker row |
 | MeleePad | Mac only | Follows SunPad, plus its Slippi Rust dependencies |
 
