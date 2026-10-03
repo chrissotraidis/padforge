@@ -48,6 +48,8 @@ def player_data(lang):
                                      "short": phrase(f"w_short_{p}", lang) if f"w_short_{p}" in MESSAGES else p}
                                     for p in platforms],
                       "files": [str(path) for path in files[:8]],
+                      "ready": ({"text": localized(entry["ready_to_play"], "text", lang),
+                                 "url": entry["ready_to_play"]["url"]} if entry.get("ready_to_play") else None),
                       "issues": entry["repo_url"] + "/issues"})
     apps = [] if cli.on_android() else [
         {"id": app, "name": name, "intro": phrase("download_intro", lang, name=name).strip(),
@@ -376,6 +378,8 @@ select,input{font:inherit;color:var(--text);background:var(--panel2);border:1px 
 #search{width:100%;max-width:none;font-size:1rem;padding:.65rem .8rem}
 button.btn{font:inherit;border-radius:10px;padding:.6rem 1.1rem;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
 button.btn:hover{border-color:var(--mint)}button.main{background:var(--mint);border-color:var(--mint);color:#06281a;font-weight:700;font-size:1.05rem;padding:.75rem 1.4rem}
+a.btn{display:inline-block;text-decoration:none;border-radius:10px;padding:.65rem 1.2rem}a.main{background:var(--mint);color:#06281a;font-weight:700}
+.tag.ready{background:var(--mint);color:#06281a;font-weight:600}
 button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
 .file{display:flex;justify-content:space-between;gap:.6rem;width:100%;margin:.3rem 0}.file b{overflow-wrap:anywhere}
 .state{margin:.6rem 0 0;font-weight:600}.ok{color:var(--mint)}.bad{color:var(--bad)}.warn{color:var(--warn)}
@@ -407,6 +411,8 @@ footer{margin-top:2rem;color:var(--muted);font-size:.82rem;display:flex;gap:1rem
 <div id="dlHead" class="sub" data-t="no_build"></div><div class="list" id="apps"></div></section>
 
 <section class="card hidden" id="dlBox"><h2 id="dlName"></h2><p id="dlIntro"></p><ol class="next" id="dlSteps"></ol><p class="small" id="dlGuide"></p></section>
+
+<section class="card banner hidden" id="readyBox"><h2 data-t="ready_title"></h2><p id="readyText"></p><div class="row"><a class="btn main" id="readyLink" target="_blank" data-t="ready_link"></a></div><p class="muted small" data-t="ready_or"></p></section>
 
 <section class="card hidden" id="fileBox"><h2 data-t="step2"></h2><p id="fileHint" class="small"></p>
 <div class="row"><button class="btn" id="choose" data-t="choose"></button></div>
@@ -462,7 +468,7 @@ function filters(){const systems=[...new Set(D.games.map(systemOf).filter(Boolea
  $("filters").replaceChildren(...["",...systems].map(s=>{const b=el("button",s||S.all,"filter"+(s==system?" on":""));b.onclick=()=>{system=s;filters();cards()};return b}))}
 function row(x,isGame){const b=el("button",null,"item"+(x.id==sel?" on":""));
  b.append(el("span",isGame?title(x):x.name,"t"));const t=el("div",null,"tags");
- if(isGame)for(const p of x.platforms)t.append(el("span",p.short||p.label,"tag"));b.append(t);
+ if(isGame&&x.ready)t.append(el("span",S.ready_tag,"tag ready"));if(isGame)for(const p of x.platforms)t.append(el("span",p.short||p.label,"tag"));b.append(t);
  if(isGame)b.append(el("span",x.name+(systemOf(x)?" · "+systemOf(x):""),"s"));b.onclick=()=>choose(x.id);return b}
 function cards(){const q=$("search").value.trim().toLowerCase();
  const m=x=>sel?x.id==sel:(!q||(x.name+" "+(x.about||"")).toLowerCase().includes(q));
@@ -473,9 +479,10 @@ function cards(){const q=$("search").value.trim().toLowerCase();
  const as=sel||system?D.downloads.filter(a=>a.id==sel):D.downloads.filter(m);
  $("dlHead").classList.toggle("hidden",!as.length||!!sel);$("apps").replaceChildren(...as.map(a=>row(a,false)));$("apps").classList.toggle("hidden",!as.length);
  $("noMatch").classList.toggle("hidden",!!(games.length||as.length))}
-$("search").oninput=cards;$("changeGame").onclick=()=>{sel=null;file=null;dev=null;for(const id of ["fileBox","deviceBox","planBox","dlBox","inApp"])$(id).classList.add("hidden");cards()};
+$("search").oninput=cards;$("changeGame").onclick=()=>{sel=null;file=null;dev=null;for(const id of ["fileBox","deviceBox","planBox","dlBox","readyBox","inApp"])$(id).classList.add("hidden");cards()};
 function choose(id){sel=id;file=null;dev=null;$("fileState").textContent="";$("path").value="";cards();const g=game(),a=app();
  $("dlBox").classList.toggle("hidden",!a);
+ $("readyBox").classList.toggle("hidden",!(g&&g.ready));if(g&&g.ready){$("readyText").textContent=g.ready.text;$("readyLink").href=g.ready.url}
  if(a){$("dlName").textContent=a.name;$("dlIntro").textContent=a.intro;$("dlSteps").replaceChildren(...a.steps.map(linked));
   const l=el("a",a.guide);l.href=a.guide;l.target="_blank";$("dlGuide").replaceChildren(S.guide+": ",l);$("dlBox").scrollIntoView({behavior:"smooth"})}
  for(const id of ["fileBox","deviceBox","planBox"])$(id).classList.add("hidden");$("inApp").classList.add("hidden");if(!g)return;

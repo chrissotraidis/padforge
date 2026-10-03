@@ -27,7 +27,7 @@ class NextStepsTests(unittest.TestCase):
         self.assertIn("already on this phone", text)
         self.assertIn(str(result.parent), text)
         self.assertIn(result.name, text)
-        self.assertIn("Import Game next to Mario Kart Wii", text)
+        self.assertIn("Import Game on the Mario Kart Wii card", text)
         self.assertIn("Game Data & Saves", text)
         self.assertIn("Import from Extracted Game Data Folder", text)
         self.assertIn("KartPad game data", text)
@@ -40,8 +40,8 @@ class NextStepsTests(unittest.TestCase):
             cli.next_steps(catalog()["kartpad"], "android", Path("/out/pack.so"), stream)
         text = stream.getvalue()
         folder = Path("/out/pack.so").parent  # "\out" on Windows
-        self.assertIn(f"Copy pack.so and the KartPad game data folder, both in {folder}, to the phone or tablet",
-                      text)
+        self.assertIn("It already has the game code, so you don't need pack.so", text)
+        self.assertIn(f"Copy the KartPad game data folder from {folder} to the phone or tablet", text)
         self.assertIn("Import from Extracted Game Data Folder", text)
         self.assertIn("USB cable", text)
         self.assertNotIn("already on this phone", text)
@@ -62,7 +62,7 @@ class NextStepsTests(unittest.TestCase):
             cli.next_steps(catalog()["kartpad"], "android", Path("/out/pack.so"), stream)
         text = stream.getvalue()
         self.assertIn("Paso 3 de 3", text)
-        self.assertIn("Copia pack.so y la carpeta KartPad game data", text)
+        self.assertIn("Copia la carpeta KartPad game data", text)
 
     def test_phone_without_special_steps_keeps_the_existing_instructions(self):
         stream = io.StringIO()
