@@ -10,8 +10,8 @@ import subprocess
 import tempfile
 import unittest
 
-from padmint.cli import execute, validate
-from padmint.manifest import validate_manifest
+from padmint.cli import digest, execute, validate
+from padmint.manifest import HOSTS, validate_manifest
 from fixtures import entries, write_ipa
 
 STEPS = {
@@ -152,3 +152,49 @@ class StepsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class FolderOutputTests(unittest.TestCase):
+    """A Windows game is a folder (BlueWake.exe and its DLLs): the backend leaves it at the
+    target's "folder", and PadMint checks and hands over the whole folder."""
+
+    def test_a_finished_folder_becomes_the_output(self):
+        temp = tempfile.TemporaryDirectory(prefix="padmint folder ")
+        self.addCleanup(temp.cleanup)
+        repo = Path(temp.name).resolve() / "backend"
+        repo.mkdir()
+        (repo / ".gitignore").write_text("build/\n")
+        make_app = ("import os, sys; app = os.path.join(sys.argv[1], 'App', 'game'); os.makedirs(app); "
+                    "open(os.path.join(app, '..', 'Game.exe'), 'w').write('x'); "
+                    "open(os.path.join(app, 'data.bin'), 'w').write('y')")
+        manifest = copy.deepcopy(STEPS)
+        manifest["targets"] = {"windows": {
+            "hosts": {host: "experimental" for host in HOSTS}, "output": "folder",
+            "folder": "{work}/App", "check": "none",
+            "steps": [{"stage": "package", "command": ["{python}", "-c", make_app, "{work}"]}]}}
+        (repo / "padmint.json").write_text(json.dumps(manifest))
+        for command in (["init", "-q"], ["config", "user.email", "t@example.invalid"],
+                        ["config", "user.name", "T"], ["add", "."], ["commit", "-qm", "synthetic"]):
+            subprocess.run(["git", "-C", str(repo), *command], check=True)
+        revision = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+        args = argparse.Namespace(game="starshippad", repo=repo, disc=None, revision=revision, target="windows",
+                                  source_only=False, no_mods=False, jobs=2)
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(execute(args, *validate(args)), 0)
+        record_path = next((repo / "build/padmint").glob("*/runs/*/record.json"))
+        record = json.loads(record_path.read_text())
+        folder = record_path.parent / "personal"
+        self.assertEqual(record["status"], "completed")
+        self.assertEqual(sorted(p.relative_to(folder).as_posix() for p in folder.rglob("*") if p.is_file()),
+                         ["Game.exe", "game/data.bin"])
+        self.assertEqual(record["output_sha256"], digest(folder))
+        self.assertEqual(record["publication_gate"]["result"], "PASS")
+
+    def test_folder_belongs_to_folder_outputs(self):
+        manifest = copy.deepcopy(STEPS)
+        manifest["targets"]["ios"]["folder"] = "{work}/App"
+        with self.assertRaisesRegex(ValueError, "only for"):
+            validate_manifest(manifest)
+        manifest["targets"]["ios"].pop("folder")
+        manifest["targets"]["ios"]["output"] = "folder"
+        with self.assertRaisesRegex(ValueError, "names the finished folder"):
+            validate_manifest(manifest)

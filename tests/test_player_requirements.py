@@ -167,3 +167,32 @@ class ExitCodeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+@unittest.skipIf(os.name == "nt", "the fake vswhere is a shell script")
+class NoAnswerTests(unittest.TestCase):
+    """Visual Studio's vswhere.exe answers nothing, with exit 0, when no installed copy has the
+    requested parts; that is missing, not a version. Its path is never on PATH."""
+    def test_an_empty_answer_with_a_minimum_counts_as_missing(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "vswhere"
+            path.write_text("#!/bin/sh\nexit 0\n")
+            path.chmod(0o755)
+            tool = {"name": "$PADMINT_TEST_VSWHERE", "version_args": ["-latest"], "min_version": "17",
+                    "player": True, "note": "Install Visual Studio Build Tools"}
+            with mock.patch.dict(os.environ, {"PADMINT_TEST_VSWHERE": str(path)}):
+                self.assertEqual(cli.check_program(tool), (False, "Install Visual Studio Build Tools"))
+                path.write_text("#!/bin/sh\necho 17.14.16\n")
+                self.assertEqual(cli.check_program(tool), (True, "17.14.16 (need 17+)"))
+
+
+class WindowsCopyTests(unittest.TestCase):
+    """A Windows copy is offered on Windows PCs only: it runs on the PC that makes it."""
+    def test_windows_is_offered_only_on_windows(self):
+        entries = {"examplepad": {"id": "examplepad", "name": "ExamplePad", "player_targets": ["android", "windows"]}}
+        with mock.patch.object(cli, "catalog", return_value=entries):
+            for host, platforms in (("windows-x86_64", ["android", "windows"]),
+                                    ("windows-arm64", ["android", "windows"]),
+                                    ("linux-x86_64", ["android"]), ("macos-arm64", ["android"])):
+                with mock.patch.object(cli, "host_id", return_value=host), \
+                        mock.patch.object(cli, "on_android", return_value=False):
+                    self.assertEqual(cli.player_games(), [("examplepad", "ExamplePad", platforms)], host)
