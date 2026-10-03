@@ -79,6 +79,9 @@ HEADERS = (
      "_types.h _wchar.h _wctype.h _xlocale.h alloca.h ctype.h errno.h limits.h locale.h runetype.h "
      "stddef.h stdint.h stdio.h stdlib.h string.h time.h unistd.h wchar.h wctype.h xlocale.h"),
     ("libc", "include/_types", "_types", "*"),
+    # Optimized builds turn on Apple's fortified string and stdio functions (__memcpy_chk
+    # and friends, all in libSystem), which these headers declare.
+    ("libc", "include/secure", "secure", "*"),
     ("libc", "include/xlocale", "xlocale", "*"),
     ("libc", "include/FreeBSD", "", "nl_types.h"),
     ("xnu", "bsd/sys", "sys",
