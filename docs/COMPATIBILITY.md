@@ -1,7 +1,7 @@
 # Build compatibility
 
-Public recipe snapshot: **3 October 2026**, checked with PadMint **v0.2.9**; KartPad's rows
-were rechecked against its v0.7.4 recipe with PadMint **v0.3.1**.
+Public recipe snapshot: **4 October 2026**, rechecked against each game's latest release
+recipe with PadMint **v0.3.4**.
 The table describes the recipe shipped with each game's latest public release.
 It does not promote a declared host to tested gameplay support. See
 [catalog-wide compatibility work](https://github.com/chrissotraidis/padmint/issues/75)
@@ -38,9 +38,9 @@ guided setup offers its Android and iOS targets only.
 | [DinoPad v0.2.0](https://github.com/chrissotraidis/dinopad/releases/tag/v0.2.0) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
 | [GoldenPad v0.2.2](https://github.com/chrissotraidis/goldenpad/releases/tag/v0.2.2) | iOS IPA | Experimental | Planned / Unavailable | Planned / Unavailable |
 | [HarkinianPad v0.2.0](https://github.com/chrissotraidis/harkinianpad/releases/tag/v0.2.0) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
-| [KartPad v0.7.4](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.4) | iOS IPA | Experimental | Experimental / Experimental | Experimental / Experimental |
-| [KartPad v0.7.4](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.4) | macOS app | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
-| [KartPad v0.7.4](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.4) | Android game pack | Experimental | Experimental / Experimental | Experimental / Experimental |
+| [KartPad v0.7.8](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.8) | iOS IPA | Experimental | Experimental / Experimental | Experimental / Experimental |
+| [KartPad v0.7.8](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.8) | macOS app | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
+| [KartPad v0.7.8](https://github.com/chrissotraidis/kartpad/releases/tag/v0.7.8) | Android game pack | Experimental | Experimental / Experimental | Experimental / Experimental |
 | [MaskPad v0.2.0](https://github.com/chrissotraidis/maskpad/releases/tag/v0.2.0) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
 | [MeleePad v0.2.1](https://github.com/chrissotraidis/meleepad/releases/tag/v0.2.1) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
 | [PaperPad v0.2.1](https://github.com/chrissotraidis/paperpad/releases/tag/v0.2.1) | iOS IPA | Experimental | Unavailable / Unavailable | Unavailable / Unavailable |
@@ -62,6 +62,48 @@ Mac build routes in this snapshot require Apple Silicon.
 PeonPad and VaultPad publish apps without game files; PadMint lists them with
 download and data-import steps. **SnapPad** downloads remain paused and no public
 PadMint recipe is available.
+
+## Status by game
+
+Where each tracker app stands on the shared pipeline, and the smallest next step.
+Games are grouped by family: one game proves a family, and the rest follow it.
+**Off-Mac** means a build on a Windows or Linux computer, as recorded below.
+
+**GameCube and Wii recompilations** (reference: BlueWake)
+
+| Game | Status | Smallest next step |
+|---|---|---|
+| KartPad | Android pack builds on Mac, Windows and Linux; the Mac-built v0.7.7 pack and a Linux x64 v0.7.4 pack raced on an Android 16 emulator. iPhone off a Mac is experimental | Physical Android and x64 Windows acceptance |
+| BlueWake | iPhone module built on Linux x64 through PadMint's open-source SDK and inserted into the v0.1.0 app, IPA check passed ([draft #42](https://github.com/chrissotraidis/bluewake/pull/42)). **Windows** downloads come from BlueWake's own releases as ready-to-play builds, outside PadMint; PadMint's Windows route ([draft #46](https://github.com/chrissotraidis/bluewake/pull/46)) stays experimental and unused | Finish the Mac run of #42; Mac, iPhone and iPad keep using PadMint |
+| SunPad | Disc extraction and translation work on Linux (needs the `cpp-ipc` submodule); the module compile is not wired to PadMint | Same recipe change as BlueWake #42; releases wait on its tracker row |
+| MeleePad | Mac only | Follows SunPad, plus its Slippi Rust dependencies |
+
+**N64 recompilations** (reference: GoldenPad)
+
+| Game | Status | Smallest next step |
+|---|---|---|
+| GoldenPad | Mac only: builds the whole app with Xcode from the generated sources | A published app without game code that loads a module (the SpaghettiPad #29 pattern); about one to two days, plus its tracker release decision |
+| AnnePad, BananaPad, BearBirdPad, DinoPad | Mac only | Follow GoldenPad once it is proven |
+
+**Engine and decompilation ports** (reference: SpaghettiPad)
+
+| Game | Status | Smallest next step |
+|---|---|---|
+| SpaghettiPad | [Draft #29](https://github.com/chrissotraidis/spaghettipad/pull/29) builds iPhone modules on Windows and Linux x64/ARM64 | A complete released recipe with matching runtime delivery |
+| HarkinianPad | Resources build on five hosts ([#35](https://github.com/chrissotraidis/harkinianpad/pull/35)); app is Mac only | Follow SpaghettiPad #29 |
+| MaskPad, StarshipPad, PaperPad, BrawlerPad, BarrelPad, BellPad, BallPad | Mac only | Follow SpaghettiPad #29. StarshipPad's merged recipe fix (#22) waits on its tracker row |
+| AgePad | Mac only by design: it packages the Mac edition from Steam | None planned off a Mac |
+
+**Not yet in PadMint:** GalaxyPad (118 address-named references need a decision),
+F0x (decompiled-context patch lines need a decision), ProjectReach (public and
+release status need a decision), EctoPad (needs a bootstrap script first).
+
+**No build needed:** CaesarPad, DaggerPad, DevilTouch, Emerald Tablet, KidPad,
+PeonPad and VaultPad appear in the PadMint page with download and data-import
+steps. RATouch (license-notice review), UTP (owner decision on official builds)
+and OpenRCT2Touch (no iPad download) are not listed yet.
+
+**Excluded:** SnapPad stays paused; CTRPad stays out while private.
 
 ## Recorded KartPad builds on x64
 
