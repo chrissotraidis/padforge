@@ -32,6 +32,17 @@ feasibility are technical findings, not copyright or licensing clearance.
   process and starts builds as `python3 -m padmint build` subprocesses (one at
   a time, cancellable), showing stages from the same events. Checked in the
   in-app browser against StarshipPad: current commit, doctor Ready, plan steps.
+- **Player window, 3 Oct:** players found the terminal confusing (a Windows
+  player reading it through a translator saw only download lines and did not
+  know what came next). Double-clicking PadMint now opens the page as a player
+  window: game, own game file (the system's Open dialog, files found in
+  Downloads, or a typed path), device, then three plain steps, Cancel, Copy
+  details and the game's next steps, in English, Spanish or Portuguese. It runs
+  `python -m padmint make` as a subprocess, so it can do nothing the terminal
+  cannot; it shows no game art or logos. Phones, scripts, a Linux computer
+  without a desktop, `padmint start` and `PADMINT_TERMINAL=1` keep the terminal
+  questions. The developer form (checkout, commit, plan) is gone; developers use
+  `plan` and `build` directly.
 
 ## D4. Manifests may list existing scripts as ordered steps
 

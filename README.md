@@ -57,29 +57,35 @@ and unzip it.
   choose **Done**, then **System Settings → Privacy & Security → Open Anyway**.
 - **Linux:** run `sh padmint.sh` in the folder (needs Python 3.9+ and Git).
 
-PadMint speaks English, Spanish and Portuguese, following your computer's
-language. To choose one, set `PADMINT_LANG` to `en`, `es` or `pt` before starting it.
+PadMint opens in your web browser. The page is served by your own computer and
+nothing is uploaded. It speaks English, Spanish and Portuguese: pick one from
+the **Language** menu at the top.
 
-### 2. Drag in your disc image
+### 2. Choose your disc image
 
-Drag your disc image into the PadMint window and press Enter:
+In the PadMint page:
 
-```
-Game: KartPad
-Make it for: Android phone or tablet
-Drag your own KartPad game file into this window, then press Enter: Mario Kart Wii.rvz
-Your copy will be saved in C:\Users\you\Downloads
-```
+1. Under **Game**, choose **KartPad**.
+2. Click **Choose file…** and pick your disc image. Disc images already in
+   Downloads are listed, so you can also click one of those.
+3. Under **Make it for**, choose **Android phone or tablet**. That is where you
+   will play, whichever computer you use.
+4. Click **Make my copy**.
 
-If PadMint asks which device to build for, choose **Android phone or tablet**.
-That choice describes where you will play, regardless of which computer you use.
-
-Keep the window open. Keep the computer plugged in; PadMint keeps it awake while
-it builds. The first build downloads tools and sources and can take an hour or
-longer, especially on Windows on ARM. Finished work is cached, so later runs can
-be quicker; a game update may need a full rebuild. If it stops, it says why and
-what to do. See the [recorded build results](docs/COMPATIBILITY.md#recorded-android-pack-builds)
+The page shows which of the three steps PadMint is on and how long it has been
+working. Keep the page and the PadMint window open, and keep the computer
+plugged in; PadMint keeps it awake while it builds. The first build downloads
+tools and sources and can take an hour or longer, especially on Windows on ARM.
+Finished work is cached, so later runs can be quicker; a game update may need a
+full rebuild. When it finishes, the page lists exactly what to do next. If it
+stops, it says why, and **Copy details** copies what to post when asking for
+help. See the [recorded build results](docs/COMPATIBILITY.md#recorded-android-pack-builds)
 for the exact hosts and versions checked.
+
+Prefer the terminal? Start PadMint with `start` (for example `PadMint.cmd start`
+on Windows or `sh padmint.sh start` on Linux), then drag your disc image into
+the window and answer the questions there. A computer without a web browser
+gets these questions automatically.
 
 ### 3. Find two things in Downloads
 
@@ -163,8 +169,8 @@ stays).
   but has not tested gameplay and reports an exit when opening the import menu.
   That report is not an independently verified Intel/AMD build-and-play result.
 
-1. Start PadMint as in [step 1](#1-start-padmint), drag in your disc image and,
-   when asked which device to build for, choose **iPhone or iPad**.
+1. Start PadMint as in [step 1](#1-start-padmint), choose your disc image and,
+   under **Make it for**, choose **iPhone or iPad**.
 2. PadMint saves `KartPad-v…-ios-personal.ipa` and a `KartPad game data`
    folder in Downloads.
 3. Install the `.ipa` with Sideloadly, AltStore or SideStore. Updating? Install
@@ -219,8 +225,8 @@ On a Mac with Apple Silicon and Xcode, PadMint also offers iPhone and iPad build
 recipes for **AnnePad**, **BallPad**, **BananaPad**, **BarrelPad**, **BearBirdPad**,
 **BellPad**, **BlueWake**, **BrawlerPad**, **DinoPad**, **GoldenPad**,
 **HarkinianPad**, **MaskPad**, **MeleePad**, **PaperPad**, **SpaghettiPad**,
-**StarshipPad** and **SunPad**. Drag in your game file (or press Enter for
-games that ask for it inside the app) and pick the game. Each game's README
+**StarshipPad** and **SunPad**. Choose the game in the PadMint page, then your
+game file (games that ask for it inside the app skip this). Each game's README
 says which file it needs and how to install the result.
 
 **Current blocker:** StarshipPad's published v0.2.0 recipe fails with an iOS SDK
@@ -283,7 +289,7 @@ Run PadMint again after resolving the error; finished downloads are kept.
 KartPad needs the European (PAL) disc, game ID RMCP01.
 
 **It says my file is stored only in iCloud (Mac).**
-In Finder, right-click the file, choose **Download Now**, wait, then drag it in
+In Finder, right-click the file, choose **Download Now**, wait, then choose it
 again.
 
 **Linux asks me to install libxml2.**
@@ -316,7 +322,7 @@ repository:
 ```sh
 python3 -m padmint list                      # supported games and platforms
 python3 -m padmint make kartpad android --disc 'your disc.wbfs'   # the one-step path
-python3 -m padmint ui                        # local browser page (same commands)
+python3 -m padmint                           # the PadMint page in your browser (start: terminal)
 python3 -m padmint doctor kartpad            # check this computer (installs nothing)
 python3 -m padmint tools kartpad --target android --repo /path/to/kartpad   # get pinned tools
 python3 -m padmint get kartpad /path/to/kartpad   # download a game's source

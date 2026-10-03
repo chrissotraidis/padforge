@@ -173,6 +173,81 @@ MESSAGES = {
         "pt": ("\nA compilação parou; as linhas acima dizem o motivo. Para pedir ajuda, publique-as "
                "com o tipo do seu computador (Windows, Mac ou Linux) em {url}"),
     },
+    # The PadMint window (padmint ui).
+    "w_open": {
+        "en": ("PadMint {version} is open in your web browser.\nKeep this window open while PadMint works; "
+               "close it when you are done.\nIf no browser opened, go to: {url}"),
+        "es": ("PadMint {version} está abierto en tu navegador.\nDeja esta ventana abierta mientras PadMint "
+               "trabaja; ciérrala cuando termines.\nSi no se abrió el navegador, ve a: {url}"),
+        "pt": ("O PadMint {version} está aberto no seu navegador.\nDeixe esta janela aberta enquanto o "
+               "PadMint trabalha; feche-a quando terminar.\nSe o navegador não abriu, acesse: {url}"),
+    },
+    "w_intro": {
+        "en": "Make your own copy of a game from your own game file. Everything stays on this computer.",
+        "es": "Crea tu propia copia de un juego a partir de tu propio archivo del juego. Todo se queda en esta computadora.",
+        "pt": "Crie sua própria cópia de um jogo a partir do seu próprio arquivo do jogo. Tudo fica neste computador.",
+    },
+    "w_language": {"en": "Language", "es": "Idioma", "pt": "Idioma"},
+    "w_game": {"en": "Game", "es": "Juego", "pt": "Jogo"},
+    "w_pick_game": {"en": "Choose your game", "es": "Elige tu juego", "pt": "Escolha o seu jogo"},
+    "w_file": {"en": "Your own game file", "es": "Tu propio archivo del juego", "pt": "O seu próprio arquivo do jogo"},
+    "w_file_in_app": {
+        "en": "{name} asks for your game file inside the app, after you install it. Nothing to choose here.",
+        "es": "{name} te pide tu archivo del juego dentro de la app, después de instalarla. Aquí no hay que elegir nada.",
+        "pt": "{name} pede o seu arquivo do jogo dentro do app, depois de instalá-lo. Nada para escolher aqui.",
+    },
+    "w_choose": {"en": "Choose file…", "es": "Elegir archivo…", "pt": "Escolher arquivo…"},
+    "w_found": {"en": "Game files in {folder}:", "es": "Archivos de juegos en {folder}:",
+                "pt": "Arquivos de jogos em {folder}:"},
+    "w_type": {"en": "Or type or paste the file's full path:", "es": "O escribe o pega la ruta completa del archivo:",
+               "pt": "Ou digite ou cole o caminho completo do arquivo:"},
+    "w_use": {"en": "Use", "es": "Usar", "pt": "Usar"},
+    "w_file_ok": {"en": "Ready: {file}", "es": "Listo: {file}", "pt": "Pronto: {file}"},
+    "w_wrong_game": {"en": "This file is not a {name} game file.", "es": "Este archivo no es del juego {name}.",
+                     "pt": "Este arquivo não é do jogo {name}."},
+    "w_device": {"en": "Make it for", "es": "Crear para", "pt": "Criar para"},
+    "w_make": {"en": "Make my copy", "es": "Crear mi copia", "pt": "Criar minha cópia"},
+    "w_time": {
+        "en": ("The first build usually takes 30 minutes to a few hours. Keep this page and the PadMint "
+               "window open; you can use your computer meanwhile."),
+        "es": ("La primera vez suele tardar de 30 minutos a unas horas. Deja abiertas esta página y la "
+               "ventana de PadMint; puedes usar tu computadora mientras tanto."),
+        "pt": ("A primeira vez costuma levar de 30 minutos a algumas horas. Deixe esta página e a janela "
+               "do PadMint abertas; você pode usar o computador enquanto isso."),
+    },
+    "w_step_tools": {"en": "Step 1 of 3: getting the free build tools (first time only)",
+                     "es": "Paso 1 de 3: descargando las herramientas gratuitas (solo la primera vez)",
+                     "pt": "Etapa 1 de 3: baixando as ferramentas gratuitas (só na primeira vez)"},
+    "w_step_build": {"en": "Step 2 of 3: building your copy", "es": "Paso 2 de 3: creando tu copia",
+                     "pt": "Etapa 2 de 3: criando sua cópia"},
+    "w_step_done": {"en": "Step 3 of 3: done!", "es": "Paso 3 de 3: ¡listo!", "pt": "Etapa 3 de 3: pronto!"},
+    "w_starting": {"en": "Starting…", "es": "Empezando…", "pt": "Começando…"},
+    "w_elapsed": {"en": "Time so far", "es": "Tiempo transcurrido", "pt": "Tempo até agora"},
+    "w_now": {"en": "Now", "es": "Ahora", "pt": "Agora"},
+    "w_cancel": {"en": "Cancel", "es": "Cancelar", "pt": "Cancelar"},
+    "w_cancelled": {
+        "en": "Cancelled. Finished work is kept, so the next try is faster.",
+        "es": "Cancelado. Lo ya hecho se conserva, así que el siguiente intento será más rápido.",
+        "pt": "Cancelado. O que já foi feito fica guardado, então a próxima tentativa é mais rápida.",
+    },
+    "w_details": {"en": "Details", "es": "Detalles", "pt": "Detalhes"},
+    "w_copy": {"en": "Copy details", "es": "Copiar detalles", "pt": "Copiar detalhes"},
+    "w_copied": {"en": "Copied", "es": "Copiado", "pt": "Copiado"},
+    "w_failed": {
+        "en": ("The build stopped. The details below say why. For help, copy them and post them with "
+               "your computer type (Windows, Mac or Linux) at"),
+        "es": ("La compilación se detuvo. Los detalles de abajo dicen por qué. Para pedir ayuda, cópialos "
+               "y publícalos junto con tu tipo de computadora (Windows, Mac o Linux) en"),
+        "pt": ("A compilação parou. Os detalhes abaixo dizem o motivo. Para pedir ajuda, copie-os e "
+               "publique-os com o tipo do seu computador (Windows, Mac ou Linux) em"),
+    },
+    "w_show": {"en": "Show in folder", "es": "Mostrar en la carpeta", "pt": "Mostrar na pasta"},
+    "w_next": {"en": "What to do next:", "es": "Qué hacer ahora:", "pt": "O que fazer agora:"},
+    "w_guide": {"en": "Full guide", "es": "Guía completa (en inglés)", "pt": "Guia completo (em inglês)"},
+    "w_again": {"en": "Make another copy", "es": "Crear otra copia", "pt": "Criar outra cópia"},
+    "w_none": {"en": "No game can be made on this computer yet.",
+               "es": "Todavía no se puede crear ningún juego en esta computadora.",
+               "pt": "Ainda não é possível criar nenhum jogo neste computador."},
 }
 
 
@@ -214,16 +289,21 @@ def language(environ=None, windows=None):
 def t(key, **fields):
     """The message for key in the player's language, with fields filled in. A console that
     cannot show accented letters gets English instead of an error."""
-    texts = MESSAGES[key]
     chosen = language()
     if chosen != "en" and not stream_supports():
         chosen = "en"
-    return texts.get(chosen, texts["en"]).format(**fields)
+    return phrase(key, chosen, **fields)
 
 
-def localized(value, field):
+def phrase(key, lang, **fields):
+    """The message for key in the given language (the PadMint window chooses its own)."""
+    texts = MESSAGES[key]
+    return texts.get(lang, texts["en"]).format(**fields)
+
+
+def localized(value, field, lang=None):
     """A catalog value's translation (value["translations"][lang][field]) or the English original."""
-    chosen = language() if stream_supports() else "en"
+    chosen = lang or (language() if stream_supports() else "en")
     return ((value.get("translations") or {}).get(chosen) or {}).get(field, value.get(field))
 
 
