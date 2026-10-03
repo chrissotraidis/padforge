@@ -190,6 +190,34 @@ class PhoneStartTests(unittest.TestCase):
                         env = tools.environment(["dotnet"], "linux-arm64", base={})
                     self.assertEqual(env.get("DOTNET_GCHeapHardLimit"), tools.ANDROID_DOTNET_HEAP if phone else None)
 
+    def test_apps_with_nothing_to_build_show_their_steps_instead_of_building(self):
+        app = {"id": "padapp", "name": "PadApp", "repo_url": "https://github.com/example/padapp",
+               "player_help": "https://github.com/example/padapp#install",
+               "download": {"steps": ["Download the IPA.", "Add your own files."],
+                            "translations": {"es": {"steps": ["Descarga la IPA.", "Añade tus archivos."]}}}}
+        stream = io.StringIO()
+        with mock.patch.object(cli, "catalog", return_value=dict(CATALOG, padapp=app)), \
+                mock.patch.object(cli, "host_id", return_value="windows-x86_64"), \
+                mock.patch.object(cli, "on_android", return_value=False), \
+                mock.patch.object(cli, "make") as make, mock.patch.dict(cli.os.environ, {"PADMINT_LANG": "es"}):
+            replies = iter(["2"])  # 1. KartPad, 2. PadApp (no hace falta crearlo)
+            code = cli.start(lambda _prompt: next(replies), stream)
+        self.assertEqual(code, 0)
+        make.assert_not_called()
+        shown = stream.getvalue()
+        self.assertIn("PadApp (no hace falta crearlo)", shown)
+        self.assertIn("  2. Añade tus archivos.", shown)
+        self.assertIn("https://github.com/example/padapp#install", shown)
+
+    def test_an_app_to_download_cannot_also_be_built(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "padapp.json"
+            path.write_text('{"id": "padapp", "name": "PadApp", "repo_url": "https://github.com/example/padapp",'
+                            ' "player_targets": ["ios"], "free_space_gb": 3, "download": {"steps": ["x"]}}')
+            with mock.patch.object(manifest, "CATALOG", Path(folder)), self.assertRaises(ValueError) as error:
+                manifest.catalog()
+        self.assertIn("download needs a name, no player_targets", str(error.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

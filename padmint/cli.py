@@ -966,6 +966,9 @@ def doctor(game, target_name, repo=None, stream=None):
 PLATFORM_NAMES = {"android": "Android", "ios": "iPhone and iPad", "macos": "Mac"}
 # The phone's Download folder, shared with its apps (Termux asks once for access).
 PHONE_DOWNLOADS = Path("/sdcard/Download")
+# Termux's command that opens an address in the phone's browser. Ubuntu inside Termux
+# (proot-distro) sees Termux's own files, so PadMint can run it from there.
+TERMUX_OPEN_URL = Path("/data/data/com.termux/files/usr/bin/termux-open-url")
 
 
 def next_step_text(entry, platform_name, result, lang=None):
@@ -1108,12 +1111,33 @@ def platform_label(platform_name, lang=None):
     return phrase(key[platform_name], lang) if lang else t(key[platform_name])
 
 
+def downloads():
+    """[(app, name)]: apps with nothing to build, only their published app and the player's
+    own files (catalog "download")."""
+    return [(app, entry["name"]) for app, entry in sorted(catalog().items()) if entry.get("download")]
+
+
+def download_steps(app, stream, lang=None):
+    """How to get an app that needs no build, in the player's words."""
+    entry = catalog()[app]
+    say = (lambda key, **fields: phrase(key, lang, **fields)) if lang else t
+    print(say("download_intro", name=entry["name"]), file=stream)
+    for number, step in enumerate(localized(entry["download"], "steps", lang), 1):
+        print(f"  {number}. {step}", file=stream)
+    if entry.get("player_help"):
+        print(say("full_guide", guide=entry["player_help"]), file=stream)
+    return 0
+
+
 def wants_window(environ=None):
-    """PadMint opened by double-click shows its window in the web browser. A phone, a script,
-    a Linux computer without a desktop, or PADMINT_TERMINAL=1 gets the terminal questions."""
+    """PadMint opened by double-click (or typed in Termux on a phone) shows its window in the
+    web browser. A script, a Linux computer without a desktop, a phone without Termux's
+    termux-open-url, or PADMINT_TERMINAL=1 gets the terminal questions."""
     environ = os.environ if environ is None else environ
-    if environ.get("PADMINT_TERMINAL") or on_android() or not sys.stdin or not sys.stdin.isatty():
+    if environ.get("PADMINT_TERMINAL") or not sys.stdin or not sys.stdin.isatty():
         return False
+    if on_android():
+        return TERMUX_OPEN_URL.exists()
     if sys.platform.startswith("linux") and not (environ.get("DISPLAY") or environ.get("WAYLAND_DISPLAY")):
         return False
     return True
@@ -1147,7 +1171,12 @@ def start(ask=input, stream=None):
                 offered = [entry for entry in games if entry[0] in found]
             game = found[0] if len(found) == 1 else None
     if game is None:
-        game = choose(t("game"), [(game, name) for game, name, _ in offered], ask, stream)
+        # iPhone and iPad apps to download: offered on computers, not on a phone making its own copy.
+        extra = ([(app, f"{name} ({t('no_build')})") for app, name in downloads()]
+                 if offered is games and not on_android() else [])
+        game = choose(t("game"), [(game, name) for game, name, _ in offered] + extra, ask, stream)
+        if game in dict(downloads()):
+            return download_steps(game, stream)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
     target = choose(t("make_it_for"), [(p, platform_label(p)) for p in platforms], ask, stream)
     if catalog()[game].get("player_game_file", "build") == "in-app":
@@ -1345,7 +1374,8 @@ def list_games(stream=None):
     source of truth for build hosts, so only the catalog's player targets show."""
     stream = stream or sys.stdout
     for game, entry in sorted(catalog().items()):
-        targets = ", ".join(entry.get("player_targets") or []) or "see repo"
+        targets = ", ".join(entry.get("player_targets") or []) or (
+            "no build needed" if entry.get("download") else "see repo")
         print(f"{game:12} {targets:12} {entry['repo_url']}", file=stream)
     return 0
 

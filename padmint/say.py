@@ -165,6 +165,12 @@ MESSAGES = {
     },
     "full_guide": {"en": "Full guide: {guide}", "es": "Guía completa (en inglés): {guide}",
                    "pt": "Guia completo (em inglês): {guide}"},
+    "no_build": {"en": "no build needed", "es": "no hace falta crearlo", "pt": "não precisa criar"},
+    "download_intro": {
+        "en": "\n{name} needs no build: its app contains no game files, and you add your own. To get it:",
+        "es": "\nNo hace falta crear {name}: su app no trae archivos del juego y tú añades los tuyos. Para conseguirlo:",
+        "pt": "\nNão é preciso criar {name}: o app não traz arquivos do jogo e você adiciona os seus. Para obtê-lo:",
+    },
     "build_stopped": {
         "en": ("\nThe build stopped; the lines above say why. For help, post them with your computer "
                "type (Windows, Mac or Linux) at {url}"),
@@ -183,13 +189,16 @@ MESSAGES = {
                "PadMint trabalha; feche-a quando terminar.\nSe o navegador não abriu, acesse: {url}"),
     },
     "w_intro": {
-        "en": "Make your own copy of a game from your own game file. Everything stays on this computer.",
-        "es": "Crea tu propia copia de un juego a partir de tu propio archivo del juego. Todo se queda en esta computadora.",
-        "pt": "Crie sua própria cópia de um jogo a partir do seu próprio arquivo do jogo. Tudo fica neste computador.",
+        "en": "Make your own copy of a game from your own game file. Everything stays on this device.",
+        "es": "Crea tu propia copia de un juego a partir de tu propio archivo del juego. Todo se queda en este dispositivo.",
+        "pt": "Crie sua própria cópia de um jogo a partir do seu próprio arquivo do jogo. Tudo fica neste dispositivo.",
     },
     "w_language": {"en": "Language", "es": "Idioma", "pt": "Idioma"},
     "w_game": {"en": "Game", "es": "Juego", "pt": "Jogo"},
     "w_pick_game": {"en": "Choose your game", "es": "Elige tu juego", "pt": "Escolha o seu jogo"},
+    "w_no_build": {"en": "No build needed: download the app, add your own files",
+                   "es": "No hace falta crearlos: descarga la app y añade tus archivos",
+                   "pt": "Não precisam ser criados: baixe o app e adicione seus arquivos"},
     "w_file": {"en": "Your own game file", "es": "Tu propio archivo del juego", "pt": "O seu próprio arquivo do jogo"},
     "w_file_in_app": {
         "en": "{name} asks for your game file inside the app, after you install it. Nothing to choose here.",
@@ -208,12 +217,12 @@ MESSAGES = {
     "w_device": {"en": "Make it for", "es": "Crear para", "pt": "Criar para"},
     "w_make": {"en": "Make my copy", "es": "Crear mi copia", "pt": "Criar minha cópia"},
     "w_time": {
-        "en": ("The first build usually takes 30 minutes to a few hours. Keep this page and the PadMint "
-               "window open; you can use your computer meanwhile."),
-        "es": ("La primera vez suele tardar de 30 minutos a unas horas. Deja abiertas esta página y la "
-               "ventana de PadMint; puedes usar tu computadora mientras tanto."),
-        "pt": ("A primeira vez costuma levar de 30 minutos a algumas horas. Deixe esta página e a janela "
-               "do PadMint abertas; você pode usar o computador enquanto isso."),
+        "en": ("The first build usually takes 30 minutes to a few hours. Keep this page and PadMint open "
+               "(its window, or Termux on a phone); you can do other things meanwhile."),
+        "es": ("La primera vez suele tardar de 30 minutos a unas horas. Deja abiertos esta página y PadMint "
+               "(su ventana, o Termux en un teléfono); mientras tanto puedes hacer otras cosas."),
+        "pt": ("A primeira vez costuma levar de 30 minutos a algumas horas. Deixe esta página e o PadMint "
+               "abertos (a janela dele, ou o Termux no celular); enquanto isso, você pode fazer outras coisas."),
     },
     "w_step_tools": {"en": "Step 1 of 3: getting the free build tools (first time only)",
                      "es": "Paso 1 de 3: descargando las herramientas gratuitas (solo la primera vez)",

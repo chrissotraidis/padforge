@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "caesarpad",
+  "name": "CaesarPad",
+  "repo_url": "https://github.com/chrissotraidis/caesarpad",
+  "reviewed_revision": null,
+  "player_help": "https://github.com/chrissotraidis/caesarpad/blob/main/docs/INSTALL_IPA.md",
+  "notes": "No build needed: the published app contains no game data and the player adds their own files in the app. Listed while the Public Repo Audit Tracker row allows its existing public release.",
+  "download": {
+    "steps": [
+      "Download the CaesarPad IPA from https://github.com/chrissotraidis/caesarpad/releases and check it against the SHA-256 file beside it.",
+      "Install it with AltStore Classic, SideStore or Sideloadly, signed with your own Apple ID.",
+      "Put your own Caesar III data folder (with c3.eng and c3.sg2) in Files. Open CaesarPad, select that folder and tap Open."
+    ],
+    "translations": {
+      "es": {
+        "steps": [
+          "Descarga la IPA de CaesarPad desde https://github.com/chrissotraidis/caesarpad/releases y compruébalo con el archivo SHA-256 que lo acompaña.",
+          "Instálala con AltStore Classic, SideStore o Sideloadly, firmada con tu propio Apple ID.",
+          "Pon tu propia carpeta de datos de Caesar III (con c3.eng y c3.sg2) en Archivos. Abre CaesarPad, selecciona esa carpeta y toca Abrir."
+        ]
+      },
+      "pt": {
+        "steps": [
+          "Baixe o IPA do CaesarPad em https://github.com/chrissotraidis/caesarpad/releases e confira-o com o arquivo SHA-256 ao lado dele.",
+          "Instale-o com AltStore Classic, SideStore ou Sideloadly, assinado com o seu próprio Apple ID.",
+          "Coloque sua própria pasta de dados do Caesar III (com c3.eng e c3.sg2) no app Arquivos. Abra o CaesarPad, selecione essa pasta e toque em Abrir."
+        ]
+      }
+    }
+  },
+  "manifest": null
+}

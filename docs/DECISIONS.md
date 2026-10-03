@@ -43,6 +43,15 @@ feasibility are technical findings, not copyright or licensing clearance.
   without a desktop, `padmint start` and `PADMINT_TERMINAL=1` keep the terminal
   questions. The developer form (checkout, commit, plan) is gone; developers use
   `plan` and `build` directly.
+- **Phones and apps without a build, 3 Oct:** in Termux, `padmint` opens the same
+  page in the phone's browser with Termux's `termux-open-url` (Ubuntu inside
+  Termux sees Termux's files and shares its network). The page hides Choose file
+  (there is no Open dialog) and lists the game files in Download. Checked on an
+  API 36 emulator: page, file check, build start and Cancel. Apps whose published
+  app needs no game code (catalog `download`) appear under **No build needed**
+  with download and import steps, while their tracker rows allow their existing
+  releases; RAtouch (notice review), UTP (draft releases only) and OpenRCT2Touch
+  (no iPad download) are not listed.
 
 ## D4. Manifests may list existing scripts as ordered steps
 

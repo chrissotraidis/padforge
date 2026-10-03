@@ -22,7 +22,7 @@ import webbrowser
 
 from . import __version__, cli
 from .manifest import catalog
-from .say import LANGUAGES, MESSAGES, language, phrase
+from .say import LANGUAGES, MESSAGES, language, localized, phrase
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -43,8 +43,14 @@ def player_data(lang):
                       "platforms": [{"id": p, "label": cli.platform_label(p, lang)} for p in platforms],
                       "files": [str(path) for path in files[:8]],
                       "issues": entry["repo_url"] + "/issues"})
+    apps = [] if cli.on_android() else [
+        {"id": app, "name": name, "intro": phrase("download_intro", lang, name=name).strip(),
+         "steps": localized(catalog()[app]["download"], "steps", lang),
+         "guide": catalog()[app].get("player_help") or catalog()[app]["repo_url"]}
+        for app, name in cli.downloads()]
     return {"lang": lang, "version": __version__, "folder": str(folder),
-            "saved_in": phrase("saved_in", lang, folder=folder), "games": games, "text": strings(lang)}
+            "saved_in": phrase("saved_in", lang, folder=folder), "games": games, "downloads": apps,
+            "text": strings(lang), "picker": not cli.on_android(), "reveal": not cli.on_android()}
 
 
 def pick_file(title, folder):
@@ -126,7 +132,9 @@ class Builds:
         header = phrase("step_build", job["lang"], jobs=0).strip().split(":")[0]
         if any(line.startswith(header) for line in lines):
             step = "build"
-        now = next((line.strip() for line in reversed(lines) if line.strip()), "")
+        # The newest line that says something: skip the "still running" heartbeat.
+        now = next((line.strip() for line in reversed(lines)
+                    if line.strip() and "build_progress:" not in line), "")
         state = {None: "running", 0: "done", 130: "cancelled"}.get(code, "failed")
         reply = {"state": state, "step": "done" if code == 0 else step, "now": now[-200:], "game": job["game"],
                  "elapsed": int(time.time() - job["started"]), "tail": lines[-60:], "exit_code": code}
@@ -234,7 +242,10 @@ def serve(port=0, open_browser=True):
     url = f"http://127.0.0.1:{server.server_address[1]}/?token={token}"
     print(phrase("w_open", language(), version=__version__, url=url), flush=True)
     if open_browser:
-        webbrowser.open(url)
+        if cli.on_android():  # the phone's browser, through Termux
+            subprocess.run([str(cli.TERMUX_OPEN_URL), url], check=False)
+        else:
+            webbrowser.open(url)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
@@ -273,6 +284,7 @@ ol li{margin:.4rem 0;overflow-wrap:anywhere}.hidden{display:none}#now{overflow-w
 <div class="row"><input id="path" style="flex:1"><button id="use" data-t="use"></button></div>
 <p id="fileState"></p></section>
 <p id="inApp" class="note"></p>
+<section id="dlBox" class="hidden"><p id="dlIntro"></p><ol id="dlSteps"></ol><p id="dlGuide"></p></section>
 <section id="deviceBox"><h2 data-t="device"></h2><div class="device" id="devices"></div></section>
 <section id="finish"><p class="note" id="savedIn"></p><p class="note" data-t="time"></p>
 <div class="row"><button class="main" id="make" data-t="make" disabled></button></div><p id="makeError" class="bad"></p></section>
@@ -290,13 +302,18 @@ const T="__TOKEN__",D=__DATA__,S=D.text,H={"Content-Type":"application/json","X-
 const $=id=>document.getElementById(id);let file=null,reading=false;
 for(const el of document.querySelectorAll("[data-t]"))el.textContent=S[el.dataset.t];
 document.documentElement.lang=D.lang;$("lang").value=D.lang;$("savedIn").textContent=D.saved_in;
+$("choose").classList.toggle("hidden",!D.picker);
 $("lang").onchange=()=>{location.search="?token="+T+"&lang="+$("lang").value};
 async function post(p,b){const r=await fetch(p,{method:"POST",headers:H,body:JSON.stringify(Object.assign({lang:D.lang},b||{}))});return r.json()}
 const game=()=>D.games.find(g=>g.id==$("game").value);
+const app=()=>D.downloads.find(a=>a.id==$("game").value);
 const base=p=>p.split(/[\\/]/).pop();
 function el(tag,text,cls){const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e}
 function ready(){const g=game();$("make").disabled=!g||reading||(g.needs_file&&!file)||!document.querySelector("input[name=device]:checked")}
-function showGame(){const g=game();file=null;$("fileState").textContent="";$("path").value="";
+function showGame(){const g=game(),a=app();file=null;$("fileState").textContent="";$("path").value="";
+ $("dlBox").classList.toggle("hidden",!a);
+ if(a){$("dlIntro").textContent=a.intro;$("dlSteps").replaceChildren(...a.steps.map(s=>el("li",s)));
+  const l=el("a",a.guide);l.href=a.guide;l.target="_blank";$("dlGuide").replaceChildren(S.guide+": ",l)}
  for(const id of ["fileBox","inApp","deviceBox","finish"])$(id).classList.toggle("hidden",!g);if(!g)return ready();
  $("fileBox").classList.toggle("hidden",!g.needs_file);$("inApp").textContent=g.needs_file?"":S.file_in_app.replace("{name}",g.name);
  $("foundBox").classList.toggle("hidden",!g.files.length);$("found").textContent=S.found.replace("{folder}",D.folder);$("files").innerHTML="";
@@ -324,13 +341,15 @@ function show(r){if(r.state=="idle")return;$("form").classList.add("hidden");$("
  if(!over||shown)return;shown=true;const f=$("finished"),g=D.games.find(x=>x.id==r.game)||{issues:""};
  if(r.state=="failed"){const p=el("p",S.failed+" ","bad"),a=el("a",g.issues);a.href=g.issues;a.target="_blank";p.append(a);f.append(p);$("detailsBox").open=true}
  if(r.state=="done"&&r.result){const x=r.result;
-  if(x.file){const b=el("button",S.show);b.onclick=()=>post("/api/reveal");f.append(el("p",x.file,"ok"),b)}
+  if(x.file){f.append(el("p",x.file,"ok"));if(D.reveal){const b=el("button",S.show);b.onclick=()=>post("/api/reveal");f.append(b)}}
   if(x.steps.length){const o=el("ol");for(const s of x.steps)o.append(el("li",s));f.append(el("h2",S.next),o)}
   if(x.note)f.append(el("p",x.note));
   const p=el("p",S.guide+": "),a=el("a",x.guide);a.href=x.guide;a.target="_blank";p.append(a);f.append(p,el("p",x.private,"note"))}}
 async function poll(){const r=await (await fetch("/api/build",{headers:H})).json();show(r);if(r.state=="running")setTimeout(poll,2000)}
-if(!D.games.length){$("form").replaceChildren(el("p",S.none,"bad"))}
+if(!D.games.length&&!D.downloads.length){$("form").replaceChildren(el("p",S.none,"bad"))}
 else{const pick=el("option",S.pick_game);pick.value="";$("game").append(pick);
  for(const g of D.games){const o=el("option",g.name);o.value=g.id;$("game").append(o)}
+ if(D.downloads.length){const grp=el("optgroup");grp.label=S.no_build;
+  for(const a of D.downloads){const o=el("option",a.name);o.value=a.id;grp.append(o)}$("game").append(grp)}
  $("game").onchange=showGame;showGame();poll()}
 </script></body></html>"""

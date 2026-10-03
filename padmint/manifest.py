@@ -219,6 +219,19 @@ def catalog():
         if not isinstance(labels, dict) or not all(platform in targets and isinstance(label, str)
                                                    for platform, label in labels.items()):
             raise ValueError(f"catalog/{path.name}: game_data_import names a player target's button")
+        # Apps with nothing to build: their own published app plus the player's own files.
+        download = entry.get("download")
+        if download is not None:
+            if not isinstance(download, dict) or not all(
+                    isinstance(text, dict) for text in (download.get("translations") or {}).values()):
+                raise ValueError(f"catalog/{path.name}: download is an object with steps")
+            lists = [download.get("steps")] + [text.get("steps") for text in
+                                               (download.get("translations") or {}).values()]
+            if targets or not entry.get("name") or not all(
+                    isinstance(steps, list) and steps and all(isinstance(s, str) for s in steps)
+                    for steps in lists):
+                raise ValueError(f"catalog/{path.name}: download needs a name, no player_targets "
+                                 "and lists of steps")
         # Games offered to players must say how much space their first build needs, or doctor
         # reports "0 GB needed" and make's early check does nothing.
         space = entry.get("free_space_gb", 0 if not targets else None)
