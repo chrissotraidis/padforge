@@ -119,7 +119,10 @@ new game pack**: run PadMint again and choose the new `.so`.
 A 64-bit Android phone or tablet can make its own game pack. It has only been
 tried on a phone-sized emulator so far. It needs about
 8 GB of memory, 25 GB free, Wi-Fi for about 6 GB of downloads, and an hour or
-more.
+more. **Most phones are easier with a computer:** if you have any Windows, Mac or
+Linux computer, use [Android, with a computer](#android-with-a-computer) instead.
+The setup line below checks the phone first and tells you, before downloading
+anything, if it is not 64-bit or lacks the memory or space.
 
 1. Install **Termux** from [F-Droid](https://f-droid.org/packages/com.termux/)
    or its [GitHub releases](https://github.com/termux/termux-app/releases)
@@ -134,6 +137,10 @@ more.
    ```
    curl -fsSL https://raw.githubusercontent.com/chrissotraidis/padmint/main/launchers/padmint-android.sh | sh
    ```
+
+   If setup stops, it says where and what to do; running the same line again
+   keeps the finished steps. It works with older Termux packages too (an
+   `unknown option '--name'` error came from an earlier version of this line).
 
 4. Tap **Allow** if Android asks about access to your files. Wait for setup to
    finish; the first run downloads tools before it asks you to choose a file.
