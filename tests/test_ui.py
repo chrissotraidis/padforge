@@ -107,6 +107,19 @@ class WindowTests(unittest.TestCase):
             self.builds.process = FinishedProcess(code)
             self.assertEqual(self.builds.status()["state"], state)
 
+    def test_the_app_or_a_zip_is_refused_before_any_build(self):
+        # kartpad#386: a player gave PadMint the KartPad app instead of the disc image.
+        from padmint import ui
+        with tempfile.TemporaryDirectory() as folder:
+            app = Path(folder) / "KartPad-v0.7.4-android.apk"
+            app.write_bytes(b"PK\x03\x04")
+            with mock.patch.object(cli, "game_from_file") as read:
+                problem = ui.check_file("kartpad", str(app), "es")
+            read.assert_not_called()
+        self.assertIn("KartPad-v0.7.4-android.apk no es un archivo del juego", problem)
+        self.assertIn("ISO", problem)
+        self.assertIn("WBFS", problem)
+
 
 class OpenWindowTests(unittest.TestCase):
     def test_double_clicked_padmint_opens_the_window_but_scripts_get_the_terminal(self):

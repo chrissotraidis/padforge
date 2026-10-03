@@ -214,6 +214,11 @@ MESSAGES = {
     "w_file_ok": {"en": "Ready: {file}", "es": "Listo: {file}", "pt": "Pronto: {file}"},
     "w_wrong_game": {"en": "This file is not a {name} game file.", "es": "Este archivo no es del juego {name}.",
                      "pt": "Este arquivo não é do jogo {name}."},
+    "w_not_game_file": {
+        "en": "{file} is not a game file. {name} needs your own game file ({formats}), not the app.",
+        "es": "{file} no es un archivo del juego. {name} necesita tu propio archivo del juego ({formats}), no la app.",
+        "pt": "{file} não é um arquivo do jogo. {name} precisa do seu próprio arquivo do jogo ({formats}), não do app.",
+    },
     "w_device": {"en": "Make it for", "es": "Crear para", "pt": "Criar para"},
     "w_make": {"en": "Make my copy", "es": "Crear mi copia", "pt": "Criar minha cópia"},
     "w_time": {

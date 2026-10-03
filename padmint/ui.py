@@ -89,6 +89,12 @@ def check_file(game, path, lang):
     problem = cli.file_problem(disc)
     if problem:
         return problem
+    # A player may pick the game's app (an APK or IPA) or a ZIP instead of the game file.
+    manifest = catalog()[game].get("manifest") or {}
+    formats = sorted({name for item in manifest.get("inputs", []) for name in item.get("formats", [])})
+    if formats and disc.suffix.lower().lstrip(".") not in formats:
+        return phrase("w_not_game_file", lang, file=disc.name, name=manifest.get("name", game),
+                      formats=", ".join(name.upper() for name in formats))
     found = cli.game_from_file(disc, cli.player_games(), io.StringIO())
     if found and game not in found:
         name = (catalog()[game].get("manifest") or {}).get("name", game)
