@@ -39,7 +39,9 @@ class NextStepsTests(unittest.TestCase):
         with mock.patch.object(cli, "on_android", return_value=False):
             cli.next_steps(catalog()["kartpad"], "android", Path("/out/pack.so"), stream)
         text = stream.getvalue()
-        self.assertIn("Copy pack.so and the KartPad game data folder, both in /out, to the phone or tablet", text)
+        folder = Path("/out/pack.so").parent  # "\out" on Windows
+        self.assertIn(f"Copy pack.so and the KartPad game data folder, both in {folder}, to the phone or tablet",
+                      text)
         self.assertIn("Import from Extracted Game Data Folder", text)
         self.assertIn("USB cable", text)
         self.assertNotIn("already on this phone", text)
