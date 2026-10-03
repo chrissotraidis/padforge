@@ -68,6 +68,34 @@ python3 -m padmint check-manifest /path/to/examplepad
 python3 -m padmint plan examplepad --repo /path/to/examplepad --revision FULL_COMMIT
 ```
 
+### iPhone modules on any computer
+
+If the game publishes an iPhone app with no game code and loads its game code from a
+library inside the app, let PadMint build that library's surroundings on Windows,
+Linux and Macs alike, with no Xcode:
+
+```json
+"ios": {
+  "hosts": {"macos-arm64": "experimental", "windows-x86_64": "experimental", "linux-x86_64": "experimental"},
+  "output": "ipa", "check": "ipa",
+  "tools": ["libcxx", "cmake", "ninja"],
+  "published_app": "ExamplePad-v{version}-ios-unsigned.ipa",
+  "ios_module": {"file": "{work}/module/libexample_game.dylib", "into": "Frameworks/libexample_game.dylib"},
+  "steps": [
+    {"stage": "compile", "command": ["{python}", "-m", "example_builder", "--toolchain", "{ios_toolchain}",
+                                     "--out", "{work}/module/libexample_game.dylib"]}
+  ]
+}
+```
+
+Before the steps, PadMint assembles an iPhone SDK from Apple's open-source headers and
+LLVM's libc++ (`{ios_sdk}`) and a CMake toolchain file for its LLVM (`{ios_toolchain}`),
+with stubs for the published app's thread-local exports. Your steps compile only the game
+library. Afterwards PadMint checks that every name the library imports comes from the
+app or the device's C and C++ libraries, strips it, names it `@rpath/<file>` and puts it at
+`into` inside a copy of the published app. `scripts/ios-module-probe.py` runs the whole
+pipeline with a small probe library and no game code.
+
 ## 2. Add a catalog entry to PadMint
 
 `catalog/examplepad.json`:

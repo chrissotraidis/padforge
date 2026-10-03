@@ -309,24 +309,35 @@ def _only_new_libxml2(os_release=Path("/etc/os-release")):
     return version >= (25, 10)
 
 
-def _with_companions(names, host, table):
+def host_entry(tool, host, any_host=False):
+    """A tool's download for host. Source archives marked any_host (the same files
+    on every computer) also serve unlisted hosts when the caller asks for it: the
+    universal iPhone module pipeline uses them on Macs too, without changing what
+    existing recipes download there."""
+    entry = tool["hosts"].get(host)
+    if entry is None and any_host and tool.get("any_host") and tool["hosts"]:
+        entry = tool["hosts"][sorted(tool["hosts"])[0]]
+    return entry
+
+
+def _with_companions(names, host, table, any_host=False):
     """names plus the tools a host's download declares it comes "with" (the
     Linux arm64 NDK comes with LLVM), so game manifests need not name them."""
     result = []
     for name in names:
-        for item in [name, *table[name]["hosts"].get(host, {}).get("with", [])]:
+        for item in [name, *(host_entry(table[name], host, any_host) or {}).get("with", [])]:
             if item not in result:
                 result.append(item)
     return result
 
 
-def install(names, host, stream=None):
+def install(names, host, stream=None, any_host=False):
     """Install the named tools for this host; already-installed tools are kept."""
     stream = stream or sys.stdout
     table = lock()
-    for name in _with_companions(names, host, table):
+    for name in _with_companions(names, host, table, any_host):
         tool = table[name]
-        entry = tool["hosts"].get(host)
+        entry = host_entry(tool, host, any_host)
         if entry is None:
             if tool.get("only_where_listed"):
                 continue  # this host does not need it
@@ -378,14 +389,14 @@ def _report_link(link, stream):
         print(f"ok   {link.name} (uses this computer's {Path(os.readlink(link)).name})", file=stream)
 
 
-def environment(names, host, base=None):
+def environment(names, host, base=None, any_host=False):
     """base (default os.environ) with installed tools first on PATH."""
     env = dict(os.environ if base is None else base)
     paths = []
     table = lock()
-    for name in _with_companions(names, host, table):
+    for name in _with_companions(names, host, table, any_host):
         tool = table[name]
-        entry = tool["hosts"].get(host)
+        entry = host_entry(tool, host, any_host)
         folder = _folder(name, tool, host)
         if entry is None or not _installed(folder):
             continue

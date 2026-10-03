@@ -20,7 +20,9 @@ RUNNABLE_STATES = {"verified", "experimental"}
 TARGETS = {"ios", "macos", "android", "windows", "linux"}
 # {app}: the published app a game pack links against (padmint build --app).
 # {python}: the Python running PadMint (Windows has no python3 command).
-PLACEHOLDERS = {"repo", "disc", "work", "output", "jobs", "app", "python"}
+# {ios_sdk}, {ios_toolchain}: the open-source iPhone SDK and its CMake toolchain file,
+# which PadMint prepares for targets with an ios_module (padmint/ios_module.py).
+PLACEHOLDERS = {"repo", "disc", "work", "output", "jobs", "app", "python", "ios_sdk", "ios_toolchain"}
 CHECKS = {"bluewake-ipa", "kartpad-ipa", "ipa", "none"}
 INPUT_TIMES = {"build", "in-app"}
 CATALOG = Path(__file__).resolve().parent.parent / "catalog"
@@ -118,6 +120,20 @@ def validate_manifest(data):
         if "published_app" in target:
             _require(isinstance(target["published_app"], str) and "{version}" in target["published_app"],
                      f"{where}.published_app must name the release asset, with {{version}}")
+        if "ios_module" in target:
+            module = target["ios_module"]
+            _require(name == "ios", f"{where}.ios_module is only for the ios target")
+            _require(isinstance(module, dict) and isinstance(module.get("file"), str)
+                     and isinstance(module.get("into"), str), f"{where}.ios_module needs file and into")
+            _argv([module["file"]], f"{where}.ios_module.file")
+            _require("published_app" in target, f"{where}.ios_module needs published_app: the app it goes into")
+            _require("libcxx" in target.get("tools", []),
+                     f"{where}.ios_module needs the libcxx tool (it brings LLVM and the open-source headers)")
+            from .ios_module import ModuleError, _member
+            try:
+                _member(module["into"])
+            except ModuleError as error:
+                _require(False, f"{where}.{error}")
         modes = target.get("modes", {"full": []})
         _require(isinstance(modes, dict) and "full" in modes, f"{where}.modes must include full")
         for mode, extra in modes.items():

@@ -105,3 +105,29 @@ jobs:
           python -m padmint --version
           python -m unittest discover -s "$player_tests" -v
           python -m padmint audit "$linux_zip"
+
+  # The universal iPhone module pipeline on native hosts: open-source SDK, LLVM compile,
+  # import check and insertion into KartPad's public app (no game code anywhere).
+  universal-ios-module:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, windows-11-arm, ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - name: Keep release files identical across build hosts
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.padmint/tools
+          key: padmint-tools-${{ matrix.os }}-${{ hashFiles('padmint/tools.lock.json') }}
+      - name: Unit tests for the module pipeline
+        run: python -B -m unittest discover -s tests -p test_ios_module.py -v
+        if: runner.os != 'Windows'
+      - name: Build, check and insert a probe module
+        run: python -B scripts/ios-module-probe.py "${{ runner.temp }}/ios-module-probe"
