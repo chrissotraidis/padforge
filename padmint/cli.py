@@ -639,12 +639,14 @@ def likely_cause(lines, needed_gb=None):
 
 
 def latest_release(repo_url):
-    """The game's latest GitHub release: tag and downloadable assets.
+    """The game's latest GitHub release that PadMint builds from: tag and downloadable assets.
 
     Uses the release web pages, not GitHub's API: the API allows 60 unsigned
     requests an hour per network address, which shared networks run out of.
     /releases/latest redirects to the tag, and every Pad release lists its
-    files in SHA256SUMS.
+    files in SHA256SUMS. A game's latest release can be for something PadMint
+    does not build (BlueWake publishes ready-to-play Windows downloads): then
+    the newest release that publishes a PadMint recipe is used instead.
     """
     base = repo_url.removesuffix(".git").rstrip("/")
     with tools.open_url(f"{base}/releases/latest") as response:
@@ -652,6 +654,43 @@ def latest_release(repo_url):
     if "/releases/tag/" not in landed:
         raise ValueError(f"{base} has no published release yet")
     tag = urllib.parse.unquote(landed.rsplit("/releases/tag/", 1)[1].split("?")[0].strip("/"))
+    latest = release_assets(base, tag)
+    if has_recipe(latest[1]):
+        return latest
+    for other in release_tags(base)[:RECENT_RELEASES]:
+        if other != tag:
+            found = release_assets(base, other)
+            if has_recipe(found[1]):
+                return found
+    return latest
+
+
+RECENT_RELEASES = 8
+
+
+def has_recipe(assets):
+    return any(name.endswith("-padmint.json") for name in assets)
+
+
+def release_tags(base):
+    """Tags on the game's releases page, newest first (the page lists the most recent few).
+    Empty when the page cannot be read."""
+    try:
+        with tools.open_url(f"{base}/releases") as response:
+            page = response.read().decode("utf-8", "replace")
+    except (RuntimeError, OSError):
+        return []
+    path = urllib.parse.urlsplit(base).path
+    tags = []
+    for found in re.findall(re.escape(path) + r'/releases/tag/([^"?#<>\s]+)', page):
+        tag = urllib.parse.unquote(found.strip("/"))
+        if tag not in tags:
+            tags.append(tag)
+    return tags
+
+
+def release_assets(base, tag):
+    """(tag, assets) for one release, from its SHA256SUMS."""
     download = f"{base}/releases/download/{urllib.parse.quote(tag)}"
     try:
         with tools.open_url(f"{download}/SHA256SUMS") as response:

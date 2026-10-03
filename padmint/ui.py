@@ -44,7 +44,9 @@ def player_data(lang):
                       "formats": sorted({f.upper() for item in (entry.get("manifest") or {}).get("inputs", [])
                                          for f in item.get("formats", [])}),
                       "ids": entry.get("game_ids") or [],
-                      "platforms": [{"id": p, "label": cli.platform_label(p, lang)} for p in platforms],
+                      "platforms": [{"id": p, "label": cli.platform_label(p, lang),
+                                     "short": phrase(f"w_short_{p}", lang) if f"w_short_{p}" in MESSAGES else p}
+                                    for p in platforms],
                       "files": [str(path) for path in files[:8]],
                       "issues": entry["repo_url"] + "/issues"})
     apps = [] if cli.on_android() else [
@@ -187,7 +189,9 @@ class Builds:
                         "device": cli.platform_label(platform_name, lang),
                         "started": time.time(), "result": None}
 
-    def status(self):
+    def status(self, lang=None):
+        """The build as the page shows it, in lang (the page's language now; the build's
+        own messages stay in the language it started in)."""
         if self.process is None:
             return {"state": "idle"}
         job, code = self.job, self.process.poll()
@@ -207,24 +211,27 @@ class Builds:
                  "device": job.get("device", ""), "elapsed": int(time.time() - job["started"]), "tail": lines[-60:],
                  "lines": len(lines), "exit_code": code, "phases": found, "tools": tool_list, "stage": stage}
         if code == 0:
-            reply["result"] = self.result()
+            reply["result"] = self.result(lang)
+        reply["device"] = cli.platform_label(job["platform"], lang) if lang else reply["device"]
         return reply
 
-    def result(self):
+    def result(self, lang=None):
         job = self.job
-        if job["result"] is None:
+        lang = lang or job["lang"]
+        job.setdefault("results", {})
+        if lang not in job["results"]:
             try:
                 built = Path(json.loads((job["folder"] / "result.json").read_text())["file"])
             except (OSError, ValueError, KeyError):
                 built = None
-            steps, note, guide = cli.next_step_text(catalog()[job["game"]], job["platform"], built, job["lang"])
+            steps, note, guide = cli.next_step_text(catalog()[job["game"]], job["platform"], built, lang)
             entry = catalog()[job["game"]]
             name = (entry.get("manifest") or {}).get("name") or entry.get("name", job["game"])
             key = f"w_output_{job['platform']}"
-            job["result"] = {"file": str(built) if built else None, "steps": steps, "note": note,
-                             "guide": guide, "private": phrase("keep_private", job["lang"]),
-                             "about": phrase(key, job["lang"], name=name) if key in MESSAGES else ""}
-        return job["result"]
+            job["results"][lang] = {"file": str(built) if built else None, "steps": steps, "note": note,
+                                    "guide": guide, "private": phrase("keep_private", lang),
+                                    "about": phrase(key, lang, name=name) if key in MESSAGES else ""}
+        return job["results"][lang]
 
     def cancel(self):
         if self.process and self.process.poll() is None:
@@ -271,7 +278,7 @@ def make_handler(token, builds):
             if route == "/api/player":
                 return self.reply(200, player_data(self.lang()))
             if route == "/api/build":
-                return self.reply(200, builds.status())
+                return self.reply(200, builds.status(self.lang()))
             if route == "/api/plan":
                 query = parse_qs(urlparse(self.path).query)
                 game, platform_name = query.get("game", [""])[0], query.get("platform", [""])[0]
@@ -359,6 +366,14 @@ select,input{font:inherit;color:var(--text);background:var(--panel2);border:1px 
 .pick b{display:block}.pick span{display:block;color:var(--muted);font-size:.82rem;margin-top:.15rem}
 .tags{margin-top:.4rem;display:flex;gap:.3rem;flex-wrap:wrap}.tag{font-size:.72rem;border-radius:6px;padding:.05rem .4rem;background:color-mix(in srgb,var(--mint) 16%,transparent);color:var(--mint)}
 .sub{margin:1rem 0 .5rem;font-size:.9rem;color:var(--muted);font-weight:600}
+.list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.item{display:grid;grid-template-columns:1fr auto;gap:.2rem .8rem;align-items:center;text-align:left;background:var(--panel2);border:0;border-bottom:1px solid var(--line);padding:.6rem .85rem;color:var(--text);cursor:pointer;font:inherit}
+.item:last-child{border-bottom:0}.item:hover{background:color-mix(in srgb,var(--mint) 10%,var(--panel2))}
+.item.on{background:color-mix(in srgb,var(--mint) 18%,var(--panel2));box-shadow:inset 3px 0 0 var(--mint)}
+.item .t{font-weight:650}.item .s{color:var(--muted);font-size:.83rem;grid-column:1}.item .tags{grid-row:1/span 2;grid-column:2;margin:0;justify-content:flex-end}
+.filters{display:flex;gap:.35rem;flex-wrap:wrap;margin:.2rem 0 .6rem}.filter{font:inherit;font-size:.82rem;border-radius:999px;padding:.2rem .7rem;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.filter.on{background:var(--mint);border-color:var(--mint);color:#06281a;font-weight:600}
+#search{width:100%;max-width:none;font-size:1rem;padding:.65rem .8rem}
 button.btn{font:inherit;border-radius:10px;padding:.6rem 1.1rem;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
 button.btn:hover{border-color:var(--mint)}button.main{background:var(--mint);border-color:var(--mint);color:#06281a;font-weight:700;font-size:1.05rem;padding:.75rem 1.4rem}
 button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
@@ -386,9 +401,10 @@ footer{margin-top:2rem;color:var(--muted);font-size:.82rem;display:flex;gap:1rem
 <section class="hero"><p data-t="intro"></p><div class="chips"><span class="chip" data-t="trust_local"></span><span class="chip" data-t="trust_upload"></span><span class="chip" data-t="trust_open"></span></div></section>
 
 <main id="form">
-<section class="card"><div class="row" style="justify-content:space-between"><h2 data-t="step1"></h2><input id="search" style="max-width:220px"><button class="btn hidden" id="changeGame" data-t="change"></button></div>
-<div class="sub" data-t="builds"></div><div class="grid" id="games"></div>
-<div id="dlHead" class="sub" data-t="no_build"></div><div class="grid" id="apps"></div></section>
+<section class="card"><div class="row" style="justify-content:space-between"><h2 data-t="step1"></h2><button class="btn hidden" id="changeGame" data-t="change"></button></div>
+<div id="finder"><input id="search" type="search" autocomplete="off"><div class="filters" id="filters"></div></div>
+<div class="sub" id="buildsHead"><span data-t="builds"></span> <span class="muted" id="count"></span></div><div class="list" id="games"></div><p class="muted hidden" id="noMatch" data-t="no_match"></p>
+<div id="dlHead" class="sub" data-t="no_build"></div><div class="list" id="apps"></div></section>
 
 <section class="card hidden" id="dlBox"><h2 id="dlName"></h2><p id="dlIntro"></p><ol class="next" id="dlSteps"></ol><p class="small" id="dlGuide"></p></section>
 
@@ -419,25 +435,44 @@ footer{margin-top:2rem;color:var(--muted);font-size:.82rem;display:flex;gap:1rem
 <footer><span data-t="local_note"></span><span><a href="https://github.com/chrissotraidis/padmint" target="_blank" data-t="source"></a> · <a id="reportLink" href="https://github.com/chrissotraidis/padmint/issues" target="_blank" data-t="report"></a></span></footer>
 </div>
 <script>
-const T="__TOKEN__",D=__DATA__,S=D.text,H={"Content-Type":"application/json","X-PadMint-Token":T};
+const T="__TOKEN__";let D=__DATA__,S=D.text;const H={"Content-Type":"application/json","X-PadMint-Token":T};
 const $=id=>document.getElementById(id);let file=null,reading=false,sel=null,dev=null,shown=false;
 const fill=(k,v)=>Object.entries(v||{}).reduce((s,[a,b])=>s.split("{"+a+"}").join(b),S[k]||"");
 for(const e of document.querySelectorAll("[data-t]"))e.textContent=S[e.dataset.t]||"";
 document.documentElement.lang=D.lang;$("lang").value=D.lang;$("ver").textContent="v"+D.version;$("search").placeholder=S.search;
 $("choose").classList.toggle("hidden",!D.picker);
-$("lang").onchange=()=>{location.search="?token="+T+"&lang="+$("lang").value};
+let last=null;
+function texts(){for(const e of document.querySelectorAll("[data-t]"))e.textContent=S[e.dataset.t]||"";document.documentElement.lang=D.lang;$("search").placeholder=S.search}
+$("lang").onchange=async()=>{const lang=$("lang").value,r=await (await fetch("/api/player?lang="+lang,{headers:H})).json();
+ if(r.error)return;D=r;S=D.text;texts();history.replaceState(null,"","?token="+T+"&lang="+lang);filters();cards();
+ if(sel){const keep={file,dev};const g=game();if(g||app())redraw(keep)}
+ if(last){shown=false;$("finished").replaceChildren();const r2=await (await fetch("/api/build?lang="+lang,{headers:H})).json();show(r2)}};
+function redraw(keep){const was=keep.file,state=$("fileState").textContent;choose(sel);if(was){file=was;$("path").value=was;$("fileState").className="state ok";$("fileState").textContent="✓ "+fill("file_ok",{file:base(was)})}
+ if(keep.dev&&game())pickDevice(keep.dev);ready()}
 async function post(p,b){const r=await fetch(p,{method:"POST",headers:H,body:JSON.stringify(Object.assign({lang:D.lang},b||{}))});return r.json()}
 const base=p=>p.split(/[\\/]/).pop();
 function el(tag,text,cls){const e=document.createElement(tag);if(text!=null&&text!=="")e.textContent=text;if(cls)e.className=cls;return e}
 const gb=b=>b?(b>=1e9?(b/1e9).toFixed(1)+" GB":Math.max(1,Math.round(b/1e6))+" MB"):"";
 const game=()=>D.games.find(g=>g.id==sel),app=()=>D.downloads.find(a=>a.id==sel);
-function cards(){const q=$("search").value.trim().toLowerCase(),m=x=>sel?x.id==sel:(!q||(x.name+" "+(x.about||"")).toLowerCase().includes(q));
- $("search").classList.toggle("hidden",!!sel);$("changeGame").classList.toggle("hidden",!sel);
- for(const e of document.querySelectorAll(".sub"))e.classList.toggle("hidden",!!sel);
- $("games").replaceChildren(...D.games.filter(m).map(g=>{const b=el("button",null,"pick"+(g.id==sel?" on":""));b.append(el("b",g.name));if(g.about)b.append(el("span",g.about));
-  const t=el("div",null,"tags");for(const p of g.platforms)t.append(el("span",p.label,"tag"));b.append(t);b.onclick=()=>choose(g.id);return b}));
- const as=D.downloads.filter(m);$("dlHead").classList.toggle("hidden",!as.length||!!sel);
- $("apps").replaceChildren(...as.map(a=>{const b=el("button",null,"pick"+(a.id==sel?" on":""));b.append(el("b",a.name));b.onclick=()=>choose(a.id);return b}))}
+let system="";
+const title=g=>(g.about||g.name).replace(/\s*\([^)]*\)\s*$/,"");
+const systemOf=g=>{const m=(g.about||"").match(/\(([^),]+)/);return m?m[1].replace(/ prototype$/,""):""};
+const sortKey=g=>title(g).replace(/^(The|A) /i,"").toLowerCase();
+function filters(){const systems=[...new Set(D.games.map(systemOf).filter(Boolean))].sort();
+ $("filters").replaceChildren(...["",...systems].map(s=>{const b=el("button",s||S.all,"filter"+(s==system?" on":""));b.onclick=()=>{system=s;filters();cards()};return b}))}
+function row(x,isGame){const b=el("button",null,"item"+(x.id==sel?" on":""));
+ b.append(el("span",isGame?title(x):x.name,"t"));const t=el("div",null,"tags");
+ if(isGame)for(const p of x.platforms)t.append(el("span",p.short||p.label,"tag"));b.append(t);
+ if(isGame)b.append(el("span",x.name+(systemOf(x)?" · "+systemOf(x):""),"s"));b.onclick=()=>choose(x.id);return b}
+function cards(){const q=$("search").value.trim().toLowerCase();
+ const m=x=>sel?x.id==sel:(!q||(x.name+" "+(x.about||"")).toLowerCase().includes(q));
+ $("finder").classList.toggle("hidden",!!sel);$("changeGame").classList.toggle("hidden",!sel);
+ const games=D.games.filter(g=>m(g)&&(sel||!system||systemOf(g)==system)).sort((a,b)=>sortKey(a).localeCompare(sortKey(b)));
+ $("games").replaceChildren(...games.map(g=>row(g,true)));$("games").classList.toggle("hidden",!games.length);
+ $("buildsHead").classList.toggle("hidden",!!sel||!games.length);$("count").textContent="("+fill("count",{count:games.length})+")";
+ const as=sel||system?D.downloads.filter(a=>a.id==sel):D.downloads.filter(m);
+ $("dlHead").classList.toggle("hidden",!as.length||!!sel);$("apps").replaceChildren(...as.map(a=>row(a,false)));$("apps").classList.toggle("hidden",!as.length);
+ $("noMatch").classList.toggle("hidden",!!(games.length||as.length))}
 $("search").oninput=cards;$("changeGame").onclick=()=>{sel=null;file=null;dev=null;for(const id of ["fileBox","deviceBox","planBox","dlBox","inApp"])$(id).classList.add("hidden");cards()};
 function choose(id){sel=id;file=null;dev=null;$("fileState").textContent="";$("path").value="";cards();const g=game(),a=app();
  $("dlBox").classList.toggle("hidden",!a);
@@ -493,7 +528,7 @@ function phaseRow(p,r,g){const li=el("li",null,p.state||"pending"),ico=el("div",
  if(p.id=="build"&&p.state=="running"&&r.now)body.append(el("div",r.now.slice(-160),"detail mono"));
  if(p.id=="save"&&p.file)body.append(el("div",p.file,"detail ok"));
  li.append(ico,body);return li}
-function show(r){if(r.state=="idle")return;$("form").classList.add("hidden");$("progress").classList.remove("hidden");
+function show(r){if(r.state=="idle")return;last=r;$("form").classList.add("hidden");$("progress").classList.remove("hidden");
  const g=D.games.find(x=>x.id==r.game);$("making").textContent=r.state=="done"?S.done_title:r.state=="failed"?S.failed_title:r.state=="cancelled"?S.cancelled:fill("making",{name:g?g.name:r.game,device:r.device||""});
  $("headCard").classList.toggle("badb",r.state=="failed");$("elapsed").textContent=clock(r.elapsed);
  const ids=["release","source","tools","app","build","save"],have={};for(const p of r.phases||[])have[p.id]=p;
@@ -510,7 +545,7 @@ function show(r){if(r.state=="idle")return;$("form").classList.add("hidden");$("
   if(x.steps.length){const o=el("ol",null,"next");for(const s of x.steps)o.append(linked(s));f.append(el("h2",S.next),o)}
   if(x.note)f.append(el("p",x.note,"muted"));
   const p=el("p",S.guide+": ","small"),a=el("a",x.guide);a.href=x.guide;a.target="_blank";p.append(a);f.append(p,el("p",x.private,"warn small"))}}
-async function poll(){const r=await (await fetch("/api/build",{headers:H})).json();show(r);if(r.state=="running")setTimeout(poll,1500)}
-if(!D.games.length&&!D.downloads.length){$("form").replaceChildren(el("p",S.none,"bad"))}else{cards();poll()}
+async function poll(){const r=await (await fetch("/api/build?lang="+D.lang,{headers:H})).json();show(r);if(r.state=="running")setTimeout(poll,1500)}
+if(!D.games.length&&!D.downloads.length){$("form").replaceChildren(el("p",S.none,"bad"))}else{filters();cards();poll()}
 </script></body></html>
 """
