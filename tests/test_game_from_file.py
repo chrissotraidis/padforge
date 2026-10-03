@@ -150,7 +150,9 @@ class RomFromFileTests(unittest.TestCase):
         self.assertEqual(args, ("goldenpad", "ios", rom))
         self.assertIn("Game: GoldenPad (from your file, NGEE)", text)
         self.assertNotIn("Reading your file", text)
-        self.assertNotIn("1. ", text)
+        # No game or device menu: both were decided without asking.
+        self.assertNotIn("Game\n  1. ", text)
+        self.assertNotIn("Make it for\n  1. ", text)
         install.assert_not_called()
         read_disc.assert_not_called()
 

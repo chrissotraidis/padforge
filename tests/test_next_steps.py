@@ -39,9 +39,30 @@ class NextStepsTests(unittest.TestCase):
         with mock.patch.object(cli, "on_android", return_value=False):
             cli.next_steps(catalog()["kartpad"], "android", Path("/out/pack.so"), stream)
         text = stream.getvalue()
-        self.assertIn("Copy pack.so to the phone or tablet", text)
+        folder = Path("/out/pack.so").parent  # "\out" on Windows
+        self.assertIn(f"Copy pack.so and the KartPad game data folder, both in {folder}, to the phone or tablet",
+                      text)
+        self.assertIn("Import from Extracted Game Data Folder", text)
         self.assertIn("USB cable", text)
         self.assertNotIn("already on this phone", text)
+
+    def test_iphone_steps_say_game_data_is_kept_on_update(self):
+        stream = io.StringIO()
+        with mock.patch.object(cli, "on_android", return_value=False):
+            cli.next_steps(catalog()["kartpad"], "ios", Path("/out/KartPad.ipa"), stream)
+        text = stream.getvalue()
+        self.assertIn("Your game data stays too", text)
+        self.assertIn("First time only", text)
+
+    def test_spanish_player_gets_spanish_steps(self):
+        stream = io.StringIO()
+        with mock.patch.object(cli, "on_android", return_value=False), \
+                mock.patch.dict("os.environ", {"PADMINT_LANG": "es"}), \
+                mock.patch("padmint.say.stream_supports", return_value=True):
+            cli.next_steps(catalog()["kartpad"], "android", Path("/out/pack.so"), stream)
+        text = stream.getvalue()
+        self.assertIn("Paso 3 de 3", text)
+        self.assertIn("Copia pack.so y la carpeta KartPad game data", text)
 
     def test_phone_without_special_steps_keeps_the_existing_instructions(self):
         stream = io.StringIO()

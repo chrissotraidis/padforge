@@ -24,6 +24,7 @@ import urllib.parse
 import uuid
 
 from . import __version__, awake, game_file, gate, tools
+from .say import MESSAGES, localized, t
 from .manifest import (RUNNABLE_STATES, NeedsNewerPadMint, catalog, expand, host_id, load_manifest,
                        manifest_for, manifest_sha256, needs_build_input, on_android,
                        repository_manifest)
@@ -740,14 +741,15 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
     accepted = game_file.check_before_tools(manifest, target, disc, host_id())
     if accepted:
         print(f"Your game file: {accepted}", flush=True)
+    print(t("step_tools"), flush=True)
     tools.install(target.get("tools", []), host_id())
     version = (read_game_version(source) or {}).get("version") or ref.lstrip("v")
     if target.get("published_app") and app is None:
         name = target["published_app"].format(version=version)
-        print(f"Downloading the published {name}", flush=True)
+        print(t("published_app", name=name), flush=True)
         app = published_app(name, assets, home / "apps" / game)
     jobs = jobs or default_jobs()
-    print(f"Building with {jobs} parallel jobs", flush=True)
+    print(t("step_build", jobs=jobs), flush=True)
     args = argparse.Namespace(game=game, repo=source, revision=git(source, "rev-parse", "HEAD"),
                               disc=disc, target=platform_name, workspace_root=None, jobs=jobs,
                               source_only=False, no_mods=False, app=app)
@@ -755,19 +757,19 @@ def _make(game, platform_name, disc, out, ref=None, app=None, jobs=None, results
     code = execute(args, source, disc)
     if code != 0:
         if code != 130:
-            print(f"\nThe build stopped; the lines above say why. For help, post them with your computer "
-                  f"type (Windows, Mac or Linux) at {entry['repo_url']}/issues", file=sys.stderr)
+            print(t("build_stopped", url=f"{entry['repo_url']}/issues"), file=sys.stderr)
         return code
     out.mkdir(parents=True, exist_ok=True)
     safe_version = re.sub(r"[^A-Za-z0-9._-]", "_", version)  # a branch name such as codex/x has a slash
     result = out / f"{manifest['name']}-v{safe_version}-{platform_name}-personal{args.output_path.suffix}"
     shutil.copyfile(args.output_path, result)
-    print(f"Your {manifest['name']} for {PLATFORM_NAMES.get(platform_name, platform_name)}: {result}")
+    platform_label = t(f"platform_{platform_name}") if f"platform_{platform_name}" in MESSAGES else platform_name
+    print(t("your_copy", name=manifest["name"], platform=platform_label, path=result))
     if results is not None:
         results.append(result)
     save_game_data(args.output_path, out, manifest["name"],
                    import_label=(entry.get("game_data_import") or {}).get(platform_name))
-    print("It contains game code made from your own copy: keep it to yourself.")
+    print(t("keep_private"))
     return 0
 
 
@@ -782,21 +784,17 @@ def save_game_data(built, out, name, stream=None, import_label=None):
         return None
     target = out / f"{name} game data"
     if target.exists():
-        print(f"Your {name} game data folder is already at {target}", file=stream)
+        print(t("data_exists", name=name, path=target), file=stream)
         return target
     partial = target.with_name(target.name + ".partial")
     if partial.exists():
         shutil.rmtree(tools._long(partial))
-    print(f"Saving your {name} game data folder (about "
-          f"{sum(p.stat().st_size for p in data.rglob('*') if p.is_file()) / (1 << 30):.1f} GB)…",
-          file=stream, flush=True)
+    size = sum(p.stat().st_size for p in data.rglob("*") if p.is_file()) / (1 << 30)
+    print(t("data_saving", name=name, size=f"{size:.1f}"), file=stream, flush=True)
     copy_files(tools._long(data), tools._long(partial))
     partial.replace(target)
-    transfer = "It is already on this phone;" if on_android() else "Copy it to your device and"
-    print(f"Your {name} game data folder: {target}\n"
-          f"  New to {name}? {transfer} choose it with "
-          f"{import_label or 'Import from Extracted Folder'}. "
-          "It needs no key.", file=stream)
+    print(t("data_saved_phone" if on_android() else "data_saved_computer", name=name, path=target,
+            label=import_label or "Import from Extracted Folder"), file=stream)
     return target
 
 
@@ -944,10 +942,6 @@ def doctor(game, target_name, repo=None, stream=None):
     return 1 if problems else 0
 
 
-PLATFORM_LABELS = {"android": "Android phone or tablet",
-                   "ios": "iPhone or iPad (needs this Mac)"}
-# Off a Mac, for games whose catalog entry says iPhone builds work there too.
-OFF_MAC_IOS_LABEL = "iPhone or iPad (experimental)"
 PLATFORM_NAMES = {"android": "Android", "ios": "iPhone and iPad", "macos": "Mac"}
 # The phone's Download folder, shared with its apps (Termux asks once for access).
 PHONE_DOWNLOADS = Path("/sdcard/Download")
@@ -958,17 +952,17 @@ def next_steps(entry, platform_name, result, stream):
     guide = entry.get("player_help") or f"{entry['repo_url']}#get-{entry['id']}"
     steps = (entry.get("player_next") or {}).get(platform_name)
     if not steps or result is None:
-        print(f"Next: {guide}", file=stream)
+        print(t("next_link", guide=guide), file=stream)
         return
-    instructions = steps["steps"]
+    instructions = localized(steps, "steps")
     if platform_name == "android" and on_android():
-        instructions = steps.get("phone_steps") or instructions
-    print("\nWhat to do next:", file=stream)
+        instructions = localized(steps, "phone_steps") or instructions
+    print(t("step_next"), file=stream)
     for number, step in enumerate(instructions, 1):
         print(f"  {number}. {step.format(file=result.name, folder=result.parent)}", file=stream)
-    if steps.get("note"):
-        print(steps["note"], file=stream)
-    print(f"Full guide: {guide}", file=stream)
+    if localized(steps, "note"):
+        print(localized(steps, "note"), file=stream)
+    print(t("full_guide", guide=guide), file=stream)
 
 
 def reveal(path):
@@ -1014,8 +1008,9 @@ def game_files(folder, manifest):
     return sorted(found, key=lambda path: path.stat().st_mtime, reverse=True)
 
 
-def choose(title, options, ask, stream, prompt="Number: "):
+def choose(title, options, ask, stream, prompt=None):
     """options: [(value, label)]. One option is chosen without asking."""
+    prompt = prompt or t("number")
     if len(options) == 1:
         print(f"{title}: {options[0][1]}", file=stream)
         return options[0][0]
@@ -1026,13 +1021,13 @@ def choose(title, options, ask, stream, prompt="Number: "):
         answer = ask(prompt).strip()
         if answer.isdigit() and 1 <= int(answer) <= len(options):
             return options[int(answer) - 1][0]
-        print(f"Enter a menu number from 1 to {len(options)}.", file=stream, flush=True)
+        print(t("menu_range", count=len(options)), file=stream, flush=True)
 
 
 def file_problem(disc):
     """Why a dropped path can't be used yet, in the player's words; None when it can."""
     if not disc.is_file():
-        return f"No file at {disc}"
+        return t("no_file", path=disc)
     if game_file.cloud_only(disc):
         return game_file.CLOUD_ONLY.format(name=disc.name)
     return None
@@ -1046,7 +1041,7 @@ def game_from_file(disc, games, stream):
     game_id = game_file.header_id(disc)
     if game_id is None:
         # nodtool may download first, with its output hidden: say something so it doesn't look stuck.
-        print("Reading your file…", file=stream, flush=True)
+        print(t("reading_file"), file=stream, flush=True)
         try:
             tools.install(["nodtool"], host_id(), stream=io.StringIO())
             _title, game_id, _revision = game_file.read_disc(disc, tools.executable("nodtool", host_id()))
@@ -1054,7 +1049,7 @@ def game_from_file(disc, games, stream):
             return []
     matches = [(id_, name) for id_, name, _ in games if game_id in (catalog()[id_].get("game_ids") or [])]
     if len(matches) == 1:
-        print(f"Game: {matches[0][1]} (from your file, {game_id})", file=stream)
+        print(t("game_from_file", name=matches[0][1], game_id=game_id), file=stream)
     return [id_ for id_, _ in matches]
 
 
@@ -1063,7 +1058,7 @@ def start(ask=input, stream=None):
     offered and the player's file names exactly one of them, the game is not asked for.
     The copy is saved to Downloads (padmint make --out chooses another folder)."""
     stream = stream or sys.stdout
-    print(f"PadMint {__version__}: make your own copy of a game from your own game file.", file=stream)
+    print(t("intro", version=__version__), file=stream)
     # iPhone builds need Xcode on Apple Silicon, except games marked ios_off_mac, which also
     # build on Windows and Linux computers. An Intel Mac and a phone make Android copies.
     host = host_id()
@@ -1081,15 +1076,14 @@ def start(ask=input, stream=None):
     disc = game = None
     offered = games
     if len(games) > 1 and any(catalog()[id_].get("game_ids") for id_, _, _ in games):
-        answer = ask("Drag your game file into this window, then press Enter "
-                     "(no file? just press Enter to choose a game): ").strip()
+        answer = ask(t("drag_or_choose")).strip()
         while answer:
             disc = dropped_path(answer)
             problem = file_problem(disc)
             if problem is None:
                 break
             print(problem, file=stream)
-            answer = ask("Drag the file again, or press Enter to choose a game: ").strip()
+            answer = ask(t("drag_again")).strip()
             disc = None
         if disc is not None:
             found = game_from_file(disc, games, stream)
@@ -1098,10 +1092,10 @@ def start(ask=input, stream=None):
                 offered = [entry for entry in games if entry[0] in found]
             game = found[0] if len(found) == 1 else None
     if game is None:
-        game = choose("Game", [(game, name) for game, name, _ in offered], ask, stream)
+        game = choose(t("game"), [(game, name) for game, name, _ in offered], ask, stream)
     name, platforms = next((name, platforms) for id_, name, platforms in games if id_ == game)
-    labels = dict(PLATFORM_LABELS, **({} if apple_silicon else {"ios": OFF_MAC_IOS_LABEL}))
-    target = choose("Make it for", [(p, labels.get(p, p)) for p in platforms], ask, stream)
+    labels = {"android": t("android"), "ios": t("ios_mac") if apple_silicon else t("ios_off_mac")}
+    target = choose(t("make_it_for"), [(p, labels.get(p, p)) for p in platforms], ask, stream)
     if catalog()[game].get("player_game_file", "build") == "in-app":
         disc = None
         print(f"{name} asks for your own game file inside the app, after you install it.", file=stream)
@@ -1118,8 +1112,7 @@ def start(ask=input, stream=None):
             print("No supported game file was found in your phone's Download folder. "
                   "Copy your disc image there and run padmint again, or enter its full file path below.",
                   file=stream, flush=True)
-        prompt = (f"Type the path of your own {name} game file, then press Enter: " if on_android()
-                  else f"Drag your own {name} game file into this window, then press Enter: ")
+        prompt = t("type_game_file", name=name) if on_android() else t("drag_game_file", name=name)
         while disc is None:
             disc = dropped_path(ask(prompt))
             problem = file_problem(disc)
@@ -1129,7 +1122,8 @@ def start(ask=input, stream=None):
         if on_android():
             print(f"Using file: {disc.name}", file=stream, flush=True)
     out = player_folder()
-    print(f"Your copy will be saved in {out}", file=stream)
+    print(t("saved_in", folder=out), file=stream)
+    print(t("plan"), file=stream, flush=True)
     results = []
     code = make(game, target, disc.resolve() if disc else None, out.resolve(), results=results)
     if code == 0:
