@@ -3,5 +3,5 @@ cmake_minimum_required(VERSION 3.20)
 project(padmint_module_probe C CXX)
 set(CMAKE_CXX_STANDARD 20)
 add_library(game SHARED probe.cpp probe_c.c)
-# Names the app exports are found when the app loads the module (flat namespace).
-target_link_options(game PRIVATE -Wl,-undefined,dynamic_lookup)
+# Like a game's own CMake project: no PadMint-specific link options, and -lm as with Xcode.
+target_link_libraries(game PRIVATE m)
